@@ -71,16 +71,15 @@ model DetailColor {
 }
 
 model Rating {
-  id              Int         @id @default(autoincrement())
+  id              Int           @id @default(autoincrement())
   star_rating     Int
   is_hsl          Boolean
   is_comp         Boolean
   user_id         Int
-  user            User        @relation(fields: [user_id], references: [id], onDelete: Cascade)
-  detail_color    DetailColor @relation(fields: [detail_color_id], references: [id], onDelete: Cascade)
-  detail_color_id Int
+  user            User          @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  detail_color_id DetailColor[]
 
-  @@unique([id, detail_color_id, user_id])
+  @@unique([id, user_id])
 }
 
 model Cart {
