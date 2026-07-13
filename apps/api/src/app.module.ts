@@ -3,9 +3,26 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { RatingModule } from './rating/rating.module';
 import { ToneModule } from './tone/tone.module';
+import { UserModule } from './user/user.module';
+import { PayModule } from './pay/pay.module';
+import { PrismaModule } from './prisma/prisma.module';
+import { ProductModule } from './product/product.module';
+import { CartModule } from './cart/cart.module';
+import { OrderModule } from './order/order.module';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
-  imports: [RatingModule, ToneModule],
+  imports: [
+    PrismaModule,
+    ProductModule,
+    CartModule,
+    OrderModule,
+    UserModule,
+    PayModule,
+    AuthModule,
+    RatingModule,
+    ToneModule,
+  ],
   controllers: [AppController],
   providers: [AppService],
 })
