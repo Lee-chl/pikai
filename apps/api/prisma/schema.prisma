@@ -61,10 +61,11 @@ model DetailColor {
   h           Int
   s           Int
   l           Int
-  ratings     Rating[]
+  rating_id   Int?
+  rating      Rating?     @relation(fields: [rating_id], references: [id], onDelete: SetNull)
   cartItem    CartItem[]
   orderItem   OrderItem[]
-  tones       Tone?
+  tone        Tone?
   products    Product     @relation(fields: [product_id], references: [id], onDelete: Cascade)
   product_id  Int
 }
@@ -89,12 +90,13 @@ model Cart {
 }
 
 model CartItem {
-  id           Int           @id @default(autoincrement())
-  detail_color DetailColor[]
-  cart_id      Int
-  cart         Cart          @relation(fields: [cart_id], references: [id], onDelete: Cascade)
-  quantity     Int
-  price        Int
+  id              Int         @id @default(autoincrement())
+  detail_color_id Int
+  detailColor     DetailColor @relation(fields: [detail_color_id], references: [id], onDelete: Cascade)
+  cart_id         Int
+  cart            Cart        @relation(fields: [cart_id], references: [id], onDelete: Cascade)
+  quantity        Int
+  price           Int
 }
 
 model Order {
