@@ -163,9 +163,8 @@ model User {
   is_admin       Boolean       @default(true)
   create_at      DateTime      @default(now())
   update_at      DateTime      @default(now())
-
-  carts     Cart[]
-  ratings   Rating  @relation(fields: [rating_id], references: [id], onDelete: Cascade)
-  rating_id Int
-  orders    Order[]
+  carts          Cart[]
+  ratings        Rating        @relation(fields: [rating_id], references: [id], onDelete: Cascade)
+  rating_id      Int
+  orders         Order[]
 }
