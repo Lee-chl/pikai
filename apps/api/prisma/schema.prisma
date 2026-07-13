@@ -37,7 +37,7 @@ enum PersonalColor {
 }
 
 model Product {
-  id                 Int         @id @default(autoincrement())
+  id                 Int           @id @default(autoincrement())
   color_main_image   String
   color_detail_image String
   name               String
@@ -45,13 +45,12 @@ model Product {
   price              Int
   is_sale            Boolean
   category_id        Int
-  category           Category    @relation(fields: [category_id], references: [id], onDelete: Cascade)
+  category           Category      @relation(fields: [category_id], references: [id], onDelete: Cascade)
   brand_id           Int
-  brand              Brand       @relation(fields: [brand_id], references: [id], onDelete: Cascade)
-  detail_color_id    Int
-  detail_color       DetailColor @relation(fields: [detail_color_id], references: [id], onDelete: Cascade)
+  brand              Brand         @relation(fields: [brand_id], references: [id], onDelete: Cascade)
+  detail_color       DetailColor[]
 
-  @@unique([id, brand_id, category_id, detail_color_id])
+  @@unique([id, brand_id, category_id])
 }
 
 model DetailColor {
@@ -67,7 +66,8 @@ model DetailColor {
   orderItem   OrderItem[]
   tone_id     Int
   tones       Tone        @relation(fields: [tone_id], references: [detail_color_id], onDelete: Cascade)
-  products    Product[]
+  products    Product     @relation(fields: [product_id], references: [id], onDelete: Cascade)
+  product_id  Int
 }
 
 model Rating {
@@ -114,7 +114,7 @@ model Order {
 }
 
 model OrderItem {
-  id              Int         @default(autoincrement())
+  id              Int         @id @default(autoincrement())
   order_id        Int
   order           Order       @relation(fields: [order_id], references: [id], onDelete: Cascade)
   detail_color_id Int
