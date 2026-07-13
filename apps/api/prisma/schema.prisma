@@ -13,118 +13,160 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-enum Order_status {
-  awaiting //결제 대기
-  pay_completed // 결제 완료
-  transit // 배송 중
-  del_completed // 배송 완료
-  refund // 환불
-  returns // 반품
-  exchange // 교환
+enum OrderStatus {
+  AWAITING //결제 대기
+  PAYCOMPLETED // 결제 완료
+  TRANSIT // 배송중
+  DELCOMPLETED // 배송 완료
+  REFUND // 환불
+  RETURNS // 반품 
+  EXCHANGE //교환 
 }
 
-enum Personal_color {
-  warm
-  cool
-  spring_warm
-  summer_cool
-  fall_warm
-  winter_cool
-  fall_deep
-  winter_deep
-  summer_mute
-  fall_mute
+enum PersonalColor {
+  WARM
+  COOL
+  SPRINGWARM
+  SUMMERCOOL
+  FALLWARM
+  WINTERCOOL
+  FALLDEEP
+  WINTERDEEP
+  SUMMERMUTE
+  FALLMUTE
 }
 
 model Product {
-  id Int @id @default(autoincrement())
+  id                 Int         @id @default(autoincrement())
+  color_main_image   String
+  color_detail_image String
+  name               String
+  hash_tag           String
+  price              Int
+  is_sale            Boolean
+  category_id        Int
+  category           Category    @relation(fields: [category_id], references: [id], onDelete: Cascade)
+  brand_id           Int
+  brand              Brand       @relation(fields: [brand_id], references: [id], onDelete: Cascade)
+  detail_color_id    Int
+  detail_color       DetailColor @relation(fields: [detail_color_id], references: [id], onDelete: Cascade)
+
+  @@unique([id, brand_id, category_id, detail_color_id])
+}
+
+model DetailColor {
+  id          Int         @id @default(autoincrement())
+  color_name  String      @unique
   color_image String
-  name String
-  hash_tag String
-  color_name String @unique
-  price Int
-  sale_price Int
-  stock Int
-  h Int
-  s Int
-  l Int
-  is_sale Boolean
-  category_id Int
-  category Category @relation(fields: [category_id], references: [id], onDelete: Cascade)
-  brand_id Int
-  brand Brand @relation(fields: [brand_id], references: [id], onDelete: Cascade)
+  stock       Int
+  h           Int
+  s           Int
+  l           Int
+  ratings     Rating[]
+  cartItem    CartItem[]
+  ordersItem  OrderItem[]
+  tone_id     Int
+  tones       Tone        @relation(fields: [tone_id], references: [detail_color_id], onDelete: Cascade)
+  products    Product[]
 }
 
 model Rating {
-  id Int @id @default(autoincrement())
-  star_rating Int
-  is_hsl Boolean
-  is_comp Boolean
-  user_id Int
-  user User @relation(fields: [user_id], references: [id], onDelete: Cascade)
-  product_id Int
-  product Product @relation(fields: [product_id], references: [id], onDelete: Cascade)
+  id              Int         @id @default(autoincrement())
+  star_rating     Int
+  is_hsl          Boolean
+  is_comp         Boolean
+  user_id         Int
+  user            User        @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  detail_color    DetailColor @relation(fields: [detail_color_id], references: [id], onDelete: Cascade)
+  detail_color_id Int
 
-  @unique([id, product_id])
+  @@unique([id, detail_color_id, user_id])
 }
 
 model Cart {
-  id Int @id @default(autoincrement())
-  order_count Int
-  product_id Int
-  product Product @relation(fields: [product_id], references: [id], onDelete: Cascade)
+  id        Int        @id @default(autoincrement())
+  cartItems CartItem[]
+  user      User       @relation(fields: [userId], references: [id])
+  userId    Int
+}
+
+model CartItem {
+  id           Int           @id @default(autoincrement())
+  detail_color DetailColor[]
+  cart_id      Int
+  cart         Cart          @relation(fields: [cart_id], references: [id], onDelete: Cascade)
+  quantity     Int
 }
 
 model Order {
-  id Int @id @default(autoincrement())
-  payment String 
+  id            Int         @id
+  payment       String
   delivery_info String
-  postal_code Int
+  postal_code   Int
   delivery_inst String
-  order_status Order_status @default(awaiting)
-  order_date DateTime @default(now())
+  order_status  OrderStatus @default(AWAITING)
+  order_date    DateTime    @default(now())
+  user_id       Int
+  user          User        @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  orderItem     OrderItem[]
 
-  product_id Int
-  product Product @relation(fields: [product_id], references: [id], onDelete: Cascade)
-  user_id Int
-  user User @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  @@unique([id, user_id])
+}
+
+model OrderItem {
+  id              Int         @default(autoincrement())
+  order_id        Int
+  order           Order       @relation(fields: [order_id], references: [id], onDelete: Cascade)
+  detail_color_id Int
+  detailColor     DetailColor @relation(fields: [detail_color_id], references: [id])
+  quantity        Int
+  price           Int
 }
 
 model Tone {
-  product_id Int @id
-  sale_count Int
-  personal_color Personal_color
-
-  product Product @relation(fields: [product_id], references: [id], onDelete: Cascade)
+  detail_color_id Int         @id
+  detailColor     DetailColor @relation(fields: [detail_color_id], references: [id])
+  sale_count      Int
+  WARM            Int
+  COOL            Int
+  SPRINGWARM      Int
+  SUMMERCOOL      Int
+  FALLWARM        Int
+  WINTERCOOL      Int
+  FALLDEEP        Int
+  WINTERDEEP      Int
+  SUMMERMUTE      Int
+  FALLMUTE        Int
 }
 
 model Brand {
-  id Int @id @default(autoincrement())
-  name String
-
+  id       Int       @id @default(autoincrement())
+  name     String
   products Product[]
 }
 
 model Category {
-  id Int @id @default(autoincrement())
-  name String
-
+  id       Int       @id @default(autoincrement())
+  name     String
   products Product[]
 }
 
 model User {
-  id Int @id @default(autoincrement())
-  name String
-  email String
-  password String @default("pwd")
-  postal_code Int
-  address String
-  phone String
-  personal_color Personal_color
-  is_active Boolean @default(true)
-  is_admin Boolean @default(true)
-  create_at DateTime @default(now())
-  update_at DateTime @default(now())
+  id             Int           @id @default(autoincrement())
+  name           String
+  email          String
+  password       String        @default("pwd")
+  postal_code    Int
+  address        String
+  phone          String
+  personal_color PersonalColor
+  is_active      Boolean       @default(true)
+  is_admin       Boolean       @default(true)
+  create_at      DateTime      @default(now())
+  update_at      DateTime      @default(now())
 
-  carts Cart[] // 회의 후 삭제 예정
+  carts     Cart[]
+  ratings   Rating  @relation(fields: [rating_id], references: [id], onDelete: Cascade)
+  rating_id Int
+  orders    Order[]
 }
