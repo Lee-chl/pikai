@@ -64,7 +64,7 @@ model DetailColor {
   l           Int
   ratings     Rating[]
   cartItem    CartItem[]
-  ordersItem  OrderItem[]
+  orderItem   OrderItem[]
   tone_id     Int
   tones       Tone        @relation(fields: [tone_id], references: [detail_color_id], onDelete: Cascade)
   products    Product[]
