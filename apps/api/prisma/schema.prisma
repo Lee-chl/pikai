@@ -64,20 +64,19 @@ model DetailColor {
   ratings     Rating[]
   cartItem    CartItem[]
   orderItem   OrderItem[]
-  tone_id     Int
-  tones       Tone        @relation(fields: [tone_id], references: [detail_color_id], onDelete: Cascade)
+  tones       Tone?
   products    Product     @relation(fields: [product_id], references: [id], onDelete: Cascade)
   product_id  Int
 }
 
 model Rating {
-  id              Int           @id @default(autoincrement())
-  star_rating     Int
-  is_hsl          Boolean
-  is_comp         Boolean
-  user_id         Int
-  user            User          @relation(fields: [user_id], references: [id], onDelete: Cascade)
-  detail_color_id DetailColor[]
+  id           Int           @id @default(autoincrement())
+  star_rating  Int
+  is_hsl       Boolean
+  is_comp      Boolean
+  user_id      Int           @unique
+  user         User          @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  detail_color DetailColor[]
 
   @@unique([id, user_id])
 }
@@ -125,7 +124,7 @@ model OrderItem {
 
 model Tone {
   detail_color_id Int         @id
-  detailColor     DetailColor @relation(fields: [detail_color_id], references: [id])
+  detailColor     DetailColor @relation(fields: [detail_color_id], references: [id], onDelete: Cascade)
   sale_count      Int
   WARM            Int
   COOL            Int
@@ -165,7 +164,6 @@ model User {
   create_at      DateTime      @default(now())
   update_at      DateTime      @default(now())
   carts          Cart[]
-  ratings        Rating        @relation(fields: [rating_id], references: [id], onDelete: Cascade)
-  rating_id      Int
+  ratings        Rating?
   orders         Order[]
 }
