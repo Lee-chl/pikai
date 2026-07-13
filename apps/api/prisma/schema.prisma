@@ -95,6 +95,7 @@ model CartItem {
   cart_id      Int
   cart         Cart          @relation(fields: [cart_id], references: [id], onDelete: Cascade)
   quantity     Int
+  price        Int
 }
 
 model Order {
