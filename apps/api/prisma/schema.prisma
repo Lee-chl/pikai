@@ -73,8 +73,8 @@ model DetailColor {
 model Rating {
   id           Int           @id @default(autoincrement())
   star_rating  Int
-  is_hsl       Boolean
-  is_comp      Boolean
+  is_hsl       Boolean       @default(false)
+  is_comp      Boolean       @default(false)
   user_id      Int           @unique
   user         User          @relation(fields: [user_id], references: [id], onDelete: Cascade)
   detail_color DetailColor[]
