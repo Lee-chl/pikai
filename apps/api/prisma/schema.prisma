@@ -74,7 +74,7 @@ model Rating {
   star_rating     Int
   is_hsl          Boolean     @default(false)
   is_comp         Boolean     @default(false)
-  user_id         Int         @unique
+  user_id         Int
   user            User        @relation(fields: [user_id], references: [id], onDelete: Cascade)
   detail_color_id Int
   detail_color    DetailColor @relation(fields: [detail_color_id], references: [id], onDelete: Restrict)
