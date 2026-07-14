@@ -50,7 +50,7 @@ model Product {
   brand              Brand         @relation(fields: [brand_id], references: [id], onDelete: Cascade)
   detail_color       DetailColor[]
 
-  @@unique([id, brand_id, category_id])
+  @@unique([brand_id, category_id])
 }
 
 model DetailColor {
@@ -61,8 +61,7 @@ model DetailColor {
   h           Int
   s           Int
   l           Int
-  rating_id   Int?
-  rating      Rating?     @relation(fields: [rating_id], references: [id], onDelete: SetNull)
+  rating      Rating[]
   cartItem    CartItem[]
   orderItem   OrderItem[]
   tone        Tone?
@@ -71,15 +70,16 @@ model DetailColor {
 }
 
 model Rating {
-  id           Int           @id @default(autoincrement())
-  star_rating  Int
-  is_hsl       Boolean       @default(false)
-  is_comp      Boolean       @default(false)
-  user_id      Int           @unique
-  user         User          @relation(fields: [user_id], references: [id], onDelete: Cascade)
-  detail_color DetailColor[]
+  id              Int         @id @default(autoincrement())
+  star_rating     Int
+  is_hsl          Boolean     @default(false)
+  is_comp         Boolean     @default(false)
+  user_id         Int         @unique
+  user            User        @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  detail_color_id Int
+  detail_color    DetailColor @relation(fields: [detail_color_id], references: [id], onDelete: Restrict)
 
-  @@unique([id, user_id])
+  @@unique([detail_color_id, user_id])
 }
 
 model Cart {
@@ -107,11 +107,9 @@ model Order {
   delivery_inst String
   order_status  OrderStatus @default(AWAITING)
   order_date    DateTime    @default(now())
-  user_id       Int
+  user_id       Int         @unique
   user          User        @relation(fields: [user_id], references: [id], onDelete: Cascade)
   orderItem     OrderItem[]
-
-  @@unique([id, user_id])
 }
 
 model OrderItem {
@@ -166,6 +164,6 @@ model User {
   create_at      DateTime      @default(now())
   update_at      DateTime      @default(now())
   carts          Cart[]
-  ratings        Rating?
+  ratings        Rating[]
   orders         Order[]
 }
