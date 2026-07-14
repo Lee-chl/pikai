@@ -41,7 +41,7 @@ model Product {
   color_main_image   String
   color_detail_image String
   name               String
-  hash_tag           String
+  hash_tag           String[]
   price              Int
   is_sale            Boolean
   category_id        Int
