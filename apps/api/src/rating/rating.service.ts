@@ -45,8 +45,18 @@ export class RatingService {
     return this.prisma.rating.create({ data: createRatingDto });
   }
 
-  findAll() {
-    return `This action returns all rating`;
+  getUserRatings(userId: number) {
+    return this.prisma.rating.findMany({
+      where: { user_id: userId },
+      include: {
+        detail_color: true,
+      },
+      orderBy: {
+        // true = 1, false = 0
+        // true가 크므로 맨 위로 정렬
+        is_comp: 'desc',
+      },
+    });
   }
 
   findOne(id: number) {

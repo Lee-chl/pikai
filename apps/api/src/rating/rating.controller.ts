@@ -29,8 +29,11 @@ export class RatingController {
   }
 
   @Get()
-  findAll() {
-    return this.ratingService.findAll();
+  @ApiOperation({ summary: '사용자 별 사용자가 작성한 모든 별점 찾기' })
+  getUserRatings() {
+    // 가짜 유저 만들기 (유저 개발 전이므로)
+    const mockUser = { id: 3, email: 'user@email.com', isAdmin: false };
+    return this.ratingService.getUserRatings(mockUser.id);
   }
 
   @Get(':id')
