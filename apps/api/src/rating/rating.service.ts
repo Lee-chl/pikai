@@ -27,7 +27,7 @@ export class RatingService {
       this.prisma.user.findUnique({ where: { id: createRatingDto.user_id } }),
     ]);
 
-    if (!existRating) {
+    if (existRating) {
       throw new ConflictException(`해당 제품의 별점이 이미 존재합니다.}`);
     }
 
