@@ -45,7 +45,15 @@ export class RatingService {
     return this.prisma.rating.create({ data: createRatingDto });
   }
 
-  getUserRatings(userId: number) {
+  async getUserRatings(userId: number) {
+    // 사용자가 있는지 체크
+    const existUser = await this.prisma.user.findUnique({
+      where: { id: userId },
+    });
+
+    if (!existUser) {
+      throw new NotFoundException(`[${userId}] 유저가 없습니다.`);
+    }
     return this.prisma.rating.findMany({
       where: { user_id: userId },
       include: {
@@ -59,15 +67,99 @@ export class RatingService {
     });
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} rating`;
+  async getCompRatings(userId: number) {
+    // user 확인
+    const existUser = await this.prisma.user.findUnique({
+      where: { id: userId },
+    });
+    if (!existUser) {
+      throw new NotFoundException(`[${userId}]가 없어요`);
+    }
+    const compRatings = await this.prisma.rating.findMany({
+      where: {
+        user_id: userId,
+        is_comp: true,
+      },
+      include: {
+        detail_color: true,
+      },
+    });
+
+    if (!compRatings) {
+      throw new NotFoundException(
+        `[${userId}]가 가진 별점 비교 데이터가 없습니다.`,
+      );
+    }
+
+    return compRatings;
   }
 
-  update(id: number, updateRatingDto: UpdateRatingDto) {
-    return `This action updates a #${id} rating`;
+  async getCompRating(id: number) {
+    const compRatings = await this.prisma.rating.findFirst({
+      where: {
+        id,
+        is_comp: true,
+      },
+      include: {
+        detail_color: true,
+      },
+    });
+
+    if (!compRatings) {
+      throw new NotFoundException(`[${id}] 별점 비교 데이터가 없습니다.`);
+    }
+
+    return compRatings;
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} rating`;
+  async findOne(id: number) {
+    const existRating = await this.prisma.rating.findUnique({
+      where: { id },
+      include: { detail_color: true },
+    });
+    if (!existRating) {
+      throw new NotFoundException(`[${id}] 해당 별점이 존재하지 않아요`);
+    }
+    return existRating;
+  }
+
+  async update(id: number, updateRatingDto: UpdateRatingDto) {
+    // 컬러 제품이 있는 지 확인
+    const existRating = await this.prisma.rating.findUnique({
+      where: {
+        id,
+      },
+      include: {
+        detail_color: true,
+      },
+    });
+
+    if (!existRating) {
+      throw new NotFoundException(`[${id}] 해당 별점이 존재하지 않아요`);
+    }
+
+    return this.prisma.rating.update({
+      where: { id },
+      data: updateRatingDto,
+    });
+  }
+
+  async remove(id: number) {
+    // 컬러 제품이 있는 지 확인
+    const existRating = await this.prisma.rating.findUnique({
+      where: {
+        id,
+      },
+      include: {
+        detail_color: true,
+      },
+    });
+
+    if (!existRating) {
+      throw new NotFoundException(`[${id}] 해당 별점이 존재하지 않아요`);
+    }
+
+    await this.prisma.rating.delete({ where: { id } });
+    return { del: id };
   }
 }
