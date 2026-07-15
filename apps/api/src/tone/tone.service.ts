@@ -1,26 +1,42 @@
 import { Injectable } from '@nestjs/common';
 import { CreateToneDto } from './dto/create-tone.dto';
 import { UpdateToneDto } from './dto/update-tone.dto';
+import { PersonalColor } from '@prisma/client';
+import { PrismaService } from 'src/prisma/prisma.service';
 
 @Injectable()
 export class ToneService {
-  create(createToneDto: CreateToneDto) {
-    return 'This action adds a new tone';
-  }
+  constructor(private readonly prisma: PrismaService) {}
 
-  findAll() {
-    return `This action returns all tone`;
-  }
-
-  findOne(id: number) {
-    return `This action returns a #${id} tone`;
-  }
-
-  update(id: number, updateToneDto: UpdateToneDto) {
-    return `This action updates a #${id} tone`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} tone`;
+  findAll(tone?: PersonalColor) {
+    if (tone) {
+      return this.prisma.tone.findMany({
+        include: {
+          detailColor: {
+            include: {
+              products: true,
+            },
+          },
+        },
+        orderBy: {
+          [tone]: 'desc',
+        },
+        take: 6,
+      });
+    } else {
+      return this.prisma.tone.findMany({
+        include: {
+          detailColor: {
+            include: {
+              products: true,
+            },
+          },
+        },
+        orderBy: {
+          sale_count: 'desc',
+        },
+        take: 6,
+      });
+    }
   }
 }
