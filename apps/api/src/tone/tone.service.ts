@@ -10,7 +10,7 @@ export class ToneService {
 
   findAll(tone?: PersonalColor) {
     if (tone) {
-      return this.prisma.tone.findMany({
+      return this.prisma.sale.findMany({
         include: {
           detailColor: {
             include: {
@@ -24,7 +24,7 @@ export class ToneService {
         take: 6,
       });
     } else {
-      return this.prisma.tone.findMany({
+      return this.prisma.sale.findMany({
         include: {
           detailColor: {
             include: {
