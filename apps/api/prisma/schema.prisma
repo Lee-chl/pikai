@@ -126,16 +126,16 @@ model Sale {
   detail_color_id Int           @id
   detailColor     DetailProduct @relation(fields: [detail_color_id], references: [id], onDelete: Cascade)
   sale_count      Int
-  WARM            Int
-  COOL            Int
-  SPRINGWARM      Int
-  SUMMERCOOL      Int
-  FALLWARM        Int
-  WINTERCOOL      Int
-  FALLDEEP        Int
-  WINTERDEEP      Int
-  SUMMERMUTE      Int
-  FALLMUTE        Int
+  WARM            Int           @default(0)
+  COOL            Int           @default(0)
+  SPRINGWARM      Int           @default(0)
+  SUMMERCOOL      Int           @default(0)
+  FALLWARM        Int           @default(0)
+  WINTERCOOL      Int           @default(0)
+  FALLDEEP        Int           @default(0)
+  WINTERDEEP      Int           @default(0)
+  SUMMERMUTE      Int           @default(0)
+  FALLMUTE        Int           @default(0)
 }
 
 model Brand {
