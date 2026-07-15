@@ -31,7 +31,7 @@ export class RatingService {
       throw new ConflictException(`해당 제품의 별점이 이미 존재합니다.}`);
     }
 
-    if (!detail_color) {
+    if (!detail_color && !createRatingDto.is_hsl) {
       throw new NotFoundException(
         `${createRatingDto.detail_color_id}은 존재 하지 않은 제품 컬러입니다.`,
       );

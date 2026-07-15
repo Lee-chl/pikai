@@ -21,7 +21,7 @@ export class RatingController {
   constructor(private readonly ratingService: RatingService) {}
   // 가짜 유저 만들기 (유저 개발 전이므로)
   private mockUser = {
-    id: 2,
+    id: 1,
     email: 'user@email.com',
     isAdmin: false,
     tone: PersonalColor.WARM,
