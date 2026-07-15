@@ -43,7 +43,7 @@ model Product {
   name               String
   hash_tag           String[]
   price              Int
-  is_sale            Boolean
+  is_sale            Boolean       @default(false)
   category_id        Int
   category           Category      @relation(fields: [category_id], references: [id], onDelete: Cascade)
   brand_id           Int
