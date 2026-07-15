@@ -27,4 +27,12 @@ export class CreateProductDto {
   @ApiProperty({ example: '판매 여부' })
   @IsBoolean()
   is_sale: boolean;
+
+  @ApiProperty({ example: 1 })
+  @IsInt()
+  category_id: number;
+
+  @ApiProperty({ example: 1 })
+  @IsInt()
+  brand_id: number;
 }
