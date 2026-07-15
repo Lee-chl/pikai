@@ -67,7 +67,20 @@ export class RatingService {
         take: limit,
         where: { user_id: userId },
         include: {
-          detail_color: true,
+          detail_color: {
+            select: {
+              color_name: true,
+              color_image: true,
+              h: true,
+              s: true,
+              l: true,
+              products: {
+                select: {
+                  name: true,
+                },
+              },
+            },
+          },
         },
         orderBy: {
           // true = 1, false = 0
@@ -95,7 +108,21 @@ export class RatingService {
         is_comp: true,
       },
       include: {
-        detail_color: true,
+        detail_color: {
+          select: {
+            color_name: true,
+            color_image: true,
+            h: true,
+            s: true,
+            l: true,
+            products: {
+              select: {
+                name: true,
+                color_main_image: true,
+              },
+            },
+          },
+        },
       },
     });
 
@@ -115,7 +142,21 @@ export class RatingService {
         is_comp: true,
       },
       include: {
-        detail_color: true,
+        detail_color: {
+          select: {
+            color_name: true,
+            color_image: true,
+            h: true,
+            s: true,
+            l: true,
+            products: {
+              select: {
+                name: true,
+                color_main_image: true,
+              },
+            },
+          },
+        },
       },
     });
 
@@ -129,7 +170,20 @@ export class RatingService {
   async findOne(id: number) {
     const existRating = await this.prisma.rating.findUnique({
       where: { id },
-      include: { detail_color: true },
+      include: {
+        detail_color: {
+          select: {
+            color_name: true,
+            color_image: true,
+            products: {
+              select: {
+                name: true,
+                color_main_image: true,
+              },
+            },
+          },
+        },
+      },
     });
     if (!existRating) {
       throw new NotFoundException(`[${id}] 해당 별점이 존재하지 않아요`);
