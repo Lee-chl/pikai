@@ -6,6 +6,7 @@ import {
 import { CreateRatingDto } from './dto/create-rating.dto';
 import { UpdateRatingDto } from './dto/update-rating.dto';
 import { PrismaService } from '../prisma/prisma.service';
+import { QueryDto } from '../common/query.dto';
 
 @Injectable()
 export class RatingService {
@@ -45,7 +46,9 @@ export class RatingService {
     return this.prisma.rating.create({ data: createRatingDto });
   }
 
-  async getUserRatings(userId: number) {
+  async getUserRatings(userId: number, query: QueryDto) {
+    const { page, limit } = query;
+
     // 사용자가 있는지 체크
     const existUser = await this.prisma.user.findUnique({
       where: { id: userId },
@@ -54,17 +57,25 @@ export class RatingService {
     if (!existUser) {
       throw new NotFoundException(`[${userId}] 유저가 없습니다.`);
     }
-    return this.prisma.rating.findMany({
-      where: { user_id: userId },
-      include: {
-        detail_color: true,
-      },
-      orderBy: {
-        // true = 1, false = 0
-        // true가 크므로 맨 위로 정렬
-        is_comp: 'desc',
-      },
-    });
+
+    const [rating, total] = await Promise.all([
+      this.prisma.rating.findMany({
+        skip: (page - 1) * limit,
+        take: limit,
+        where: { user_id: userId },
+        include: {
+          detail_color: true,
+        },
+        orderBy: {
+          // true = 1, false = 0
+          // true가 크므로 맨 위로 정렬
+          is_comp: 'desc',
+        },
+      }),
+      this.prisma.rating.count(),
+    ]);
+
+    return { rating, total, page, limit, totalPage: Math.ceil(total / limit) };
   }
 
   async getCompRatings(userId: number) {

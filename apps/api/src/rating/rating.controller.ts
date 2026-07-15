@@ -7,6 +7,7 @@ import {
   Param,
   Delete,
   ParseIntPipe,
+  Query,
 } from '@nestjs/common';
 import { RatingService } from './rating.service';
 import { CreateRatingDto } from './dto/create-rating.dto';
@@ -14,6 +15,7 @@ import { UpdateRatingDto } from './dto/update-rating.dto';
 import { RatingEntity } from './entities/rating.entity';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { PersonalColor, Rating } from '@prisma/client';
+import { QueryDto } from '../common/query.dto';
 
 @Controller('rating')
 @ApiTags('Rating')
@@ -38,8 +40,8 @@ export class RatingController {
 
   @Get()
   @ApiOperation({ summary: '사용자 별 사용자가 작성한 모든 별점 찾기' })
-  getUserRatings() {
-    return this.ratingService.getUserRatings(this.mockUser.id);
+  getUserRatings(@Query() query: QueryDto) {
+    return this.ratingService.getUserRatings(this.mockUser.id, query);
   }
 
   @Get('/comp')
