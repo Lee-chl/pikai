@@ -21,7 +21,7 @@ export class RatingService {
           },
         },
       }),
-      this.prisma.detailColor.findUnique({
+      this.prisma.detailProduct.findUnique({
         where: { id: createRatingDto.detail_color_id },
       }),
       this.prisma.user.findUnique({ where: { id: createRatingDto.user_id } }),
