@@ -48,7 +48,7 @@ export class ProductService {
     });
 
     if (!product) {
-      throw new NotFoundException(`Product with id ${id} not found`);
+      throw new NotFoundException(`상품을 찾을 수 없습니다.`);
     }
 
     return product;
