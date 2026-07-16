@@ -7,10 +7,13 @@ import {
   Param,
   Delete,
   ParseIntPipe,
+  DefaultValuePipe,
+  Query,
 } from '@nestjs/common';
 import { ProductService } from './product.service';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
+import { ApiQuery } from '@nestjs/swagger';
 
 @Controller('products')
 export class ProductController {
@@ -21,9 +24,24 @@ export class ProductController {
     return this.productService.create(createProductDto);
   }
 
+  //@Get()
+  //findAll(
+  //@Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number,
+  //@Query('limit', new DefaultValuePipe(10), ParseIntPipe) limit: number,
+
+  //) {
+  // return this.productService.findAll();
+  //}
+  @ApiQuery({
+    name: 'page',
+    required: false,
+    type: Number,
+    example: 1,
+    description: '페이지 번호',
+  })
   @Get()
-  findAll() {
-    return this.productService.findAll();
+  findAll(@Query('page') page = '1') {
+    return this.productService.findAll(Number(page));
   }
 
   @Get(':id')

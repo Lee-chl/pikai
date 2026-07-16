@@ -23,8 +23,12 @@ export class ProductService {
   }
 
   //상품 전체 조회
-  async findAll() {
+  async findAll(page: number = 1, limit: number = 10) {
+    const skip = (page - 1) * limit;
+
     return this.prisma.product.findMany({
+      skip,
+      take: limit,
       orderBy: {
         id: 'desc',
       },
