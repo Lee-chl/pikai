@@ -13,7 +13,8 @@ import {
 import { ProductService } from './product.service';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
-import { ApiQuery } from '@nestjs/swagger';
+import { ApiOperation, ApiQuery } from '@nestjs/swagger';
+import { QueryProductDto } from './dto/query-product.dto';
 
 @Controller('products')
 export class ProductController {
@@ -32,17 +33,27 @@ export class ProductController {
   //) {
   // return this.productService.findAll();
   //}
-  @ApiQuery({
-    name: 'page',
-    required: false,
-    type: Number,
-    example: 1,
-    description: '페이지 번호',
-  })
+  //@ApiQuery({
+  // name: 'page',
+  // required: false,
+  // type: Number,
+  // example: 1,
+  // description: '페이지 번호',
+  //})
+  //@Get()
+  //findAll(@Query('page') page = '1') {
+  // return this.productService.findAll(Number(page));
+  //}
   @Get()
-  findAll(@Query('page') page = '1') {
-    return this.productService.findAll(Number(page));
+  findAll(@Query() query: QueryProductDto) {
+    return this.productService.findAll(query);
   }
+
+  //@Get('category')
+  //@ApiOperation({ summary: '카테고리별 상품 찾기' })
+  //getCategoryProducts(@Query() query: QueryProductDto) {
+  // return this.productService.getCategoryProducts(query);
+  //}
 
   @Get(':id')
   findOne(@Param('id', ParseIntPipe) id: number) {

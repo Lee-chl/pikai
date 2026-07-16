@@ -2,6 +2,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
+import { QueryProductDto } from './dto/query-product.dto';
 
 @Injectable()
 export class ProductService {
@@ -22,22 +23,67 @@ export class ProductService {
     });
   }
 
-  //상품 전체 조회
-  async findAll(page: number = 1, limit: number = 10) {
-    const skip = (page - 1) * limit;
+  // //상품 전체 조회
+  // async findAll(page: number = 1, limit: number = 10) {
+  //   const skip = (page - 1) * limit;
 
-    return this.prisma.product.findMany({
-      skip,
-      take: limit,
-      orderBy: {
-        id: 'desc',
-      },
-      include: {
-        category: true,
-        brand: true,
-        detail_color: true,
-      },
-    });
+  //   return this.prisma.product.findMany({
+  //     skip,
+  //     take: limit,
+  //     orderBy: {
+  //       id: 'desc',
+  //     },
+  //     include: {
+  //       category: true,
+  //       brand: true,
+  //       detail_color: true,
+  //     },
+  //   });
+  // }
+
+  // async findAll(query: QueryProductDto) {
+  //   const page = query?.page ?? 1;
+  //   const limit = query?.limit ?? 10;
+  //   const skip = (page - 1) * limit;
+
+  //   const where = query?.categoryId ? { category_id: query.categoryId } : {};
+
+  //   return this.prisma.product.findMany({
+  //     where,
+  //     skip,
+  //     take: limit,
+  //     orderBy: {
+  //       id: 'desc',
+  //     },
+  //     include: {
+  //       category: true,
+  //       brand: true,
+  //       detail_color: true,
+  //     },
+  //   });
+  // }
+  async findAll(query: QueryProductDto) {
+    const { page, limit } = query;
+    const [items, total] = await Promise.all([
+      this.prisma.product.findMany({
+        skip: (page - 1) * limit,
+        take: limit,
+        orderBy: {
+          id: 'desc',
+        },
+        include: {
+          category: true,
+        },
+      }),
+      this.prisma.product.count(),
+    ]);
+
+    return {
+      items,
+      total,
+      page,
+      limit,
+    };
   }
 
   //상품 단일 조회
@@ -57,6 +103,9 @@ export class ProductService {
 
     return product;
   }
+
+  //async getCategoryProducts(userId: number, query: QueryProductDto) {
+  //   const { categoryId, page = 1, limit = 10 } = query;
 
   update(id: number, updateProductDto: UpdateProductDto) {
     return `This action updates a #${id} product`;
