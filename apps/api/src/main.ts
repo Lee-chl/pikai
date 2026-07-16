@@ -2,6 +2,7 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import { Constants } from './common/constants';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -12,10 +13,16 @@ async function bootstrap() {
     .setDescription('API')
     .setVersion('1.0')
     .build();
+
   SwaggerModule.setup('docs', app, SwaggerModule.createDocument(app, config));
-  await app.listen(process.env.PORT ?? 3001);
+  app.enableCors({
+    origin: `${Constants.front}`,
+    Credential: true, // 쿠키나 인증 헤더를 허용할지 여부
+  });
+
+  await app.listen(Constants.port);
   console.log(
-    `Pikai 쇼핑몰 시작 : http://localhost:${process.env.PORT} (Swagger) 문서: /docs`,
+    `Pikai 쇼핑몰 시작 : http://localhost:${Constants.port} (Swagger) 문서: /docs`,
   );
 }
 bootstrap();
