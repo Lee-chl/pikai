@@ -13,6 +13,7 @@ import { AuthModule } from './auth/auth.module';
 import { AdminModule } from './admin/admin.module';
 import { BrandModule } from './brand/brand.module';
 import { CategoryModule } from './category/category.module';
+import { DetailproductModule } from './detailproduct/detailproduct.module';
 
 @Module({
   imports: [
@@ -28,6 +29,7 @@ import { CategoryModule } from './category/category.module';
     AdminModule,
     BrandModule,
     CategoryModule,
+    DetailproductModule,
   ],
   controllers: [AppController],
   providers: [AppService],
