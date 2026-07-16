@@ -11,6 +11,8 @@ import { CartModule } from './cart/cart.module';
 import { OrderModule } from './order/order.module';
 import { AuthModule } from './auth/auth.module';
 import { AdminModule } from './admin/admin.module';
+import { BrandModule } from './brand/brand.module';
+import { CategoryModule } from './category/category.module';
 
 @Module({
   imports: [
@@ -24,6 +26,8 @@ import { AdminModule } from './admin/admin.module';
     RatingModule,
     ToneModule,
     AdminModule,
+    BrandModule,
+    CategoryModule,
   ],
   controllers: [AppController],
   providers: [AppService],
