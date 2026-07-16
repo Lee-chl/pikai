@@ -1,44 +1,86 @@
 "use client";
 
 import { useState } from "react";
-import { personalColorEnum } from "../../common/enum";
+import { personalColorEnum } from "@repo/common";
 import { Constants } from "../../common/constants";
+import { UserInfoType } from "../../types/userType";
 
-export default function PersonalColor(tone: personalColorEnum) {
-  const [userTone, SetUserTone] = useState<personalColorEnum>(tone || "");
-  const [isShow, SetIsShow] = useState(false);
+interface PersonalColorProps {
+  userInfo: UserInfoType;
+}
 
-  const personalColorList = Object.values(PersonalColor);
+export default function PersonalColor({ userInfo }: PersonalColorProps) {
+  const [userTone, SetUserTone] = useState<personalColorEnum | null>(
+    userInfo.personal_color || null,
+  );
 
-  const handleColorUpdate = async (color: personalColorEnum) => {
+  const [changeTone, setChangeTone] = useState<personalColorEnum | null>(null);
+
+  const [isEditing, SetIsEditing] = useState(false);
+
+  const personalColorList = Object.values(personalColorEnum);
+
+  const handleColorUpdate = async (
+    personalColor: personalColorEnum | null,
+    id: number,
+  ) => {
+    if (!personalColor || personalColor === userTone) {
+      alert("바꿀 퍼스널 컬러를 선택해주세요");
+      return;
+    }
+
     try {
-      const response = await fetch(`${Constants.front_url}`, {
-        method: "POST",
+      const response = await fetch(`${Constants.front_url}/user/${id}`, {
+        method: "PATCH",
         headers: {
           "Content-Type": "application/json",
         },
+        body: JSON.stringify({
+          personal_color: personalColor,
+        }),
       });
+
+      if (!response.ok) {
+        throw new Error(response.statusText);
+      }
+
+      SetUserTone(personalColor);
+      SetIsEditing(false);
+      alert("저장이 성공적으로 완료되었습니다.");
     } catch (error) {
       console.error(error);
     }
-    SetUserTone(color);
   };
 
-  const handleToggle = () => {
-    SetIsShow(!isShow);
+  const handleChangeTone = (personalColor: personalColorEnum) => {
+    setChangeTone(personalColor);
+  };
+
+  const handleChangeEditing = () => {
+    if (isEditing) {
+      setChangeTone(userTone);
+    }
+    SetIsEditing(!isEditing);
   };
 
   return (
     <div>
       <h5>나의 퍼스널 컬러</h5>
-      <h5>본인이 고른 톤 : ${userTone}</h5>
-      <button onClick={handleToggle}>수정</button>
-      {isShow && (
+      <h5>본인이 고른 톤 : {userTone}</h5>
+      {isEditing ? (
         <div>
+          <button onClick={() => handleColorUpdate(changeTone, userInfo.id)}>
+            저장
+          </button>
+          <button onClick={handleChangeEditing}>취소</button>
           {personalColorList.map((color) => (
-            <button key={color}>{color}</button>
+            <button key={color} onClick={() => handleChangeTone(color)}>
+              {color}
+            </button>
           ))}
         </div>
+      ) : (
+        <button onClick={handleChangeEditing}>퍼스널 컬러 수정</button>
       )}
     </div>
   );
