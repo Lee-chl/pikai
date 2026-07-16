@@ -25,20 +25,13 @@ export class CategoryService {
   }
 
   findAll() {
-    return this.prisma.category.findMany({
-      include: {
-        products: true,
-      },
-    });
+    return this.prisma.category.findMany({});
   }
 
   findOne(id: number) {
     return this.prisma.category.findUnique({
       where: {
         id,
-      },
-      include: {
-        products: true,
       },
     });
   }
