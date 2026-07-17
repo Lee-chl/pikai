@@ -15,7 +15,7 @@ import { UpdateRatingDto } from './dto/update-rating.dto';
 import { RatingEntity } from './entities/rating.entity';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { PersonalColor, Rating } from '@prisma/client';
-import { QueryDto } from '../common/query.dto';
+import { QueryRatingDto } from './dto/query-rating.dto';
 
 @Controller('rating')
 @ApiTags('Rating')
@@ -40,8 +40,8 @@ export class RatingController {
 
   @Get()
   @ApiOperation({ summary: '사용자 별 사용자가 작성한 모든 별점 찾기' })
-  getUserRatings(@Query() query: QueryDto) {
-    return this.ratingService.getUserRatings(this.mockUser.id, query);
+  getUserRatings(@Query() query: QueryRatingDto) {
+    return this.ratingService.getUserRatings(query);
   }
 
   @Get('/comp')

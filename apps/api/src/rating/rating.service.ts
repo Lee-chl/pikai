@@ -7,7 +7,7 @@ import {
 import { CreateRatingDto } from './dto/create-rating.dto';
 import { UpdateRatingDto } from './dto/update-rating.dto';
 import { PrismaService } from '../prisma/prisma.service';
-import { QueryDto } from '../common/query.dto';
+import { QueryRatingDto } from './dto/query-rating.dto';
 
 @Injectable()
 export class RatingService {
@@ -49,8 +49,8 @@ export class RatingService {
     return this.prisma.rating.create({ data: createRatingDto });
   }
 
-  async getUserRatings(userId: number, query: QueryDto) {
-    const { page, limit } = query;
+  async getUserRatings(query: QueryRatingDto) {
+    const { page, limit, userId } = query;
 
     // 사용자가 있는지 체크
     const existUser = await this.prisma.user.findUnique({
