@@ -33,7 +33,7 @@ export default function PersonalColor({ userInfo }: PersonalColorProps) {
     }
 
     try {
-      const response = await fetch(`${Constants.front_url}/user/${id}`, {
+      const response = await fetch(`${Constants.back_url}/user/${id}`, {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",
