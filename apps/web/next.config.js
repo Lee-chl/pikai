@@ -1,7 +1,9 @@
 /** @type {import('next').NextConfig} */
-const fullUrl = globalThis.process.env.NEXT_PUBLIC_IMAGE_URL;
+const env = globalThis.process?.env || {};
+const fullUrl = env.NEXT_PUBLIC_IMAGE_URL;
 let imageHost = "";
-if (fullUrl) {
+
+if (fullUrl && fullUrl !== "undefined" && fullUrl.startsWith("http")) {
   try {
     imageHost = new URL(fullUrl).hostname;
   } catch (e) {
@@ -15,7 +17,7 @@ const nextConfig = {
     remotePatterns: [
       {
         protocol: "https",
-        hostname: imageHost,
+        hostname: imageHost || "localhost",
       },
     ],
   },
