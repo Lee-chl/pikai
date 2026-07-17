@@ -77,6 +77,7 @@ export class RatingService {
               products: {
                 select: {
                   name: true,
+                  color_main_image: true,
                 },
               },
             },
