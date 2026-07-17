@@ -1,7 +1,7 @@
 import Ranking from "./Ranking";
 import Image from "next/image";
 import styles from "./Ranking-item.module.css";
-import EmojiEventsIcon from "@mui/icons-material/EmojiEvents";
+import { Medal } from "lucide-react";
 
 interface Tone {
   detail_color_id: number;
@@ -27,9 +27,9 @@ export default function RankingItem({ tone, rank }: RankingItemProps) {
   return (
     <div className={styles.card}>
       <div className={styles.rank}>
-        {rank === 1 && <EmojiEventsIcon sx={{ color: "#FFD700" }} />}
-        {rank === 2 && <EmojiEventsIcon sx={{ color: "#C0C0C0" }} />}
-        {rank === 3 && <EmojiEventsIcon sx={{ color: "#CD7F32" }} />}
+        {rank === 1 && <Medal color="#FFD700" />}
+        {rank === 2 && <Medal color="#C0C0C0" />}
+        {rank === 3 && <Medal color="#CD7F32" />}
         {rank > 3 && <span>{rank}</span>}
       </div>
       {/* 이미지 경로 임시 설정 추후 변경 필요 */}

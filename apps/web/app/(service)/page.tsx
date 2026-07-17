@@ -2,7 +2,7 @@ import Image, { type ImageProps } from "next/image";
 import Link from "next/link";
 import styles from "./page.module.css";
 import Ranking from "../../components/ranking/Ranking";
-import KeyboardDoubleArrowRightIcon from "@mui/icons-material/KeyboardDoubleArrowRight";
+import { ChevronsRight } from "lucide-react";
 
 export default async function Home() {
   return (
@@ -19,7 +19,7 @@ export default async function Home() {
         <Ranking />
         <Link href="/product" className={styles.button}>
           전체 상품 보러가기
-          <KeyboardDoubleArrowRightIcon />
+          <ChevronsRight />
         </Link>
       </main>
     </div>

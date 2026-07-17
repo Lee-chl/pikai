@@ -1,4 +1,4 @@
-import SearchIcon from "@mui/icons-material/Search";
+import { Search } from "lucide-react";
 import styles from "./SearchBar.module.css";
 
 export default function SearchBar() {
@@ -11,7 +11,7 @@ export default function SearchBar() {
       />
 
       <button type="button" className={styles.button} aria-label="검색">
-        <SearchIcon />
+        <Search />
       </button>
     </div>
   );
