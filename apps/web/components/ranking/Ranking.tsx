@@ -1,6 +1,7 @@
 import Link from "next/link";
 import RankingItem from "./Ranking-item";
 import styles from "./Ranking.module.css";
+import { Constants } from "../../common/constants";
 
 interface Tone {
   detail_color_id: number;
@@ -19,7 +20,7 @@ interface Tone {
 }
 
 export default async function Ranking() {
-  const res = await fetch(`${process.env.URL}/tone`);
+  const res = await fetch(`${Constants.back_url}/tone`);
   const tones: Tone[] = await res.json();
   return (
     <div className={styles.container}>
