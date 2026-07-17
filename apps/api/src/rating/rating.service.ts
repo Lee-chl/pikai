@@ -8,6 +8,7 @@ import { CreateRatingDto } from './dto/create-rating.dto';
 import { UpdateRatingDto } from './dto/update-rating.dto';
 import { PrismaService } from '../prisma/prisma.service';
 import { QueryDto } from '../common/query.dto';
+import { DeleteRatingDto } from './dto/delete-rating.dto';
 
 @Injectable()
 export class RatingService {
@@ -218,11 +219,18 @@ export class RatingService {
     });
   }
 
-  async remove(id: number) {
+  async remove(deleteDto: DeleteRatingDto) {
+    const { ids } = deleteDto;
     // 컬러 제품이 있는 지 확인
-    await this.findOne(id);
+    await Promise.all(ids.map((id) => this.findOne(id)));
 
-    await this.prisma.rating.delete({ where: { id } });
-    return { del: id };
+    await this.prisma.rating.deleteMany({
+      where: {
+        id: {
+          in: ids,
+        },
+      },
+    });
+    return { del: ids };
   }
 }
