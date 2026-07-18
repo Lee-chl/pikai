@@ -4,6 +4,7 @@ import { useState } from "react";
 import { personalColorEnum } from "@repo/common";
 import { Constants } from "../../common/constants";
 import { UserInfoType } from "../../types/userType";
+import styles from "./PersonalColor.module.css";
 
 interface PersonalColorProps {
   userInfo: UserInfoType;
@@ -14,7 +15,9 @@ export default function PersonalColor({ userInfo }: PersonalColorProps) {
     userInfo.personal_color || null,
   );
 
-  const [changeTone, setChangeTone] = useState<personalColorEnum | null>(null);
+  const [changeTone, setChangeTone] = useState<personalColorEnum | null>(
+    userInfo.personal_color || null,
+  );
 
   const [isEditing, SetIsEditing] = useState(false);
 
@@ -30,7 +33,7 @@ export default function PersonalColor({ userInfo }: PersonalColorProps) {
     }
 
     try {
-      const response = await fetch(`${Constants.front_url}/user/${id}`, {
+      const response = await fetch(`${Constants.back_url}/user/${id}`, {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",
@@ -64,23 +67,49 @@ export default function PersonalColor({ userInfo }: PersonalColorProps) {
   };
 
   return (
-    <div>
-      <h5>나의 퍼스널 컬러</h5>
-      <h5>본인이 고른 톤 : {userTone}</h5>
-      {isEditing ? (
-        <div>
-          <button onClick={() => handleColorUpdate(changeTone, userInfo.id)}>
-            저장
-          </button>
-          <button onClick={handleChangeEditing}>취소</button>
+    <div className={styles.personalColorContainer}>
+      <div className={styles.personalColorHeader}>
+        <h5 className={styles.title}>나의 퍼스널 컬러</h5>
+        <h5 className={styles.selectedTone}>본인이 고른 톤 : {userTone}</h5>
+        <div className={styles.actionButtons}>
+          {isEditing ? (
+            <>
+              <button
+                className={`${styles.btn} ${styles.btnSave}`}
+                onClick={() => handleColorUpdate(changeTone, userInfo.id)}
+              >
+                저장
+              </button>
+              <button
+                className={`${styles.btn} ${styles.btnCancel}`}
+                onClick={handleChangeEditing}
+              >
+                취소
+              </button>
+            </>
+          ) : (
+            <button
+              className={`${styles.btn} ${styles.btnEdit}`}
+              onClick={handleChangeEditing}
+            >
+              퍼스널 컬러 수정
+            </button>
+          )}
+        </div>
+      </div>
+      {/* 퍼스널 컬러 선택 영역 */}
+      {isEditing && (
+        <div className={styles.colorOptionsGrid}>
           {personalColorList.map((color) => (
-            <button key={color} onClick={() => handleChangeTone(color)}>
+            <button
+              key={color}
+              onClick={() => handleChangeTone(color)}
+              className={`${styles.colorItemBtn}  ${changeTone === color ? styles.activeTone : ""}`}
+            >
               {color}
             </button>
           ))}
         </div>
-      ) : (
-        <button onClick={handleChangeEditing}>퍼스널 컬러 수정</button>
       )}
     </div>
   );

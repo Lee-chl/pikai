@@ -2,21 +2,29 @@ import PersonalColor from "../../../components/rating/PersonalColor";
 import { UserInfoType } from "../../../types/userType";
 import { Constants } from "../../../common/constants";
 import { redirect } from "next/navigation";
+import styles from "./rating.module.css";
+import { RatingItemType } from "../../../types/ratingType";
+import RatingList from "../../../components/rating/RatingList";
 
 export default async function Page({
   searchParams,
 }: {
-  searchParams: Promise<{ userId: string }>;
+  searchParams: Promise<{ userId: string; page: string }>;
 }) {
   let userInfo: UserInfoType | null = null;
-  const { userId } = await searchParams;
+  let compRating: RatingItemType[] = [];
+  let ratings: RatingItemType[] = [];
+  let totalPage = 1;
+
+  const { userId, page } = await searchParams;
   if (!userId) {
     redirect("user/login");
   }
 
+  // 유저 정보 가져오기
   try {
     const response = await fetch(
-      `${Constants.front_url}/user/${Number(userId)}`,
+      `${Constants.back_url}/user/${Number(userId)}`,
     );
     const userData = await response.json();
     if (!userData.id) {
@@ -34,16 +42,83 @@ export default async function Page({
   if (!userInfo) {
     return (
       <div>
-        <h3>나만의 화장대</h3>
+        <h3 className={styles.titleMain}>나만의 온라인 화장대</h3>
         <p>유저 정보를 불러올 수 없습니다. 다시 시도해주세요</p>
       </div>
     );
   }
 
+  // 비교 상품 과 전체 상품 가져오기
+  try {
+    const response = await fetch(`${Constants.back_url}/rating/comp`);
+    const compJson = await response.json();
+    // 비교 상품 가져오기
+    if (compJson) {
+      compRating = compJson;
+    }
+  } catch (error) {
+    console.error(error);
+  }
+  // 전체 별 점 매긴 화장품 가져오기
+  try {
+    const response = await fetch(`${Constants.back_url}/rating?page=${page}`);
+    const ratingJson = await response.json();
+    const ratingData = ratingJson?.rating;
+    totalPage = ratingJson?.totalPage;
+    if (ratingData) {
+      ratings = ratingData;
+    }
+  } catch (error) {
+    console.error(error);
+  }
+
   return (
     <div>
-      <h3>나만의 화장대</h3>
+      <h3 className={styles.titleMain}>나만의 온라인 화장대</h3>
       <PersonalColor userInfo={userInfo} />
+      <hr className={styles.line} />
+      <h3 className={styles.titleMain}>비교 상품</h3>
+      <div className={styles.helpTextContainer}>
+        <p className={styles.helpText}>
+          비교 상품의 별점과 컬러를 확인하고 싶으시면 상품을 한번 클릭해주세요
+        </p>
+        <p className={styles.helpText}>
+          비교 상품 삭제를 원하시면 두번 클릭 해주세요
+        </p>
+        <p className={styles.helpText}>
+          비교 상품 별점 수정은 밑의 전체 상품 별점에서 가능합니다.
+        </p>
+      </div>
+      {compRating ? (
+        <RatingList ratingItem={compRating} is_com={true} />
+      ) : (
+        <p>비교 상품을 추가해주세요.</p>
+      )}
+
+      <hr className={styles.line} />
+      <h3 className={styles.titleMain}>전체 상품</h3>
+      <div className={styles.helpTextContainer}>
+        <p className={styles.helpText}>
+          상품의 별점과 컬러를 확인하고 싶으시면 상품을 한번 클릭해주세요
+        </p>
+        <p className={styles.helpText}>
+          {" "}
+          상품의 별점 수정을 원하시면 두번 클릭 해주세요
+        </p>
+        <p className={styles.helpText}>
+          {" "}
+          상품 별점 삭제를 원하시면 한번 클릭 후 삭제 버튼을 눌러주세요 (여러
+          상품 가능)
+        </p>
+      </div>
+      {ratings ? (
+        <RatingList ratingItem={ratings} is_com={false} />
+      ) : (
+        <p>상품의 별점을 매겨주세요.</p>
+      )}
+      <div>
+        <h1>버튼 부분</h1>
+      </div>
     </div>
   );
 }

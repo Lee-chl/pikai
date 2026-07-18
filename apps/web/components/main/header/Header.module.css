@@ -1,0 +1,57 @@
+.header {
+  width: 100%;
+  background: #ffffff;
+  border-bottom: 1px solid #f2f2f2;
+}
+
+.userMenu {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+
+  gap: 18px;
+
+  height: 48px;
+  padding: 0 60px;
+}
+
+.logo {
+  position: relative;
+
+  width: min(1200px, calc(100% - 80px));
+  height: 100px;
+
+  margin: 0 auto;
+  margin-bottom: 30px;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  padding: 28px 0 20px;
+}
+
+.logo img {
+  transition: transform 0.25s ease;
+}
+
+.category {
+  position: relative;
+
+  display: flex;
+  justify-content: center;
+}
+
+.category::before {
+  content: "";
+
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+
+  width: min(1200px, calc(100% - 80px));
+  height: 1px;
+
+  background: #ececec;
+}
