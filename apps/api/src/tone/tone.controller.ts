@@ -20,14 +20,21 @@ export class ToneController {
 
   @Get()
   @ApiOperation({ summary: '톤 별 베스트' })
-  findAll() {
+  async findAll() {
     // 사용자 임시 데이터 (추후 auth 개발 후 수정)
     const mockUser = {
       id: 3,
       email: 'user@email.com',
       isAdmin: false,
-      tone: PersonalColor.WARM,
+      tone: PersonalColor.COOL,
     };
-    return this.toneService.findAll(mockUser?.tone);
+
+    const products = await this.toneService.findAll(mockUser?.tone);
+
+    let title = '베스트 상품';
+    if (!mockUser.isAdmin && mockUser.tone) {
+      title = `${mockUser.tone} 상품 베스트`;
+    }
+    return { products, title };
   }
 }

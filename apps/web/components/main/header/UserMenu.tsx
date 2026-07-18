@@ -10,17 +10,19 @@ interface User {
 }
 
 export default function UserMenu() {
-  // const user: User | null = {
-  //   id: 2,
-  //   name: "사용자",
-  //   is_admin: false,
-  //   personal_color: personalColorEnum.WARM,
-  // };
   const user: User | null = {
-    id: 1,
-    name: "관리자",
-    is_admin: true,
+    id: 2,
+    name: "사용자",
+    is_admin: false,
+    personal_color: personalColorEnum.WARM,
   };
+
+  // const user: User | null = {
+  //   id: 1,
+  //   name: "관리자",
+  //   is_admin: true,
+  // };
+
   // const user = null as User | null;
 
   if (!user) {
