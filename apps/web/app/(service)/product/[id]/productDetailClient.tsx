@@ -213,7 +213,7 @@ export default function ProductDetailClient({
                 fontWeight: 600,
               }}
             >
-              색상 선택
+              색상 선택(필수)
             </label>
 
             <select
