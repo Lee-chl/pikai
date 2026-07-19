@@ -19,7 +19,7 @@ export default async function CategoryNav() {
         {categories.map((category) => (
           <Link
             key={category.id}
-            href={`/product/${category.id}`}
+            href={`/product/category/${category.id}`}
             className={styles.link}
           >
             {category.name}
