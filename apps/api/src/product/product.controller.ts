@@ -25,35 +25,10 @@ export class ProductController {
     return this.productService.create(createProductDto);
   }
 
-  //@Get()
-  //findAll(
-  //@Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number,
-  //@Query('limit', new DefaultValuePipe(10), ParseIntPipe) limit: number,
-
-  //) {
-  // return this.productService.findAll();
-  //}
-  //@ApiQuery({
-  // name: 'page',
-  // required: false,
-  // type: Number,
-  // example: 1,
-  // description: '페이지 번호',
-  //})
-  //@Get()
-  //findAll(@Query('page') page = '1') {
-  // return this.productService.findAll(Number(page));
-  //}
   @Get()
   findAll(@Query() query: QueryProductDto) {
     return this.productService.findAll(query);
   }
-
-  //@Get('category')
-  //@ApiOperation({ summary: '카테고리별 상품 찾기' })
-  //getCategoryProducts(@Query() query: QueryProductDto) {
-  // return this.productService.getCategoryProducts(query);
-  //}
 
   @Get(':id')
   findOne(@Param('id', ParseIntPipe) id: number) {
