@@ -2,7 +2,8 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { QueryProductDto } from './dto/query-product.dto';
+import { ProductSort, QueryProductDto } from './dto/query-product.dto';
+import { Prisma } from '@prisma/client';
 
 @Injectable()
 export class ProductService {
@@ -23,59 +24,48 @@ export class ProductService {
     });
   }
 
-  // //상품 전체 조회
-  // async findAll(page: number = 1, limit: number = 10) {
-  //   const skip = (page - 1) * limit;
-
-  //   return this.prisma.product.findMany({
-  //     skip,
-  //     take: limit,
-  //     orderBy: {
-  //       id: 'desc',
-  //     },
-  //     include: {
-  //       category: true,
-  //       brand: true,
-  //       detail_color: true,
-  //     },
-  //   });
-  // }
-
-  // async findAll(query: QueryProductDto) {
-  //   const page = query?.page ?? 1;
-  //   const limit = query?.limit ?? 10;
-  //   const skip = (page - 1) * limit;
-
-  //   const where = query?.categoryId ? { category_id: query.categoryId } : {};
-
-  //   return this.prisma.product.findMany({
-  //     where,
-  //     skip,
-  //     take: limit,
-  //     orderBy: {
-  //       id: 'desc',
-  //     },
-  //     include: {
-  //       category: true,
-  //       brand: true,
-  //       detail_color: true,
-  //     },
-  //   });
-  // }
   async findAll(query: QueryProductDto) {
-    const { page, limit } = query;
+    const { page, limit, categoryId, sort = ProductSort.LATEST } = query;
+
+    let orderBy: Prisma.ProductOrderByWithRelationInput;
+
+    switch (sort) {
+      case ProductSort.PRICE_ASC:
+        orderBy = {
+          price: 'asc',
+        };
+        break;
+
+      case ProductSort.PRICE_DESC:
+        orderBy = {
+          price: 'desc',
+        };
+        break;
+
+      case ProductSort.LATEST:
+      default:
+        orderBy = {
+          id: 'desc',
+        };
+        break;
+    }
+    const where: Prisma.ProductWhereInput = categoryId
+      ? {
+          category_id: categoryId,
+        }
+      : {};
+
     const [items, total] = await Promise.all([
       this.prisma.product.findMany({
+        where,
         skip: (page - 1) * limit,
         take: limit,
-        orderBy: {
-          id: 'desc',
-        },
+        orderBy,
         include: {
           category: true,
         },
       }),
-      this.prisma.product.count(),
+      this.prisma.product.count({ where }),
     ]);
 
     return {
