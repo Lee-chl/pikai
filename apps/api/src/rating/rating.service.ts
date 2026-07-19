@@ -44,8 +44,9 @@ export class RatingService {
         `${createRatingDto.user_id}는 존재하지 않는 유저입니다.`,
       );
     }
-
-    await this.getCompRatingCount();
+    if (createRatingDto.is_comp) {
+      await this.getCompRatingCount();
+    }
 
     return this.prisma.rating.create({ data: createRatingDto });
   }
@@ -229,7 +230,7 @@ export class RatingService {
     // 컬러 제품이 있는 지 확인
     await this.findOne(id);
     // 비교 제품이 10개 이상인 경우 추가 못하게 설정
-    if (updateRatingDto.is_comp) {
+    if (updateRatingDto.is_comp === true) {
       await this.getCompRatingCount();
     }
 
