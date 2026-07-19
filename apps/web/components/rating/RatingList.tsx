@@ -1,10 +1,10 @@
 "use client";
-import { RatingItemType } from "../../types/ratingType";
+import { RatingItemType } from "@/types/ratingType";
 import { useState } from "react";
 import RatingItem from "./Rating-item";
 import { Trash2 } from "lucide-react";
 import styles from "./RatingList.module.css";
-import { Constants } from "../../common/constants";
+import { Constants } from "@/common/constants";
 import { useRouter, useSearchParams } from "next/navigation";
 
 interface RatingItemProps {

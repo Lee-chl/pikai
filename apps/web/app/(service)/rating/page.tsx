@@ -1,9 +1,9 @@
 import PersonalColor from "../../../components/rating/PersonalColor";
-import { UserInfoType } from "../../../types/userType";
-import { Constants } from "../../../common/constants";
+import { UserInfoType } from "@/types/userType";
+import { Constants } from "@/common/constants";
 import { redirect } from "next/navigation";
 import styles from "./rating.module.css";
-import { RatingItemType } from "../../../types/ratingType";
+import { RatingItemType } from "@/types/ratingType";
 import RatingList from "../../../components/rating/RatingList";
 
 export default async function Page({

@@ -1,7 +1,7 @@
 "use client";
 
-import { RatingItemType } from "../../types/ratingType";
-import { Constants } from "../../common/constants";
+import { RatingItemType } from "@/types/ratingType";
+import { Constants } from "@/common/constants";
 import Image from "next/image";
 import { Star } from "lucide-react";
 import styles from "./Rating-item.module.css";
