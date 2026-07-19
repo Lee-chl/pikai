@@ -33,7 +33,7 @@ export default function ProductList({ products }: ProductListProps) {
         >
           <div>
             <img
-              src={`${process.env.NEXT_PUBLIC_IMAGE_URL}/${product.color_main_image}`}
+              src={product.color_main_image}
               alt={product.name}
               style={{
                 display: "block",
