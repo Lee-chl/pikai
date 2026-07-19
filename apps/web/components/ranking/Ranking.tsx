@@ -19,14 +19,19 @@ interface Tone {
   };
 }
 
+interface ToneResponse {
+  products: Tone[];
+  title: string;
+}
+
 export default async function Ranking() {
   const res = await fetch(`${Constants.back_url}/tone`);
-  const tones: Tone[] = await res.json();
+  const tones: ToneResponse = await res.json();
   return (
     <div className={styles.container}>
-      <h2 className={styles.title}>베스트 상품</h2>
+      <h2 className={styles.title}>{tones.title}</h2>
       <div className={styles.list}>
-        {tones.map((tone, index) => (
+        {tones.products.map((tone, index) => (
           <Link
             key={tone.detail_color_id}
             href={`/product/${tone.detailColor.products.id}`}

@@ -9,7 +9,7 @@ export class ToneService {
   constructor(private readonly prisma: PrismaService) {}
 
   findAll(tone?: PersonalColor) {
-    if (tone) {
+    if (!tone) {
       return this.prisma.sale.findMany({
         include: {
           detailColor: {
@@ -19,7 +19,7 @@ export class ToneService {
           },
         },
         orderBy: {
-          [tone]: 'desc',
+          sale_count: 'desc',
         },
         take: 6,
       });
@@ -33,7 +33,7 @@ export class ToneService {
           },
         },
         orderBy: {
-          sale_count: 'desc',
+          [tone]: 'desc',
         },
         take: 6,
       });

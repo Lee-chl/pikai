@@ -27,9 +27,9 @@ export default function RankingItem({ tone, rank }: RankingItemProps) {
   return (
     <div className={styles.card}>
       <div className={styles.rank}>
-        {rank === 1 && <Medal color="#FFD700" />}
-        {rank === 2 && <Medal color="#C0C0C0" />}
-        {rank === 3 && <Medal color="#CD7F32" />}
+        {rank === 1 && <Medal color="#FFD700" size={30} />}
+        {rank === 2 && <Medal color="#C0C0C0" size={30} />}
+        {rank === 3 && <Medal color="#CD7F32" size={30} />}
         {rank > 3 && <span>{rank}</span>}
       </div>
       {/* 이미지 경로 임시 설정 추후 변경 필요 */}

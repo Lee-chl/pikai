@@ -5,16 +5,23 @@ import RatingItem from "./Rating-item";
 import { Trash2 } from "lucide-react";
 import styles from "./RatingList.module.css";
 import { Constants } from "../../common/constants";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 
 interface RatingItemProps {
   ratingItem: RatingItemType[];
   is_com: boolean;
+  totalPageNum?: number;
+  currentPageNum?: number;
 }
-export default function RatingList({ ratingItem, is_com }: RatingItemProps) {
+export default function RatingList({
+  ratingItem,
+  is_com,
+  totalPageNum,
+  currentPageNum,
+}: RatingItemProps) {
   const router = useRouter();
   const [selectDelIds, setSelectDelIds] = useState<number[]>([]);
-
+  const searchParams = useSearchParams();
   // 별점 클릭 시 삭제할 별점 id 저장
   const handleDelSelect = (id: number, isChecked: boolean) => {
     if (isChecked) {
@@ -24,6 +31,52 @@ export default function RatingList({ ratingItem, is_com }: RatingItemProps) {
     }
   };
 
+  const handlePageChange = (pageNum: number) => {
+    const params = new URLSearchParams(searchParams.toString());
+    params.set("page", String(pageNum));
+
+    router.push(`${params.toString()}`);
+  };
+
+  const range: (number | string)[] = [];
+
+  if (totalPageNum && currentPageNum) {
+    // 페이지가 5개 이하일 경우 그냥 다 보여주기
+    if (totalPageNum <= 5) {
+      for (let i = 1; i <= totalPageNum; i++) {
+        range.push(i);
+      }
+    } else {
+      range.push(1);
+
+      let start = currentPageNum - 1;
+      let end = currentPageNum + 1;
+
+      if (start <= 2) {
+        start = 2;
+        end = 4;
+      }
+
+      if (end >= totalPageNum - 1) {
+        start = totalPageNum - 3;
+        end = totalPageNum - 1;
+      }
+
+      if (start > 2) {
+        range.push("...");
+      }
+
+      for (let i = start; i <= end; i++) {
+        range.push(i);
+      }
+
+      if (end < totalPageNum - 1) {
+        range.push("...");
+      }
+
+      range.push(totalPageNum);
+    }
+  }
   const handleDelete = async () => {
     if (selectDelIds.length < 0) return alert("선택한 상품의 별점이 없습니다.");
 
@@ -85,7 +138,7 @@ export default function RatingList({ ratingItem, is_com }: RatingItemProps) {
       <div>
         {is_com ? (
           <div>
-            <ul className={styles.card}>
+            <ul className={styles.cardList}>
               {ratingItem.map((rating) => (
                 <li key={rating.id}>
                   <RatingItem ratingItem={rating} setComDel={handleComDelete} />
@@ -107,7 +160,7 @@ export default function RatingList({ ratingItem, is_com }: RatingItemProps) {
                 <Trash2 className={styles.trash} />
               </button>
             </div>
-            <ul className={styles.card}>
+            <ul className={styles.cardList}>
               {ratingItem.map((rating) => (
                 <li key={rating.id}>
                   <RatingItem
@@ -120,6 +173,26 @@ export default function RatingList({ ratingItem, is_com }: RatingItemProps) {
             </ul>
           </div>
         )}
+      </div>
+      <div className={styles.pagination}>
+        {range.map((page, index) => {
+          // '...' 문자인 경우 버튼이 아닌 그냥 일반 글자로 띄우기
+          if (page === "...") {
+            return <span key={`ellipsis-${index}`}>...</span>;
+          }
+
+          // 숫자 페이지 버튼인 경우
+          return (
+            <button
+              key={`page-${index}`}
+              onClick={() => handlePageChange(Number(page))}
+              /* 현재 페이지와 번호가 일치하면 active 클래스를 줘서 색을 다르게 만듭니다 */
+              className={`${styles.pageButton} ${currentPageNum === page ? styles.active : ""}`}
+            >
+              {page}
+            </button>
+          );
+        })}
       </div>
     </div>
   );

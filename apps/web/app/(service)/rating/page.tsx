@@ -16,16 +16,19 @@ export default async function Page({
   let ratings: RatingItemType[] = [];
   let totalPage = 1;
 
-  const { userId, page } = await searchParams;
+  const { userId } = await searchParams;
   if (!userId) {
     redirect("user/login");
   }
+
+  const page = (await searchParams.page) || 1;
 
   // 유저 정보 가져오기
   try {
     const response = await fetch(
       `${Constants.back_url}/user/${Number(userId)}`,
     );
+    if (!response.ok) throw new Error(response.statusText);
     const userData = await response.json();
     if (!userData.id) {
       throw new Error("유저 데이터 가져오다가 오류 발생");
@@ -51,17 +54,20 @@ export default async function Page({
   // 비교 상품 과 전체 상품 가져오기
   try {
     const response = await fetch(`${Constants.back_url}/rating/comp`);
-    const compJson = await response.json();
+    const compData = await response.json();
     // 비교 상품 가져오기
-    if (compJson) {
-      compRating = compJson;
+    if (compData) {
+      compRating = compData;
     }
   } catch (error) {
     console.error(error);
   }
   // 전체 별 점 매긴 화장품 가져오기
   try {
-    const response = await fetch(`${Constants.back_url}/rating?page=${page}`);
+    const response = await fetch(
+      `${Constants.back_url}/rating?page=${Number(page)}`,
+    );
+    if (!response.ok) throw new Error(response.statusText);
     const ratingJson = await response.json();
     const ratingData = ratingJson?.rating;
     totalPage = ratingJson?.totalPage;
@@ -80,10 +86,13 @@ export default async function Page({
       <h3 className={styles.titleMain}>비교 상품</h3>
       <div className={styles.helpTextContainer}>
         <p className={styles.helpText}>
-          비교 상품의 별점과 컬러를 확인하고 싶으시면 상품을 한번 클릭해주세요
+          비교 상품에 마우스를 올리면 비교 상품의 컬러를 확인하실 수 있습니다.
         </p>
         <p className={styles.helpText}>
           비교 상품 삭제를 원하시면 두번 클릭 해주세요
+        </p>
+        <p className={styles.helpText}>
+          ※ 비교 상품에서만 삭제 되고 밑의 전체 상품에서는 삭제가 안됩니다.
         </p>
         <p className={styles.helpText}>
           비교 상품 별점 수정은 밑의 전체 상품 별점에서 가능합니다.
@@ -99,26 +108,26 @@ export default async function Page({
       <h3 className={styles.titleMain}>전체 상품</h3>
       <div className={styles.helpTextContainer}>
         <p className={styles.helpText}>
-          상품의 별점과 컬러를 확인하고 싶으시면 상품을 한번 클릭해주세요
+          상품에 마우스를 올리면 비교 상품의 컬러를 확인하실 수 있습니다.
         </p>
         <p className={styles.helpText}>
-          {" "}
           상품의 별점 수정을 원하시면 두번 클릭 해주세요
         </p>
         <p className={styles.helpText}>
-          {" "}
           상품 별점 삭제를 원하시면 한번 클릭 후 삭제 버튼을 눌러주세요 (여러
           상품 가능)
         </p>
       </div>
       {ratings ? (
-        <RatingList ratingItem={ratings} is_com={false} />
+        <RatingList
+          ratingItem={ratings}
+          is_com={false}
+          totalPageNum={totalPage}
+          currentPageNum={page}
+        />
       ) : (
         <p>상품의 별점을 매겨주세요.</p>
       )}
-      <div>
-        <h1>버튼 부분</h1>
-      </div>
     </div>
   );
 }

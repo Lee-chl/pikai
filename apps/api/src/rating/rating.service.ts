@@ -91,9 +91,21 @@ export class RatingService {
         },
       }),
       this.prisma.rating.count(),
+      this.prisma.rating.count({
+        where: {
+          user_id: userId,
+          is_comp: true,
+        },
+      }),
     ]);
 
-    return { rating, total, page, limit, totalPage: Math.ceil(total / limit) };
+    return {
+      rating,
+      total,
+      page,
+      limit,
+      totalPage: Math.ceil(total / limit),
+    };
   }
 
   async getCompRatings(userId: number) {
@@ -170,27 +182,35 @@ export class RatingService {
   }
 
   async findOne(id: number) {
-    const existRating = await this.prisma.rating.findUnique({
-      where: { id },
-      include: {
-        detail_color: {
-          select: {
-            color_name: true,
-            color_image: true,
-            products: {
-              select: {
-                name: true,
-                color_main_image: true,
+    const [existRating, compRatingNum] = await Promise.all([
+      this.prisma.rating.findUnique({
+        where: { id },
+        include: {
+          detail_color: {
+            select: {
+              color_name: true,
+              color_image: true,
+              products: {
+                select: {
+                  name: true,
+                  color_main_image: true,
+                },
               },
             },
           },
         },
-      },
-    });
+      }),
+      this.prisma.rating.count({
+        where: {
+          user_id: 1,
+          is_comp: true,
+        },
+      }),
+    ]);
     if (!existRating) {
       throw new NotFoundException(`[${id}] 해당 별점이 존재하지 않아요`);
     }
-    return existRating;
+    return { existRating, compRatingNum };
   }
 
   async getCompRatingCount() {
