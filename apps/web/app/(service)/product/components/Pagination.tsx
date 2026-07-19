@@ -1,12 +1,28 @@
-export default function Pagination() {
+"use client";
+
+interface PaginationProps {
+  currentPage: number;
+  onPageChange: (page: number) => void;
+}
+
+export default function Pagination({
+  currentPage,
+  onPageChange,
+}: PaginationProps) {
+  const pages = [1, 2, 3, 4];
+
   return (
     <div>
-      <div>
-        <button type="button">1</button>
-        <button type="button">2</button>
-        <button type="button">3</button>
-        <button type="button">4</button>
-      </div>
+      {pages.map((page) => (
+        <button
+          type="button"
+          key={page}
+          onClick={() => onPageChange(page)}
+          className={currentPage === page ? "active" : ""}
+        >
+          {page}
+        </button>
+      ))}
     </div>
   );
 }
