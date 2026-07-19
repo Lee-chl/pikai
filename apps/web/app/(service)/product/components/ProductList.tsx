@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 import { ProductItemType } from "@/types/productItemType";
 
 interface ProductListProps {
@@ -18,21 +20,34 @@ export default function ProductList({ products }: ProductListProps) {
       }}
     >
       {products.map((product) => (
-        <div key={product.id}>
-          <img
-            src={`${process.env.NEXT_PUBLIC_IMAGE_URL}/${product.color_main_image}`}
-            alt={product.name}
-            style={{
-              width: "100%",
-              height: "200px",
-              objectFit: "cover",
-            }}
-          />
+        // <div key={product.id}>
+        <Link
+          key={product.id}
+          href={`/product/${product.id}`}
+          style={{
+            display: "block",
+            color: "inherit",
+            textDecoration: "none",
+            cursor: "pointer",
+          }}
+        >
+          <div>
+            <img
+              src={`${process.env.NEXT_PUBLIC_IMAGE_URL}/${product.color_main_image}`}
+              alt={product.name}
+              style={{
+                display: "block",
+                width: "100%",
+                height: "200px",
+                objectFit: "cover",
+              }}
+            />
 
-          <h4>{product.name}</h4>
+            <h4>{product.name}</h4>
 
-          <p>{product.price.toLocaleString()}원</p>
-        </div>
+            <p>{product.price.toLocaleString()}원</p>
+          </div>
+        </Link>
       ))}
     </div>
   );
