@@ -64,6 +64,7 @@ export default function RatingItem({
           sizes={"(max-width: 768px) 50vw, 20vw"}
           priority={false}
           alt={`${name}-${color_name} 의 사진입니다.`}
+          loading="eager"
         />
       </div>
       <div className={styles.infoWrapper}>

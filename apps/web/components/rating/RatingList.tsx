@@ -31,11 +31,17 @@ export default function RatingList({
     }
   };
 
+  const handleNavigateTOAddPage = () => {
+    const params = new URLSearchParams(searchParams.toString());
+    const userId = params.get("userId");
+    router.push(`/rating/add?userId=${userId}`);
+  };
+
   const handlePageChange = (pageNum: number) => {
     const params = new URLSearchParams(searchParams.toString());
     params.set("page", String(pageNum));
 
-    router.push(`${params.toString()}`);
+    router.push(`?${params.toString()}`);
   };
 
   const range: (number | string)[] = [];
@@ -123,7 +129,8 @@ export default function RatingList({
 
         if (!response.ok) {
           alert("비교 상품 삭제 중 오류가 발생했습니다.");
-          throw new Error(response.statusText);
+          const errorData = await response.json();
+          throw new Error(errorData.message);
         }
 
         alert("비교 상품 삭제가 성공적으로 완료되었습니다.");
@@ -149,7 +156,10 @@ export default function RatingList({
         ) : (
           <div>
             <div className={styles.actionGroup}>
-              <button className={`${styles.btn} ${styles.btnSave}`}>
+              <button
+                className={`${styles.btn} ${styles.btnSave}`}
+                onClick={handleNavigateTOAddPage}
+              >
                 비교 상품 추가
               </button>
               <button

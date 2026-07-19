@@ -16,12 +16,12 @@ export default async function Page({
   let ratings: RatingItemType[] = [];
   let totalPage = 1;
 
-  const { userId } = await searchParams;
+  const { userId, page } = await searchParams;
   if (!userId) {
     redirect("user/login");
   }
 
-  const page = (await searchParams.page) || 1;
+  const currentPage = Number(page) || 1;
 
   // 유저 정보 가져오기
   try {
@@ -65,7 +65,7 @@ export default async function Page({
   // 전체 별 점 매긴 화장품 가져오기
   try {
     const response = await fetch(
-      `${Constants.back_url}/rating?page=${Number(page)}`,
+      `${Constants.back_url}/rating?page=${Number(currentPage)}`,
     );
     if (!response.ok) throw new Error(response.statusText);
     const ratingJson = await response.json();
@@ -89,7 +89,7 @@ export default async function Page({
           비교 상품에 마우스를 올리면 비교 상품의 컬러를 확인하실 수 있습니다.
         </p>
         <p className={styles.helpText}>
-          비교 상품 삭제를 원하시면 두번 클릭 해주세요
+          비교 상품 삭제를 원하시면 해당 상품을 두번 클릭 해주세요
         </p>
         <p className={styles.helpText}>
           ※ 비교 상품에서만 삭제 되고 밑의 전체 상품에서는 삭제가 안됩니다.
@@ -111,7 +111,7 @@ export default async function Page({
           상품에 마우스를 올리면 비교 상품의 컬러를 확인하실 수 있습니다.
         </p>
         <p className={styles.helpText}>
-          상품의 별점 수정을 원하시면 두번 클릭 해주세요
+          상품의 별점 수정을 원하시면 해당 상품을 두번 클릭 해주세요
         </p>
         <p className={styles.helpText}>
           상품 별점 삭제를 원하시면 한번 클릭 후 삭제 버튼을 눌러주세요 (여러
@@ -123,7 +123,7 @@ export default async function Page({
           ratingItem={ratings}
           is_com={false}
           totalPageNum={totalPage}
-          currentPageNum={page}
+          currentPageNum={currentPage}
         />
       ) : (
         <p>상품의 별점을 매겨주세요.</p>

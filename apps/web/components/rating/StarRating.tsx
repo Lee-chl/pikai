@@ -1,9 +1,9 @@
 "use client";
 import styles from "./StarRating.module.css";
 import { useState } from "react";
-import { RatingItemType } from "../../types/ratingType";
+import { RatingItemType } from "@/types/ratingType";
 import { useRouter, useSearchParams } from "next/navigation";
-import { Constants } from "../../common/constants";
+import { Constants } from "@/common/constants";
 import StarRatingItem from "./StarRating-item";
 
 interface StarRatingProps {
@@ -34,7 +34,7 @@ export default function StarRating({
         } = {
           star_rating: score,
         };
-        if (isComp !== rating.is_comp) {
+        if (isComp && isComp !== rating.is_comp) {
           if (compRatingNum >= 10) {
             alert(`비교 상품은 10개까지만 추가 가능합니다`);
             return setIsComp(false);
@@ -49,22 +49,30 @@ export default function StarRating({
           body: JSON.stringify(requestBody),
         });
       } else {
+        if (isComp) {
+          if (compRatingNum >= 10) {
+            alert(`비교 상품은 10개까지만 추가 가능합니다`);
+            return setIsComp(false);
+          }
+        }
         if (!detailColorId) {
           alert(
             "오전 9시에서 오후 6시 사이에 담당자가 해당 상품 컬러를 추가하겠습니다.",
           );
           router.push(`/rating?userId=${userId}&page=1`);
+          return;
         }
-
-        if (compRatingNum >= 10) {
-          alert(`비교 상품은 10개까지만 추가 가능합니다`);
-          return setIsComp(false);
+        if (isComp) {
+          if (compRatingNum >= 10) {
+            alert(`비교 상품은 10개까지만 추가 가능합니다`);
+            return setIsComp(false);
+          }
         }
         const requestBody = {
           star_rating: score,
           is_comp: isComp,
-          user_id: userId,
-          detail_color_id: detailColorId,
+          user_id: Number(userId),
+          detail_color_id: Number(detailColorId),
         };
         response = await fetch(`${Constants.back_url}/rating`, {
           method: "POST",
@@ -76,7 +84,14 @@ export default function StarRating({
       }
 
       if (!response.ok) {
-        throw new Error(response.statusText);
+        const errorData = await response.json();
+        if (errorData.statusCode === 409) {
+          alert(errorData.message);
+          alert(errorData.message);
+          return router.push(`/rating?userId=${userId}&page=1`);
+        }
+        alert(errorData.message || "요청 중 문제가 발생했습니다.");
+        return;
       }
 
       alert("저장이 성공적으로 완료되었습니다.");
