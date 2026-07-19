@@ -15,6 +15,7 @@ interface Tone {
       name: string;
       price: number;
       is_sale: boolean;
+      color_main_image: string;
     };
   };
 }

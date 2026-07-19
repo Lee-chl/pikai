@@ -1,4 +1,3 @@
-import Ranking from "./Ranking";
 import Image from "next/image";
 import styles from "./Ranking-item.module.css";
 import { Medal } from "lucide-react";
@@ -14,6 +13,7 @@ interface Tone {
       id: number;
       name: string;
       price: number;
+      color_main_image: string;
     };
   };
 }
@@ -32,10 +32,9 @@ export default function RankingItem({ tone, rank }: RankingItemProps) {
         {rank === 3 && <Medal color="#CD7F32" size={30} />}
         {rank > 3 && <span>{rank}</span>}
       </div>
-      {/* 이미지 경로 임시 설정 추후 변경 필요 */}
-      <Image
+      <img
         className={styles.image}
-        src={`/globe.svg`}
+        src={tone.detailColor.products.color_main_image}
         alt={tone.detailColor.color_name}
         width={70}
         height={70}
