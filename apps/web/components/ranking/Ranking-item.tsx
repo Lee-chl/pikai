@@ -1,27 +1,7 @@
 import Image from "next/image";
 import styles from "./Ranking-item.module.css";
 import { Medal } from "lucide-react";
-
-interface Tone {
-  detail_color_id: number;
-  sale_count: number;
-  detailColor: {
-    id: number;
-    color_name: string;
-    color_image: string;
-    products: {
-      id: number;
-      name: string;
-      price: number;
-      color_main_image: string;
-    };
-  };
-}
-
-interface RankingItemProps {
-  tone: Tone;
-  rank: number;
-}
+import { Tone, RankingItemProps } from "@/types/rankingType";
 
 export default function RankingItem({ tone, rank }: RankingItemProps) {
   return (

@@ -2,28 +2,7 @@ import Link from "next/link";
 import RankingItem from "./Ranking-item";
 import styles from "./Ranking.module.css";
 import { Constants } from "../../common/constants";
-
-interface Tone {
-  detail_color_id: number;
-  sale_count: number;
-  detailColor: {
-    id: number;
-    color_name: string;
-    color_image: string;
-    products: {
-      id: number;
-      name: string;
-      price: number;
-      is_sale: boolean;
-      color_main_image: string;
-    };
-  };
-}
-
-interface ToneResponse {
-  products: Tone[];
-  title: string;
-}
+import { ToneResponse } from "@/types/rankingType";
 
 export default async function Ranking() {
   const res = await fetch(`${Constants.back_url}/tone`);

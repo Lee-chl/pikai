@@ -1,28 +1,26 @@
 import Link from "next/link";
 import { personalColorEnum } from "@repo/common";
 import styles from "./UserMenu.module.css";
-
-interface User {
-  id: number;
-  name: string;
-  is_admin: boolean;
-  personal_color?: personalColorEnum;
-}
+import { UserInfoType } from "@/types/userType";
 
 export default function UserMenu() {
-  const user: User | null = {
+  // 임시 데이터 사용 (로그인 기능 구현 후 수정)
+  // 회원 계정
+  const user: UserInfoType | null = {
     id: 2,
     name: "사용자",
     is_admin: false,
     personal_color: personalColorEnum.WARM,
   };
 
+  // 관리자 계정
   // const user: User | null = {
   //   id: 1,
   //   name: "관리자",
   //   is_admin: true,
   // };
 
+  // 로그인 하지 않은 상태
   // const user = null as User | null;
 
   if (!user) {
