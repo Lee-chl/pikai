@@ -43,7 +43,7 @@ export default function UserMenu() {
     <div className={styles.container}>
       <Link href={`/cart?userId=${user.id}`}>장바구니</Link>
       <Link href={`/order?userId=${user.id}`}>주문 내역</Link>
-      <Link href={`/user/mypage?userId=${user.id}`}>마이페이지</Link>
+      <Link href={`/user/mypage/${user.id}`}>마이페이지</Link>
       <Link href={`/rating?userId=${user.id}`}>나만의 화장대</Link>
       <button type="button">로그아웃</button>
     </div>
