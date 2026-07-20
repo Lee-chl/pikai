@@ -1,15 +1,11 @@
 import Link from "next/link";
 import styles from "./category-nav.module.css";
 import { Constants } from "../../../common/constants";
-
-interface Category {
-  id: number;
-  name: string;
-}
+import { CategoryType } from "@/types/productDetailType";
 
 export default async function CategoryNav() {
   const res = await fetch(`${Constants.back_url}/category`);
-  const categories: Category[] = await res.json();
+  const categories: CategoryType[] = await res.json();
   return (
     <div>
       <nav className={styles.nav}>
