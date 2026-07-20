@@ -7,7 +7,7 @@ export default function UserMenu() {
   // 임시 데이터 사용 (로그인 기능 구현 후 수정)
   // 회원 계정
   const user: UserInfoType | null = {
-    id: 2,
+    id: 1,
     name: "사용자",
     is_admin: false,
     personal_color: personalColorEnum.WARM,
@@ -44,7 +44,7 @@ export default function UserMenu() {
       <Link href={`/cart`}>장바구니</Link>
       <Link href={`/order`}>주문 내역</Link>
       <Link href={`/user/mypage`}>마이페이지</Link>
-      <Link href={`/rating`}>나만의 화장대</Link>
+      <Link href={`/rating?userId=${user.id}`}>나만의 화장대</Link>
       <button type="button">로그아웃</button>
     </div>
   );
