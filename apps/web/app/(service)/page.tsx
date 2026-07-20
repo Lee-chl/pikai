@@ -3,6 +3,7 @@ import Link from "next/link";
 import styles from "./page.module.css";
 import Ranking from "../../components/ranking/Ranking";
 import { ChevronsRight } from "lucide-react";
+import mainBanner from "../../public/pikai_mainbanner.png";
 
 export default async function Home() {
   return (
@@ -10,7 +11,7 @@ export default async function Home() {
       <main className={styles.main}>
         <Image
           className={styles.image}
-          src={`/pikai_mainbanner.png`}
+          src={mainBanner}
           alt="광고 배너 이미지"
           width={1000}
           height={450}

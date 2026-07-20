@@ -4,6 +4,7 @@ import UserMenu from "./UserMenu";
 import Link from "next/link";
 import styles from "./Header.module.css";
 import SearchBar from "./SearchBar";
+import logo from "../../../public/pikai_logo.png";
 
 export default async function Header() {
   return (
@@ -14,8 +15,8 @@ export default async function Header() {
       <div className={styles.logo}>
         <Link href={`/`}>
           <Image
-            src={`/pikai_logo.png`}
-            alt={`pikai`}
+            src={logo}
+            alt={`pikai_logo`}
             width={250}
             height={90}
             loading="eager"
