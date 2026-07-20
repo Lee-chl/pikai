@@ -55,7 +55,7 @@ model Product {
 
 model DetailProduct {
   id          Int         @id @default(autoincrement())
-  color_name  String      @unique
+  color_name  String
   color_image String
   stock       Int
   h           Int
@@ -67,6 +67,8 @@ model DetailProduct {
   tone        Sale?
   products    Product     @relation(fields: [product_id], references: [id], onDelete: Cascade)
   product_id  Int
+
+  @@unique([color_name, product_id])
 }
 
 model Rating {
