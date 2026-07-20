@@ -1,14 +1,13 @@
 .container {
-  width: 100%;
   max-width: 900px;
-  margin: 60px auto;
+  margin: 60px auto 90px;
 }
 
 .title {
   text-align: center;
-  font-size: 30px;
+  font-size: 28px;
   font-weight: 700;
-  margin-bottom: 50px;
+  margin-bottom: 45px;
 }
 
 .profile {
@@ -16,28 +15,32 @@
   justify-content: space-between;
   align-items: center;
 
-  padding: 25px 35px;
+  padding: 28px 36px;
+
   background: #ececec;
-  border-radius: 10px;
+  border-radius: 12px;
 }
 
 .userName {
-  font-size: 22px;
+  font-size: 20px;
   font-weight: 600;
 }
 
 .buttonGroup {
   display: flex;
-  gap: 16px;
+  gap: 14px;
 }
 
 .button {
-  padding: 14px 28px;
-  background: white;
+  padding: 12px 24px;
   border: none;
   border-radius: 8px;
+  background: white;
+
   font-size: 15px;
+  font-weight: 500;
   cursor: pointer;
+
   transition: 0.2s;
 }
 
@@ -46,19 +49,21 @@
 }
 
 .menuBox {
-  margin: 55px 0;
+  margin-top: 45px;
+  padding: 55px 20px;
 
   display: flex;
   justify-content: space-evenly;
   align-items: center;
 
   background: #ececec;
-  border-radius: 30px;
-
-  padding: 55px 30px;
+  border-radius: 28px;
 }
 
 .menu {
+  width: 220px;
+  padding: 10px;
+
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -66,31 +71,40 @@
 
   color: black;
   text-decoration: none;
-  font-size: 20px;
-  font-weight: 600;
 
-  transition: 0.2s;
+  transition: transform 0.2s;
 }
 
 .menu:hover {
-  color: #ffc7c2;
+  transform: translateY(-4px);
 }
 
 .menu svg {
   color: #ffc7c2;
 }
 
-.cancel {
-  display: block;
-  text-align: center;
-  margin-top: 50px;
+.menu span {
+  font-size: 20px;
+  font-weight: 600;
+}
 
-  color: black;
+.bottom {
+  margin-top: 30px;
+  text-align: center;
+}
+
+.cancel {
+  display: inline-block;
+  padding-top: 20px;
+
   font-size: 15px;
+  color: #888;
   text-decoration: none;
-  text-decoration: underline;
+
+  transition: 0.2s;
 }
 
 .cancel:hover {
-  color: #ff7c74;
+  color: #e55d5d;
+  text-decoration: underline;
 }

@@ -30,19 +30,21 @@ export default async function Mypage({
 
       <div className={styles.menuBox}>
         <Link href={`/order?userId=${id}`} className={styles.menu}>
-          <ClipboardList size={60} />
+          <ClipboardList size={65} />
           <span>주문내역</span>
         </Link>
 
         <Link href={`/rating?userId=${id}`} className={styles.menu}>
-          <MirrorRound size={60} />
+          <MirrorRound size={65} />
           <span>나만의 온라인 화장대</span>
         </Link>
       </div>
 
-      <Link className={styles.cancel} href={`/user/mypage/cancel-user/${id}`}>
-        회원 탈퇴
-      </Link>
+      <div className={styles.bottom}>
+        <Link href={`/user/mypage/cancel-user/${id}`} className={styles.cancel}>
+          회원 탈퇴
+        </Link>
+      </div>
     </div>
   );
 }
