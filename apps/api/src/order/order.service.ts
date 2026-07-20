@@ -46,7 +46,7 @@ export class OrderService {
     return this.prisma.orderItem.count({ where: { order_id: order_id } });
   }
 
-  async getOrderItem(orderId: number, userId: number) {
+  async getOrderItem(orderId: number) {
     const existOrder = await this.prisma.order.findUnique({
       where: { id: orderId },
     });
@@ -55,36 +55,53 @@ export class OrderService {
       throw new NotFoundException(`[${orderId}] 주문이 없습니다.`);
     }
 
-    return await this.prisma.orderItem.findMany({
+    return this.prisma.orderItem.findMany({
       where: { order_id: orderId },
+    });
+  }
+
+  async findOne(id: number) {
+    // 일단 있는 지 확인 추후 사용자 인증 개발 되면 해당 유저 인지 확인!
+    const exist = await this.prisma.order.findUnique({
+      where: { id },
       include: {
-        detailColor: {
-          select: {
-            id: true,
-            color_name: true,
-            products: {
-              select: {
-                id: true,
-                name: true,
-                color_main_image: true,
+        orderItem: {
+          orderBy: [
+            { quantity: 'desc' },
+            { price: 'desc' },
+            { detail_color_id: 'asc' },
+          ],
+          include: {
+            detailColor: {
+              include: {
+                products: {
+                  select: {
+                    id: true,
+                    name: true,
+                    color_main_image: true,
+                  },
+                },
               },
             },
           },
         },
       },
     });
-  }
-
-  async findOne(id: number) {
-    // 일단 있는 지 확인 추후 사용자 인증 개발 되면 해당 유저 인지 확인!
-    const exist = await this.prisma.order.findUnique({ where: { id } });
     if (!exist) {
       throw new NotFoundException(`[${id}] 해당하는 주문이 없어요`);
     }
     return exist;
   }
 
-  update(id: number, updateOrderDto: UpdateOrderDto) {
-    return `This action updates a #${id} order`;
+  async update(id: number, updateOrderDto: UpdateOrderDto) {
+    // 존재 여부 확인
+    const exist = await this.prisma.order.findUnique({ where: { id } });
+    if (!exist) {
+      throw new NotFoundException(`[${id}] 해당하는 주문이 없어요`);
+    }
+    return this.prisma.order.update({
+      where: { id },
+      data: updateOrderDto,
+    });
   }
 }

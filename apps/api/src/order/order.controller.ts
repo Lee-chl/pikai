@@ -35,11 +35,12 @@ export class OrderController {
     return this.orderService.findOne(id);
   }
 
+  @ApiOperation({ summary: '배송 상태 변경' })
   @Patch(':id')
   update(
     @Param('id', ParseIntPipe) id: number,
     @Body() updateOrderDto: UpdateOrderDto,
   ) {
-    return this.orderService.update(+id, updateOrderDto);
+    return this.orderService.update(id, updateOrderDto);
   }
 }
