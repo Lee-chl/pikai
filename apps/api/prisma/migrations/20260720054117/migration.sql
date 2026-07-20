@@ -5,7 +5,7 @@
 
 */
 -- DropIndex
-DROP INDEX "DetailProduct_color_name_key";
+-- DROP INDEX "DetailProduct_color_name_key";
 
 -- CreateIndex
-CREATE UNIQUE INDEX "DetailProduct_color_name_product_id_key" ON "DetailProduct"("color_name", "product_id");
+-- CREATE UNIQUE INDEX "DetailProduct_color_name_product_id_key" ON "DetailProduct"("color_name", "product_id");
