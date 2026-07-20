@@ -1,7 +1,7 @@
 import Image from "next/image";
 import styles from "./Ranking-item.module.css";
-import { Medal } from "lucide-react";
-import { Tone, RankingItemProps } from "@/types/rankingType";
+import { Trophy } from "lucide-react";
+import { RankingItemProps } from "@/types/rankingType";
 import { Constants } from "@/common/constants";
 
 export default function RankingItem({ tone, rank }: RankingItemProps) {
@@ -9,9 +9,9 @@ export default function RankingItem({ tone, rank }: RankingItemProps) {
   return (
     <div className={styles.card}>
       <div className={styles.rank}>
-        {rank === 1 && <Medal color="#FFD700" size={30} />}
-        {rank === 2 && <Medal color="#C0C0C0" size={30} />}
-        {rank === 3 && <Medal color="#CD7F32" size={30} />}
+        {rank === 1 && <Trophy color="#FFD700" size={27} />}
+        {rank === 2 && <Trophy color="#C0C0C0" size={27} />}
+        {rank === 3 && <Trophy color="#CD7F32" size={27} />}
         {rank > 3 && <span>{rank}</span>}
       </div>
       <Image
