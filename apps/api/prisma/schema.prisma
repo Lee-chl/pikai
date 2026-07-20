@@ -107,6 +107,7 @@ model Order {
   delivery_info String
   postal_code   Int
   delivery_inst String
+  phone_number  String
   order_status  OrderStatus @default(AWAITING)
   order_date    DateTime    @default(now())
   user_id       Int
