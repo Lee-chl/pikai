@@ -1,13 +1,23 @@
 .container {
   max-width: 900px;
-  margin: 60px auto 90px;
+  margin: 60px auto 80px;
 }
 
 .title {
   text-align: center;
-  font-size: 28px;
+  font-size: 35px;
   font-weight: 700;
-  margin-bottom: 45px;
+  margin-bottom: 40px;
+}
+
+.myPageBox {
+  width: 800px;
+  margin: 0 auto;
+
+  background: #f6f6f6;
+  border-radius: 22px;
+  border: 1px solid #ececec;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.05);
 }
 
 .profile {
@@ -16,61 +26,53 @@
   align-items: center;
 
   padding: 28px 36px;
-
-  background: #ececec;
-  border-radius: 12px;
 }
 
 .userName {
-  font-size: 20px;
-  font-weight: 600;
+  margin: 0;
+  font-size: 25px;
+  font-weight: 700;
+  color: #333;
 }
 
-.buttonGroup {
-  display: flex;
-  gap: 14px;
-}
-
-.button {
-  padding: 12px 24px;
-  border: none;
-  border-radius: 8px;
-  background: white;
-
-  font-size: 15px;
-  font-weight: 500;
-  cursor: pointer;
-
+.cancel {
+  font-size: 14px;
+  color: #999;
+  text-decoration: none;
   transition: 0.2s;
 }
 
-.button:hover {
-  background: #ffc7c2;
+.cancel:hover {
+  color: #ff6b6b;
+  text-decoration: underline;
+}
+
+.divider {
+  width: calc(100% - 60px);
+  height: 1px;
+  margin: 0 auto;
+  background: #dddddd;
 }
 
 .menuBox {
-  margin-top: 45px;
-  padding: 55px 20px;
-
   display: flex;
-  justify-content: space-evenly;
+  justify-content: center;
   align-items: center;
+  gap: 70px;
 
-  background: #ececec;
-  border-radius: 28px;
+  padding: 45px 40px;
 }
 
 .menu {
-  width: 220px;
-  padding: 10px;
+  width: 180px;
 
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 18px;
+  justify-content: center;
 
-  color: black;
   text-decoration: none;
+  color: #333;
 
   transition: transform 0.2s;
 }
@@ -81,30 +83,16 @@
 
 .menu svg {
   color: #ffc7c2;
+  margin-bottom: 18px;
+}
+
+.menu:hover svg {
+  color: #ffaea8;
 }
 
 .menu span {
-  font-size: 20px;
+  font-size: 18px;
   font-weight: 600;
-}
-
-.bottom {
-  margin-top: 30px;
   text-align: center;
-}
-
-.cancel {
-  display: inline-block;
-  padding-top: 20px;
-
-  font-size: 15px;
-  color: #888;
-  text-decoration: none;
-
-  transition: 0.2s;
-}
-
-.cancel:hover {
-  color: #e55d5d;
-  text-decoration: underline;
+  line-height: 1.5;
 }
