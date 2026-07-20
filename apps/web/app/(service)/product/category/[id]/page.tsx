@@ -29,6 +29,8 @@ export default function CategoryProductPage({
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
+  const [categoryName, setCategoryName] = useState("");
+
   const handleSortChange = (sort: ProductSortType) => {
     setSelectedSort(sort);
     setCurrentPage(1);
@@ -55,9 +57,44 @@ export default function CategoryProductPage({
         // API가 배열을 반환하는 경우와
         // { items: [...] } 형태를 반환하는 경우 모두 처리
         setProducts(data.items ?? data);
+
+        /**
+         * 2. 전체 카테고리 목록 가져오기
+         *
+         * 응답 예시:
+         * [
+         *   { id: 1, name: "lip" },
+         *   { id: 2, name: "cheek" }
+         * ]
+         */
+        const categoryResponse = await fetch(`${backUrl}/category`);
+
+        if (!categoryResponse.ok) {
+          throw new Error("카테고리 정보를 불러오지 못했습니다.");
+        }
+
+        const categoryData: {
+          id: number;
+          name: string;
+        }[] = await categoryResponse.json();
+
+        /**
+         * 현재 주소의 id와 같은 카테고리 찾기
+         *
+         * /product/category/1 → lip
+         * /product/category/2 → cheek
+         */
+        const currentCategory = categoryData.find(
+          (category) => category.id === Number(id),
+        );
+
+        setCategoryName(currentCategory?.name ?? "카테고리");
       } catch (error) {
         console.error(error);
+
         setError("카테고리 상품을 불러오는 중 오류가 발생했습니다.");
+
+        setCategoryName("카테고리");
       } finally {
         setLoading(false);
       }
@@ -75,8 +112,21 @@ export default function CategoryProductPage({
   }
 
   return (
-    <main>
-      <h1>카테고리 상품</h1>
+    <main
+      style={{
+        maxWidth: "1400px",
+        margin: "0 auto",
+        padding: "0 40px",
+        boxSizing: "border-box",
+      }}
+    >
+      <h1
+        style={{
+          fontSize: "25px",
+        }}
+      >
+        {categoryName} 상품{" "}
+      </h1>
 
       <SortMenu selectedSort={selectedSort} onSortChange={handleSortChange} />
 
