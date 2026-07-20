@@ -61,13 +61,27 @@ export default function Page() {
   }, [selectedSort, currentPage]);
 
   return (
-    <div>
+    <div
+      style={{
+        maxWidth: "1400px",
+        margin: "0 auto",
+        padding: "0 40px",
+        boxSizing: "border-box",
+      }}
+    >
       <h3>전체상품 </h3>
       <SortMenu selectedSort={selectedSort} onSortChange={handleSortChange} />
 
       <ProductList products={products} />
-
-      <Pagination currentPage={currentPage} onPageChange={setCurrentPage} />
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "center",
+          marginTop: "40px",
+        }}
+      >
+        <Pagination currentPage={currentPage} onPageChange={setCurrentPage} />
+      </div>
     </div>
   );
 }
