@@ -1,0 +1,96 @@
+.container {
+  width: 100%;
+  max-width: 900px;
+  margin: 60px auto;
+}
+
+.title {
+  text-align: center;
+  font-size: 30px;
+  font-weight: 700;
+  margin-bottom: 50px;
+}
+
+.profile {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  padding: 25px 35px;
+  background: #ececec;
+  border-radius: 10px;
+}
+
+.userName {
+  font-size: 22px;
+  font-weight: 600;
+}
+
+.buttonGroup {
+  display: flex;
+  gap: 16px;
+}
+
+.button {
+  padding: 14px 28px;
+  background: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 15px;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.button:hover {
+  background: #ffc7c2;
+}
+
+.menuBox {
+  margin: 55px 0;
+
+  display: flex;
+  justify-content: space-evenly;
+  align-items: center;
+
+  background: #ececec;
+  border-radius: 30px;
+
+  padding: 55px 30px;
+}
+
+.menu {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 18px;
+
+  color: black;
+  text-decoration: none;
+  font-size: 20px;
+  font-weight: 600;
+
+  transition: 0.2s;
+}
+
+.menu:hover {
+  color: #ffc7c2;
+}
+
+.menu svg {
+  color: #ffc7c2;
+}
+
+.cancel {
+  display: block;
+  text-align: center;
+  margin-top: 50px;
+
+  color: black;
+  font-size: 15px;
+  text-decoration: none;
+  text-decoration: underline;
+}
+
+.cancel:hover {
+  color: #ff7c74;
+}
