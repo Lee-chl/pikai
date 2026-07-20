@@ -19,7 +19,7 @@ async function bootstrap() {
     origin: `${Constants.front}`,
     Credential: true, // 쿠키나 인증 헤더를 허용할지 여부
   });
-
+  app.setGlobalPrefix('pikai');
   await app.listen(Constants.port);
   console.log(
     `Pikai 쇼핑몰 시작 : http://localhost:${Constants.port} (Swagger) 문서: /docs`,
