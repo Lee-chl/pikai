@@ -1,12 +1,14 @@
 import Link from "next/link";
-
 import { ProductItemType } from "@/types/productItemType";
+import Image from "next/image";
+import { Constants } from "@/common/constants";
 
 interface ProductListProps {
   products: ProductItemType[];
 }
 
 export default function ProductList({ products }: ProductListProps) {
+  const imageUrl = ``;
   if (products.length === 0) {
     return <p>등록된 상품이 없습니다.</p>;
   }
@@ -32,13 +34,15 @@ export default function ProductList({ products }: ProductListProps) {
           }}
         >
           <div>
-            <img
-              src={product.color_main_image}
+            <Image
+              src={`${Constants.image_url}/${product.color_main_image}`}
               alt={product.name}
+              width={250}
+              height={250}
               style={{
                 display: "block",
-                width: "100%",
-                height: "200px",
+                //width: "100%px",
+                // height: "200px",
                 objectFit: "cover",
               }}
             />
