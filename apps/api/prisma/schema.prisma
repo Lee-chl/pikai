@@ -108,7 +108,7 @@ model Order {
   id            Int         @id
   payment       String
   delivery_info String
-  postal_code   Int
+  postal_code   String
   delivery_inst String
   phone_number  String
   order_status  OrderStatus @default(AWAITING)
@@ -161,7 +161,7 @@ model User {
   name           String
   email          String
   password       String        @default("pwd")
-  postal_code    Int
+  postal_code    String
   address        String
   phone          String
   personal_color PersonalColor
