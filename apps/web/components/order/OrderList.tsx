@@ -1,7 +1,7 @@
 "use client";
 import { OrderListType } from "@/types/OrderType";
 import { useRouter, useSearchParams } from "next/navigation";
-import OrderListItem from "./OrderList-item";
+import Image from "next/image";
 import styles from "./OrderList.module.css";
 import { Constants } from "@/common/constants";
 
@@ -90,7 +90,7 @@ export default function OrderList({
               src={imageUrl}
               width={200}
               height={200}
-              alt={`${orderItem.detailColor.products.color_main_image} - ${orderItem.detailColor.color_name}`}
+              alt={`${orderList.orderItem[0]?.detailColor.products.color_main_image} - ${orderList.orderItem[0]?.detailColor.color_name}`}
               loading="eager"
             />
           </div>
@@ -102,7 +102,7 @@ export default function OrderList({
           </div>
           <div>
             <span>
-              {orderItem.detailColor.products.name}
+              {orderList.detailColor.products.name}
               <br />
               {orderItem.detailColor.color_name}
             </span>
