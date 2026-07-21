@@ -4,12 +4,12 @@ import { useRouter, useSearchParams } from "next/navigation";
 import Image from "next/image";
 import styles from "./OrderList.module.css";
 import { Constants } from "@/common/constants";
+import { formatDateSimple } from "@/common/date";
+import { OrderStatusKor } from "@repo/common";
 
 interface OrderProps {
   orderList: OrderListType;
-  totalQuantity: number;
   totalPage: number;
-  totalPrice: number;
   currentPageNum: number;
   isLast: boolean;
 }
@@ -17,9 +17,7 @@ interface OrderProps {
 export default function OrderList({
   orderList,
   totalPage,
-  totalPrice,
   currentPageNum,
-  totalQuantity,
   isLast,
 }: OrderProps) {
   const router = useRouter();
@@ -36,9 +34,19 @@ export default function OrderList({
     router.push(`/order/${orderList.id.toString()}`);
   };
 
-  const imageUrl = `${Constants.image_url}/${orderList.orderItem[0]?.detailColor.products.color_main_image}`;
+  const handleNavigateToProduct = () => {
+    router.push(`/product/${orderShow?.detailColor.products.id.toString()}`);
+  };
 
+  const orderShow = orderList.orderItem[0];
+  const imageUrl = `${Constants.image_url}/${orderShow?.detailColor.products.color_main_image}`;
+  const totalQuantity = orderList.orderItem.length - 1;
   const range: (number | string)[] = [];
+  // total Price  계산
+  const totalPrice = orderList.orderItem.reduce(
+    (sum, item) => sum + item.price * item.quantity,
+    0,
+  );
 
   if (totalPage && currentPageNum) {
     // 페이지가 5개 이하일 경우 그냥 다 보여주기
@@ -79,40 +87,71 @@ export default function OrderList({
   }
 
   return (
-    <div>
-      <div>
+    <div className={styles.cardContainer}>
+      <div className={styles.headerInfo}>
         <h4>주문 번호: {orderList.id}</h4>
-        <h4>날짜: {orderList.order_date}</h4>
-        <div>
-          <button onClick={handleNavigateToDetail}>상세</button>
-          <div>
+        <h4>
+          날짜:
+          <time className={styles.dateText} suppressHydrationWarning>
+            {formatDateSimple(orderList.order_date)}
+          </time>
+        </h4>
+      </div>
+
+      <div className={styles.cardBox}>
+        <button
+          className={styles.detailButton}
+          onClick={handleNavigateToDetail}
+        >
+          상세
+        </button>
+
+        <div className={styles.imageWrapper}>
+          <div className={styles.imageBox}>
             <Image
               src={imageUrl}
-              width={200}
-              height={200}
-              alt={`${orderList.orderItem[0]?.detailColor.products.color_main_image} - ${orderList.orderItem[0]?.detailColor.color_name}`}
+              fill
+              sizes={"(max-width: 768px) 50vw, 20vw"}
+              priority={false}
+              alt={`${orderShow?.detailColor.products.color_main_image} - ${orderShow?.detailColor.color_name}`}
               loading="eager"
+              onClick={handleNavigateToProduct}
             />
           </div>
-          <div>
+          {totalQuantity > 0 && (
+            <span
+              className={styles.extraBadge}
+              onClick={handleNavigateToDetail}
+            >
+              +{totalQuantity}
+            </span>
+          )}
+        </div>
+
+        <div className={styles.tableWrapper}>
+          <div className={styles.tableHeader}>
             <span> 주문 상품 명</span>
             <span>수량</span>
-            <span>가격</span>
+            <span>주문 금액</span>
             <span>상태</span>
           </div>
-          <div>
-            <span>
-              {orderList.detailColor.products.name}
-              <br />
-              {orderItem.detailColor.color_name}
+
+          <div className={styles.itemRow}>
+            <span className={styles.productName}>
+              {orderShow?.detailColor.products.name}
+              {orderShow?.detailColor.color_name}
+              {totalQuantity > 0 && ` 외 ${totalQuantity}건`}
             </span>
-            <span>{totalQuantity}</span>
-            <span>{totalPrice}</span>
-            <span>{order_status}</span>
+            <span>{totalQuantity > 0 ? "-" : orderShow?.quantity}</span>
+            <span>{totalPrice.toLocaleString("ko-KR")}원</span>
+            <span style={{ fontWeight: "bold" }}>
+              {OrderStatusKor[orderList.order_status as OrderStatusKor] ??
+                orderList.order_status}
+            </span>
           </div>
         </div>
-        <hr className={styles.line} />
       </div>
+      <hr className={styles.line} />
       {isLast ? (
         <div className={styles.pagination}>
           {range.map((page, index) => {

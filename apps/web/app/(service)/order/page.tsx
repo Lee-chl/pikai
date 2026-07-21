@@ -45,8 +45,6 @@ export default async function Page({
               key={orders.id}
               orderList={orders}
               totalPage={totalPage}
-              totalPrice={0}
-              totalQuantity={0}
               currentPageNum={currentPage}
               isLast={index === orderList.length - 1}
             />
