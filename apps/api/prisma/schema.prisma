@@ -88,7 +88,7 @@ model Cart {
   id        Int        @id @default(autoincrement())
   cartItems CartItem[]
   user      User       @relation(fields: [userId], references: [id])
-  userId    Int
+  userId    Int        @unique
 }
 
 model CartItem {
@@ -97,8 +97,11 @@ model CartItem {
   detailColor     DetailProduct @relation(fields: [detail_color_id], references: [id], onDelete: Cascade)
   cart_id         Int
   cart            Cart          @relation(fields: [cart_id], references: [id], onDelete: Cascade)
-  quantity        Int
+  quantity        Int           @default(1)
   price           Int
+  is_selected     Boolean       @default(true)
+
+  @@unique([cart_id, detail_color_id])
 }
 
 model Order {
