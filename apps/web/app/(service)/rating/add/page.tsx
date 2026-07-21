@@ -44,7 +44,7 @@ export default async function Page({
           <label className={styles.label}>컬러 이름</label>
           <SearchBarRating
             isProduct={false}
-            productId={productId ? Number(productId) : null}
+            productId={productId ? Number(productId) : undefined}
           />
         </div>
       </div>
