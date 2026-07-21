@@ -2,7 +2,6 @@ import { PersonalColor } from '@prisma/client';
 import {
   IsBoolean,
   IsEnum,
-  IsInt,
   IsOptional,
   IsString,
   Min,
@@ -17,11 +16,10 @@ export class UpdateUserDto {
   @ApiProperty({ example: '서울시 관악구' })
   address: string;
 
-  @IsInt()
+  @IsString()
   @IsOptional()
-  @Min(1)
-  @ApiProperty({ example: 101 })
-  postal_code: number;
+  @ApiProperty({ example: '101' })
+  postal_code: string;
 
   @IsString()
   @IsOptional()

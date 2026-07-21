@@ -23,7 +23,7 @@ export default async function Mypage({
             <strong>{userInfo.name}</strong> 님
           </p>
           <Link
-            href={`/user/mypage/cancel-user/${id}`}
+            href={`/user/mypage/${id}/cancel-user`}
             className={styles.cancel}
           >
             회원 탈퇴
@@ -44,7 +44,7 @@ export default async function Mypage({
           </Link>
 
           <Link
-            href={`/user/mypage/change-address/${id}`}
+            href={`/user/mypage/${id}/change-address`}
             className={styles.menu}
           >
             <UserRoundCog size={60} strokeWidth={1.8} />
