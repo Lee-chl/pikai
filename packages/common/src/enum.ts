@@ -25,3 +25,16 @@ export const OrderStatus = {
 };
 
 export type OrderStatus = (typeof OrderStatus)[keyof typeof OrderStatus];
+
+export const OrderStatusKor: Record<OrderStatus, string> = {
+  [OrderStatus.AWAITING]: "결제 대기",
+  [OrderStatus.PAYCOMPLETED]: "결제 완료",
+  [OrderStatus.TRANSIT]: "배송중",
+  [OrderStatus.DELCOMPLETED]: "배송 완료",
+  [OrderStatus.REFUND]: "환불",
+  [OrderStatus.RETURNS]: "반품",
+  [OrderStatus.EXCHANGE]: "교환",
+};
+
+export type OrderStatusKor =
+  (typeof OrderStatusKor)[keyof typeof OrderStatusKor];
