@@ -30,6 +30,10 @@ export default function PasswordForm({ id }: { id: number }) {
       alert("현재 비밀번호와 다른 비밀번호를 입력해주세요.");
       return;
     }
+    if (newPassword.trim().length < 6) {
+      alert("비밀번호는 공백 없이 6자 이상으로 입력해주세요.");
+      return;
+    }
 
     const response = await fetch(`${Constants.back_url}/user/${id}`, {
       method: "PATCH",
@@ -45,11 +49,7 @@ export default function PasswordForm({ id }: { id: number }) {
     const result = await response.json();
 
     if (!response.ok) {
-      if (Array.isArray(result.message)) {
-        alert(result.message[0]);
-      } else {
-        alert(result.message);
-      }
+      alert(result.message);
       return;
     }
 

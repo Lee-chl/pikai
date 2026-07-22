@@ -28,9 +28,7 @@ export class UpdateUserDto {
 
   @IsString()
   @IsOptional()
-  @MinLength(6, {
-    message: '비밀번호는 6자 이상이어야 합니다.',
-  })
+  @MinLength(6)
   @ApiProperty({ example: '123123123' })
   password: string;
 
