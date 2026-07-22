@@ -458,14 +458,14 @@
 }
 
 .cartButton {
-  border: 1px solid #ff4f87;
+  border: 1px solid #ffc7c2;
   background-color: #ffffff;
-  color: #ff4f87;
+  color: #ffc7c2;
 }
 
 .buyButton {
   border: none;
-  background-color: #ff4f87;
+  background-color: #ffc7c2;
   color: #ffffff;
 }
 
