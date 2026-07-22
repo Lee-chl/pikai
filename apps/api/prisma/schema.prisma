@@ -14,13 +14,14 @@ datasource db {
 }
 
 enum OrderStatus {
-  AWAITING //결제 대기
+  AWAITING // 결제 대기
   PAYCOMPLETED // 결제 완료
   TRANSIT // 배송중
   DELCOMPLETED // 배송 완료
   REFUND // 환불
   RETURNS // 반품 
-  EXCHANGE //교환 
+  EXCHANGE // 교환
+  ConfirmPurchase // 구매 확정
 }
 
 enum PersonalColor {
