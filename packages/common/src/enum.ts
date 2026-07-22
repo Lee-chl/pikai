@@ -22,6 +22,7 @@ export const OrderStatus = {
   REFUND: "REFUND", // 환불
   RETURNS: "RETURNS", // 반품
   EXCHANGE: "EXCHANGE", //교환
+  ConfirmPurchase: "ConfirmPurchase",
 };
 
 export type OrderStatus = (typeof OrderStatus)[keyof typeof OrderStatus];
@@ -34,6 +35,7 @@ export const OrderStatusKor: Record<OrderStatus, string> = {
   [OrderStatus.REFUND]: "환불",
   [OrderStatus.RETURNS]: "반품",
   [OrderStatus.EXCHANGE]: "교환",
+  [OrderStatus.ConfirmPurchase]: "구매확정",
 };
 
 export type OrderStatusKor =
