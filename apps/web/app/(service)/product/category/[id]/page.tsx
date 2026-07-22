@@ -2,9 +2,9 @@
 
 import { use, useEffect, useState } from "react";
 
-import ProductList from "../../components/ProductList";
-import SortMenu from "../../components/SortMenu";
-import Pagination from "../../components/Pagination";
+import ProductList from "../../../../../components/products/ProductList";
+import SortMenu from "../../../../../components/products/SortMenu";
+import Pagination from "../../../../../components/products/Pagination";
 
 import type { ProductItemType } from "@/types/productItemType";
 import type { ProductSortType } from "@/types/productSortTyps";
