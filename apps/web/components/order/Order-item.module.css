@@ -20,6 +20,7 @@
 }
 
 .imageBox {
+    position: relative;
     width: 200px;
     height: 200px;
     background-color: #f1b2b2;

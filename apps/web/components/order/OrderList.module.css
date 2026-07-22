@@ -95,6 +95,7 @@
 }
 
 .imageBox {
+    position: relative;
     width: 120px;
     height: 120px;
     background-color: #f1b2b2;

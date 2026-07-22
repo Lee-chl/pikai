@@ -84,7 +84,10 @@ export default async function Page({
       <PersonalColor userInfo={userInfo} />
       <hr className={styles.line} />
       <h3 className={styles.titleMain}>비교 상품</h3>
-      <div className={styles.helpTextContainer}>
+      <div
+        className={styles.helpTextContainer}
+        style={{ marginBottom: "4rem" }}
+      >
         <p className={styles.helpText}>
           비교 상품에 마우스를 올리면 비교 상품의 컬러를 확인하실 수 있습니다.
         </p>

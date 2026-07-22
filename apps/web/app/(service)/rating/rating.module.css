@@ -26,6 +26,9 @@
 .helpTextContainer {
     display: flex;
     flex-direction: column;
-    align-items: flex-end;
+    align-items: center;
+    padding-top: 1rem;
+    padding-bottom: 1rem;
     margin-bottom: 1rem;
+    background-color: #f8f7f7;
 }
