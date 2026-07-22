@@ -1,5 +1,5 @@
 import type { ProductDetailType } from "@/types/productDetailType";
-import ProductDetailClient from "./productDetailClient";
+import ProductDetailClient from "../../../../components/products/productDetailClient";
 
 interface ProductDetailPageProps {
   params: Promise<{
