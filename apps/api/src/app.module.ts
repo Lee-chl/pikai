@@ -14,6 +14,7 @@ import { AdminModule } from './admin/admin.module';
 import { BrandModule } from './brand/brand.module';
 import { CategoryModule } from './category/category.module';
 import { DetailproductModule } from './detailproduct/detailproduct.module';
+import { RecommendationsModule } from './recommendations/recommendations.module';
 
 @Module({
   imports: [
@@ -30,6 +31,7 @@ import { DetailproductModule } from './detailproduct/detailproduct.module';
     BrandModule,
     CategoryModule,
     DetailproductModule,
+    RecommendationsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
