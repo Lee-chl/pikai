@@ -21,6 +21,11 @@ export class UpdateUserDto {
   @ApiProperty({ example: '101' })
   postal_code: string;
 
+  @IsOptional()
+  @IsString()
+  @ApiProperty({ example: '123123' })
+  current_password: string;
+
   @IsString()
   @IsOptional()
   @MinLength(6)
