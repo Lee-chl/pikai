@@ -107,6 +107,7 @@ model CartItem {
 model Order {
   id            Int         @id
   payment       String
+  recipient     String
   delivery_info String
   postal_code   String
   delivery_inst String
