@@ -25,6 +25,7 @@ export interface OrderItem {
 export interface OrderListType {
   id: number;
   payment: string;
+  recipient: string;
   delivery_info: string;
   postal_code: number;
   delivery_inst: string;
