@@ -1,9 +1,9 @@
 "use client";
 
 import { ProductItemType } from "@/types/productItemType";
-import Pagination from "./components/Pagination";
-import ProductList from "./components/ProductList";
-import SortMenu from "./components/SortMenu";
+import Pagination from "../../../components/products/Pagination";
+import ProductList from "../../../components/products/ProductList";
+import SortMenu from "../../../components/products/SortMenu";
 import { useEffect, useState } from "react";
 import { ProductSortType } from "@/types/productSortTyps";
 
