@@ -109,6 +109,7 @@ export default function OrderList({
         <div className={styles.imageWrapper}>
           <div className={styles.imageBox}>
             <Image
+              className={styles.productImage}
               src={imageUrl}
               fill
               sizes={"(max-width: 768px) 50vw, 20vw"}

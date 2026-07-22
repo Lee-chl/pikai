@@ -152,13 +152,6 @@
     margin-left: 0.5rem;
 }
 
-.itemList {
-    display: flex;
-    flex-direction: column;
-    gap: 0.75rem; /* 줄 간격 */
-    width: 100%;
-}
-
 .itemRow {
     display: grid;
     /* 상품명 | 수량 | 가격 | 상태 4열 구조 */

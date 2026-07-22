@@ -1,7 +1,9 @@
 import { Constants } from "@/common/constants";
 import { formatDateSimple } from "@/common/date";
 import { OrderListType } from "@/types/OrderType";
-import { OrderStatusKor } from "@repo/common";
+import styles from "./order-id.module.css";
+import OrderItemList from "@/components/order/Order-itemList";
+import Link from "next/link";
 
 export default async function Page({
   params,
@@ -39,49 +41,60 @@ export default async function Page({
   );
 
   return (
-    <div>
+    <div className={styles.cardContainer}>
       <div>
-        <div>
-          <h3>주문 상세</h3>
+        <div className={styles.headerInfo}>
+          <h3 className={styles.titleMain}>주문 상세</h3>
           <h4>주문 번호: {orderList.id}</h4>
-          <h4>구매 날짜: {formatDateSimple(orderList.order_date)}</h4>
+          <h4>
+            구매 날짜:{" "}
+            <time suppressHydrationWarning>
+              {formatDateSimple(orderList.order_date)}
+            </time>
+          </h4>
         </div>
-        <hr />
-        <div>
+        <div className={styles.cardBox}>
           <h3>주소</h3>
-          <div>
-            <p>받는 분 : {orderList.recipient}</p>
-            <p>전화번호: {orderList.phone_number}</p>
-            <p>
-              주소 :[{orderList.postal_code}] {orderList.delivery_info}
-            </p>
-            <p>배송메시지: {orderList.delivery_inst}</p>
-          </div>
-        </div>
-        <hr />
-        <div>
-          <h3>주문 상품</h3>
-          {orderList.order_status === "AWAITING" || "PAYCOMPLETED" ? (
-            <button>주문 취소</button>
-          ) : orderList.order_status === "REFUND" || "RETURNS" || "EXCHANGE" ? (
-            <span>
-              OrderStatusKor[orderList.order_status as OrderStatusKor] ??
-              orderList.order_status
-            </span>
-          ) : (
-            <div>
-              <button>교환</button> <button>반품</button>
+          <div className={styles.tableWrapper}>
+            <div className={styles.tableHeader}>
+              <span>받는 분</span>
+              <span>전화번호</span>
+              <span>주소</span>
+              <span>배송메시지</span>
             </div>
-          )}
-        </div>
-        <div>{/* item 컴포넌트로 돌리기 */}</div>
-        <hr />
-        <div>
-          <h3>결제 정보</h3>
-          <div>
-            <h4>{orderList.payment} 계좌이체로 진행</h4>
-            <h4>총 {totalPrice.toLocaleString("ko-KR")}원</h4>
+            <div className={styles.itemRow}>
+              <span>{orderList.recipient}</span>
+              <span>{orderList.phone_number}</span>
+              <span>
+                [{orderList.postal_code}] {orderList.delivery_info}
+              </span>
+              <span>{orderList.delivery_inst}</span>
+            </div>
           </div>
+        </div>
+        <div className={styles.cardBox}>
+          <h3>주문 상품</h3>
+          <div className={styles.tableWrapper}>
+            <div>{<OrderItemList orderList={orderList} />}</div>
+          </div>
+        </div>
+        <div className={styles.cardBox}>
+          <h3>결제 정보</h3>
+          <div className={styles.tableWrapper}>
+            <div className={styles.paymentHeader}>
+              <span>결제 수단</span>
+              <span>총 금액</span>
+            </div>
+            <div className={styles.paymentRow}>
+              <h4>{orderList.payment} 계좌이체로 진행</h4>
+              <h4>총 {totalPrice.toLocaleString("ko-KR")}원</h4>
+            </div>
+          </div>
+        </div>
+        <div>
+          <Link href="/order" className={styles.backButton}>
+            주문 목록으로 돌아가기
+          </Link>
         </div>
       </div>
     </div>
