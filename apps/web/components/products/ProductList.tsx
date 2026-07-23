@@ -8,7 +8,6 @@ interface ProductListProps {
 }
 
 export default function ProductList({ products }: ProductListProps) {
-  const imageUrl = ``;
   if (products.length === 0) {
     return <p>등록된 상품이 없습니다.</p>;
   }
@@ -21,38 +20,79 @@ export default function ProductList({ products }: ProductListProps) {
         gap: "20px",
       }}
     >
-      {products.map((product) => (
-        // <div key={product.id}>
-        <Link
-          key={product.id}
-          href={`/product/${product.id}`}
-          style={{
-            display: "block",
-            color: "inherit",
-            textDecoration: "none",
-            cursor: "pointer",
-          }}
-        >
-          <div>
-            <Image
-              src={`${Constants.image_url}/${product.color_main_image}`}
-              alt={product.name}
-              width={250}
-              height={250}
-              style={{
-                display: "block",
-                //width: "100%px",
-                // height: "200px",
-                objectFit: "cover",
-              }}
-            />
+      {products.map((product) => {
+        const originalPrice = product.price;
+        const salePrice = Math.floor(originalPrice * 0.9);
 
-            <h4>{product.name}</h4>
+        return (
+          <Link
+            key={product.id}
+            href={`/product/${product.id}`}
+            style={{
+              display: "block",
+              color: "inherit",
+              textDecoration: "none",
+              cursor: "pointer",
+            }}
+          >
+            <div>
+              <Image
+                src={`${Constants.image_url}/${product.color_main_image}`}
+                alt={product.name}
+                width={250}
+                height={250}
+                style={{
+                  display: "block",
+                  objectFit: "cover",
+                }}
+              />
 
-            <p>{product.price.toLocaleString()}원</p>
-          </div>
-        </Link>
-      ))}
+              <h4
+                style={{
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "center",
+                }}
+              >
+                {product.name}
+              </h4>
+
+              {/* 가격 */}
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                  gap: "10px",
+                  marginTop: "8px",
+                }}
+              >
+                {/* 정가 */}
+                <span
+                  style={{
+                    color: "#999",
+                    fontSize: "18px",
+                    textDecoration: "line-through",
+                  }}
+                >
+                  {originalPrice.toLocaleString()}원
+                </span>
+
+                {/* 할인 가격 */}
+                <strong
+                  style={{
+                    color: "#E02020",
+                    fontSize: "23px",
+                    fontWeight: 700,
+                  }}
+                >
+                  {salePrice.toLocaleString()}원
+                </strong>
+              </div>
+            </div>
+          </Link>
+        );
+      })}
     </div>
   );
 }
