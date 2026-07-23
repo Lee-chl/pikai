@@ -47,11 +47,11 @@ export class OrderService {
     return { orders, total, page, limit, totalPage: Math.ceil(total / limit) };
   }
 
-  getOrderItemNum(order_id: number) {
+  getOrderItemNum(order_id: string) {
     return this.prisma.orderItem.count({ where: { order_id: order_id } });
   }
 
-  async getOrderItem(orderId: number) {
+  async getOrderItem(orderId: string) {
     const existOrder = await this.prisma.order.findUnique({
       where: { id: orderId },
     });
@@ -65,7 +65,7 @@ export class OrderService {
     });
   }
 
-  async findOne(id: number) {
+  async findOne(id: string) {
     // 일단 있는 지 확인 추후 사용자 인증 개발 되면 해당 유저 인지 확인!
     const exist = await this.prisma.order.findUnique({
       where: { id },
@@ -99,7 +99,7 @@ export class OrderService {
   }
 
   async update(
-    id: number,
+    id: string,
     updateOrderDto: UpdateOrderDto,
     userTone: PersonalColor,
   ) {

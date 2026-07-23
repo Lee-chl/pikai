@@ -1,12 +1,4 @@
-import {
-  Controller,
-  Get,
-  Body,
-  Patch,
-  Param,
-  Query,
-  ParseIntPipe,
-} from '@nestjs/common';
+import { Controller, Get, Body, Patch, Param, Query } from '@nestjs/common';
 import { OrderService } from './order.service';
 import { UpdateOrderDto } from './dto/update-order.dto';
 import { QueryDto } from 'src/common/query.dto';
@@ -33,16 +25,13 @@ export class OrderController {
 
   @Get(':id')
   @ApiOperation({ summary: '주문 번호로 조회' })
-  findOne(@Param('id', ParseIntPipe) id: number) {
+  findOne(@Param('id') id: string) {
     return this.orderService.findOne(id);
   }
 
   @ApiOperation({ summary: '배송 상태 변경' })
   @Patch(':id')
-  update(
-    @Param('id', ParseIntPipe) id: number,
-    @Body() updateOrderDto: UpdateOrderDto,
-  ) {
+  update(@Param('id') id: string, @Body() updateOrderDto: UpdateOrderDto) {
     return this.orderService.update(id, updateOrderDto, this.mockUser.tone);
   }
 }
