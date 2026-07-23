@@ -1,27 +1,12 @@
-import {
-  Controller,
-  Get,
-  Post,
-  Body,
-  Patch,
-  Param,
-  Delete,
-  ParseIntPipe,
-  Query,
-} from '@nestjs/common';
-import { DetailproductService } from './detailproduct.service';
-import { CreateDetailproductDto } from './dto/create-detailproduct.dto';
-import { UpdateDetailproductDto } from './dto/update-detailproduct.dto';
+import { Controller, Get, Param, ParseIntPipe, Query } from '@nestjs/common';
+import { ApiOperation } from '@nestjs/swagger';
 import { ApiQuery } from '@nestjs/swagger';
+import { SearchDetailProductDto } from './dto/search-detail-product.dto';
+import { DetailproductService } from './detailproduct.service';
 
 @Controller('detailproduct')
 export class DetailproductController {
   constructor(private readonly detailproductService: DetailproductService) {}
-
-  @Post()
-  create(@Body() createDetailproductDto: CreateDetailproductDto) {
-    return this.detailproductService.create(createDetailproductDto);
-  }
 
   @ApiQuery({
     name: 'page',
@@ -40,16 +25,9 @@ export class DetailproductController {
     return this.detailproductService.findOne(id);
   }
 
-  @Patch(':id')
-  update(
-    @Param('id') id: string,
-    @Body() updateDetailproductDto: UpdateDetailproductDto,
-  ) {
-    return this.detailproductService.update(+id, updateDetailproductDto);
-  }
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.detailproductService.remove(+id);
+  @Get('search')
+  @ApiOperation({ summary: '상품 검색' })
+  searchProductByName(@Query() query: SearchDetailProductDto) {
+    return this.detailproductService.searchProductByName(query);
   }
 }

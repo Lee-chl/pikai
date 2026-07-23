@@ -1,8 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { CreateDetailproductDto } from './dto/create-detailproduct.dto';
-import { UpdateDetailproductDto } from './dto/update-detailproduct.dto';
-import { ProductService } from 'src/product/product.service';
 import { PrismaService } from 'src/prisma/prisma.service';
+import { SearchDetailProductDto } from './dto/search-detail-product.dto';
 
 @Injectable()
 export class DetailproductService {
@@ -46,11 +45,7 @@ export class DetailproductService {
     return detailProduct;
   }
 
-  update(id: number, updateDetailproductDto: UpdateDetailproductDto) {
-    return `This action updates a #${id} detailproduct`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} detailproduct`;
+  async searchProductByName(query: SearchDetailProductDto) {
+    const { productName } = query;
   }
 }
