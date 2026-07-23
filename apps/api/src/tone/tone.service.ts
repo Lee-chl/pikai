@@ -1,6 +1,4 @@
 import { Injectable } from '@nestjs/common';
-import { CreateToneDto } from './dto/create-tone.dto';
-import { UpdateToneDto } from './dto/update-tone.dto';
 import { PersonalColor } from '@prisma/client';
 import { PrismaService } from 'src/prisma/prisma.service';
 

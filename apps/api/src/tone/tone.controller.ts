@@ -1,16 +1,5 @@
-import {
-  Controller,
-  Get,
-  Post,
-  Body,
-  Patch,
-  Param,
-  Delete,
-  ParseIntPipe,
-} from '@nestjs/common';
+import { Controller, Get } from '@nestjs/common';
 import { ToneService } from './tone.service';
-import { CreateToneDto } from './dto/create-tone.dto';
-import { UpdateToneDto } from './dto/update-tone.dto';
 import { ApiOperation } from '@nestjs/swagger';
 import { PersonalColor } from '@prisma/client';
 
