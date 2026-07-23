@@ -1,10 +1,17 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  Injectable,
+  InternalServerErrorException,
+  NotFoundException,
+} from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { RecommendationRequestDto } from './dto/recommendation-request.dto';
 import { MockAiProvider } from './providers/mock-ai.provider';
+//import { AzureOpenAI } from 'openai';
+import OpenAI from 'openai';
 
 @Injectable()
 export class RecommendationsService {
+  AzureAiProvider: any;
   constructor(
     private readonly prisma: PrismaService,
     private readonly mockAiProvider: MockAiProvider,
@@ -13,7 +20,7 @@ export class RecommendationsService {
   async recommendColor(dto: RecommendationRequestDto, userId: number) {
     // 1. 선택한 색상과 사용자 정보를 동시에 조회
 
-    const [detailColor, user] = await Promise.all([
+    const [detailColor, user, ratings] = await Promise.all([
       this.prisma.detailProduct.findUnique({
         where: {
           id: dto.detailColorId,
@@ -35,6 +42,12 @@ export class RecommendationsService {
           id: userId,
         },
       }),
+
+      this.prisma.rating.findMany({
+        where: {
+          user_id: userId,
+        },
+      }),
     ]);
 
     // 선택한 색상이 존재하지 않는 경우
@@ -47,6 +60,10 @@ export class RecommendationsService {
     // 사용자가 존재하지 않는 경우
     if (!user) {
       throw new NotFoundException(`사용자 ID ${userId}를 찾을 수 없습니다.`);
+    }
+
+    if (!ratings.length) {
+      console.log('사용자의 평점 데이터가 없습니다.');
     }
 
     // 2. 현재 선택한 색상의 HSL 값을 RGB로 변환
@@ -232,17 +249,113 @@ rgb(${rgb.r}, ${rgb.g}, ${rgb.b})입니다.
 
     // 8. Mock AI 호출
     // Azure OpenAI 연결 전까지 임시로 사용
+    // const endpoint = process.env['AZURE_OPENAI_ENDPOINT'];
+    // const azureApiKey = process.env['AZURE_OPENAI_KEY'];
+    // const apiVersion = process.env['AZURE_OPENAI_API_VERSION'];
+    //===============================
 
-    const aiResult = await this.mockAiProvider.generate(aiInput);
+    //환경 변수 검증
 
-    // 9. 프런트엔드에 결과 반환
+    // if (!endpoint || !azureApiKey || !apiVersion) {
+    //   throw new Error('Azure OpenAI 환경변수가 누락되었습니다.');
+    // }
+    // const deploymentId = 'gpt-5';
+    // const client = new OpenAI({
+    //   endpoint,
+    //   apiKey: azureApiKey,
+    //   deployment: deploymentId,
+    //   apiVersion: process.env.AZURE_OPENAI_API_VERSION,
+    // });
+    // //====
+
+    // //====
+    // const result = await client.chat.completions.create({
+    //   model: deploymentId,
+    //   messages: [{ role: 'user', content: aiInput.prompt }],
+    //   //temperature: 1,
+    //   max_completion_tokens: 100,
+    // });
+
+    // const answer = result.choices[0]?.message?.content?.trim();
+    // if (!answer) throw new NotFoundException('Azure OpenAI API 호출 중 오류');
+
+    // console.log(answer);
+    //=========================
+    // Azure OpenAI 환경변수
+    const endpoint = process.env['AZURE_OPENAI_ENDPOINT'];
+    const azureApiKey = process.env['AZURE_OPENAI_KEY'];
+
+    // 환경변수 검증
+    if (!endpoint || !azureApiKey) {
+      throw new Error('Azure OpenAI 환경변수가 누락되었습니다.');
+    }
+
+    // Azure AI Foundry에서 만든 실제 배포 이름
+    const deploymentId = 'gpt-5';
+
+    // endpoint 마지막의 /를 제거한 뒤 v1 경로 추가
+    const baseURL = `${endpoint.replace(/\/$/, '')}/openai/v1/`;
+
+    console.log('Azure Base URL:', baseURL);
+    console.log('Azure Deployment:', deploymentId);
+
+    const client = new OpenAI({
+      apiKey: azureApiKey,
+      baseURL,
+      defaultHeaders: {
+        'api-key': azureApiKey,
+      },
+    });
+    let answer: string;
+
+    try {
+      const result = await client.chat.completions.create({
+        model: deploymentId,
+        messages: [
+          {
+            role: 'user',
+            content: aiInput.prompt,
+          },
+        ],
+        max_completion_tokens: 1000,
+      });
+
+      const content = result.choices[0]?.message?.content?.trim();
+
+      console.log('content =', content);
+
+      if (!content) {
+        throw new NotFoundException('Azure OpenAI 응답이 비어 있습니다.');
+      }
+      if (!/^[1-6]$/.test(content)) {
+        throw new InternalServerErrorException(
+          `Azure OpenAI 응답 형식이 올바르지 않습니다: ${content}`,
+        );
+      }
+
+      // const answer가 아니라, 위에서 선언한 answer에 값 저장
+      answer = content;
+
+      console.log('Azure OpenAI 응답:', content);
+
+      // 여기 아래에는 기존 return 코드가 있으면 그대로 두세요.
+    } catch (error: any) {
+      console.error('========== Azure OpenAI 오류 ==========');
+      console.error('message:', error?.message);
+      console.error('status:', error?.status);
+      console.error('code:', error?.code);
+      console.error('전체 오류:', error);
+
+      throw error;
+    }
+
+    //========================================
 
     return {
       // 테스트할 때 AI에 어떤 정보가 전달됐는지 확인하기 위한 값
       aiInput,
 
       detailColorId: detailColor.id,
-      action: dto.action,
 
       user: {
         id: user.id,
@@ -271,7 +384,7 @@ rgb(${rgb.r}, ${rgb.g}, ${rgb.b})입니다.
       },
 
       // MockAiProvider에서 반환한 결과 사용
-      aiResult,
+      answer,
     };
   }
 
