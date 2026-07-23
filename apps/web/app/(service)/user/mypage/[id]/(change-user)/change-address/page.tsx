@@ -1,6 +1,6 @@
 import { Constants } from "@/common/constants";
 import React from "react";
-import AddressForm from "./addressForm";
+import AddressForm from "../../../../../../../components/mypage/addressForm";
 import styles from "./page.module.css";
 
 export default async function ChangeAddress({

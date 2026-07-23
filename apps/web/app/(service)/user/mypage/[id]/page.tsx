@@ -2,7 +2,7 @@ import styles from "./page.module.css";
 import { Constants } from "@/common/constants";
 import { MirrorRound, ClipboardList, UserRoundCog } from "lucide-react";
 import Link from "next/link";
-import DeleteButton from "./deleteButton";
+import DeleteButton from "../../../../../components/mypage/deleteButton";
 
 export default async function Mypage({
   params,
