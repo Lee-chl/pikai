@@ -106,7 +106,7 @@ model CartItem {
 }
 
 model Order {
-  id            Int         @id
+  id            String      @id
   payment       String
   recipient     String
   delivery_info String
@@ -122,7 +122,7 @@ model Order {
 
 model OrderItem {
   id              Int           @id @default(autoincrement())
-  order_id        Int
+  order_id        String
   order           Order         @relation(fields: [order_id], references: [id], onDelete: Cascade)
   detail_color_id Int
   detailColor     DetailProduct @relation(fields: [detail_color_id], references: [id])
