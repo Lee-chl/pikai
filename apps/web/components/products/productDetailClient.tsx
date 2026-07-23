@@ -255,6 +255,11 @@ export default function ProductDetailClient({
       alert("옵션을 하나 이상 선택해 주세요.");
       return;
     }
+
+    if (selectedOptions.length > 1) {
+      alert("1개의 상품을 담았을 때만 AI 색상 추천을 합니다.");
+      return;
+    }
     // 재고가 없거나 선택 수량이 재고보다 많은지 확인
     const hasInvalidStock = selectedOptions.some(
       (option) =>
@@ -312,6 +317,10 @@ export default function ProductDetailClient({
   const handleBuyNow = async () => {
     if (selectedOptions.length === 0) {
       alert("옵션을 하나 이상 선택해 주세요.");
+      return;
+    }
+    if (selectedOptions.length > 1) {
+      alert("1개의 상품을 담았을 때만 AI 색상 추천을 합니다.");
       return;
     }
 
@@ -661,6 +670,10 @@ export default function ProductDetailClient({
             )}
 
             {/* 장바구니 및 구매 버튼 */}
+
+            <p className={styles.aiNotice}>
+              ※ 1개의 상품을 담았을 때만 AI 색상 추천을 합니다.
+            </p>
             <div className={styles.purchaseButtonArea}>
               <button
                 type="button"
