@@ -21,6 +21,7 @@ export default function SearchBar() {
   }, [pathname, q]);
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.nativeEvent.isComposing) return;
     if (e.key === "Enter") {
       handleSubmit();
     }
