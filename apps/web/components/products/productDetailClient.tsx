@@ -28,6 +28,10 @@ export default function ProductDetailClient({
   // AI 추천 팝업 열림 여부
 
   const [isOpen, setIsOpen] = useState(false);
+  //  false: AI 분석 중이 아님, true: AI 분석 중임
+  const [isAiLoading, setIsAiLoading] = useState(false);
+  //오류 메시지를 저장할 state를 추가
+  const [aiError, setAiError] = useState<string | null>(null);
 
   // 기존 useEffect
   // 기존 함수들
@@ -272,17 +276,18 @@ export default function ProductDetailClient({
         alert("선택된 색상 옵션을 찾을 수 없습니다.");
         return;
       }
-
+      // true: AI 분석 중임 =>AI 분석 시작
+      setIsAiLoading(true);
+      setAiError(null);
+      setIsOpen(true); //팝업 열림 --> "AI 분석 중입니다"
       //=======================================
-      //const result = await fetchRecommendation(selectedColor.color.id, "CART");
-      // fetchRecommendation(selectedColor.color.id, "CART"); 삭제??
-
+      // AI 요청 시작전
       const result = await fetchRecommendation(selectedColor.color.id);
       //=====================
       // AI 추천 결과를 state에 저장
       setRecommendation(result);
       // AI 추천 팝업 열기
-      setIsOpen(true);
+      //setIsOpen(true);
 
       // 기존 장바구니 데이터(다음 단계에서 실제 API 연결 예정)
       const cartData = selectedOptions.map((option) => ({
@@ -294,7 +299,10 @@ export default function ProductDetailClient({
       console.log("장바구니 데이터:", cartData);
     } catch (error) {
       console.error("AI 추천 오류:", error);
-      alert("AI 추천 결과를 불러오지 못했습니다.");
+      setAiError("AI 추천 결과를 불러오지 못했습니다.");
+    } finally {
+      //AI 요청 성공 ==> isAiLoading을 false로 변경 & //AI 요청 실패 ==> 그래도 isAiLoading을 false로 변경
+      setIsAiLoading(false); //"AI 분석은 끝났다."
     }
   };
 
@@ -325,6 +333,10 @@ export default function ProductDetailClient({
         alert("선택된 색상 옵션을 찾을 수 없습니다.");
         return;
       }
+      // AI 분석 시작
+      setIsAiLoading(true);
+      setAiError(null);
+      setIsOpen(true);
 
       const result = await fetchRecommendation(selectedColor.color.id);
 
@@ -344,32 +356,26 @@ export default function ProductDetailClient({
       console.log("바로 구매 데이터:", orderData);
     } catch (error) {
       console.error("AI 추천 오류:", error);
-      alert("AI 추천 결과를 불러오지 못했습니다.");
+      setAiError("AI 추천 결과를 불러오지 못했습니다.");
+    } finally {
+      // AI 분석 종료
+      setIsAiLoading(false);
     }
   };
 
-  //===================================
-
-  //   const orderData = selectedOptions.map((option) => ({
-  //     productId: product.id,
-  //     detailColorId: option.color.id,
-  //     quantity: option.quantity,
-  //   }));
-
-  //   console.log("바로 구매 데이터:", orderData);
-
-  //   alert("바로 구매 기능을 연결해 주세요.");
-  // };
-
   return (
-    //     return (
     <>
       <AIRecommendPopup
         open={isOpen}
         title={recommendation?.title ?? "추천 결과"}
         message={recommendation?.message ?? ""}
         score={recommendation?.score ?? 0}
-        onClose={() => setIsOpen(false)}
+        isAiLoading={isAiLoading}
+        aiError={aiError}
+        onClose={() => {
+          setIsOpen(false);
+          setAiError(null);
+        }}
       />
 
       <main className={styles.page}>
