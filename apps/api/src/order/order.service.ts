@@ -1,7 +1,12 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { UpdateOrderDto } from './dto/update-order.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { QueryDto } from 'src/common/query.dto';
+import { PersonalColor } from '@prisma/client';
 
 @Injectable()
 export class OrderService {
@@ -93,15 +98,54 @@ export class OrderService {
     return exist;
   }
 
-  async update(id: number, updateOrderDto: UpdateOrderDto) {
+  async update(
+    id: number,
+    updateOrderDto: UpdateOrderDto,
+    userTone: PersonalColor,
+  ) {
     // 존재 여부 확인
     const exist = await this.prisma.order.findUnique({ where: { id } });
     if (!exist) {
       throw new NotFoundException(`[${id}] 해당하는 주문이 없어요`);
     }
-    return this.prisma.order.update({
-      where: { id },
-      data: updateOrderDto,
+    return this.prisma.$transaction(async (tx) => {
+      // 주문 상태 수정
+      await tx.order.update({
+        where: { id },
+        data: updateOrderDto,
+      });
+
+      if (updateOrderDto.order_status === 'ConfirmPurchase') {
+        const validTones = Object.values(PersonalColor);
+        if (!validTones.includes(userTone)) {
+          throw new BadRequestException(`유효하지 않은 톤입니다.`);
+        }
+        // 아이템 들 가져오기
+        const orderItems = await tx.orderItem.findMany({
+          where: { order_id: id },
+        });
+
+        if (!orderItems) {
+          throw new NotFoundException('상품들이 없어요');
+        }
+
+        for (const order of orderItems) {
+          await tx.sale.upsert({
+            where: {
+              detail_color_id: order.detail_color_id,
+            },
+            update: {
+              sale_count: { increment: 1 },
+              [userTone]: { increment: 1 },
+            },
+            create: {
+              detail_color_id: order.detail_color_id,
+              sale_count: 1,
+              [userTone]: 1,
+            },
+          });
+        }
+      }
     });
   }
 }

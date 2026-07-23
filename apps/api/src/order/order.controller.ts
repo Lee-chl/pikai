@@ -11,6 +11,7 @@ import { OrderService } from './order.service';
 import { UpdateOrderDto } from './dto/update-order.dto';
 import { QueryDto } from 'src/common/query.dto';
 import { ApiOperation } from '@nestjs/swagger';
+import { PersonalColor } from '@prisma/client';
 
 @Controller('order')
 export class OrderController {
@@ -21,6 +22,7 @@ export class OrderController {
     id: 1,
     email: 'user@email.com',
     isAdmin: false,
+    tone: PersonalColor.SUMMERMUTE,
   };
 
   @Get()
@@ -41,6 +43,6 @@ export class OrderController {
     @Param('id', ParseIntPipe) id: number,
     @Body() updateOrderDto: UpdateOrderDto,
   ) {
-    return this.orderService.update(id, updateOrderDto);
+    return this.orderService.update(id, updateOrderDto, this.mockUser.tone);
   }
 }
