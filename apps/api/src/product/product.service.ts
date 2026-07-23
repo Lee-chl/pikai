@@ -1,6 +1,5 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateProductDto } from './dto/create-product.dto';
-import { UpdateProductDto } from './dto/update-product.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { ProductSort, QueryProductDto } from './dto/query-product.dto';
 import { Prisma } from '@prisma/client';
@@ -92,16 +91,5 @@ export class ProductService {
     }
 
     return product;
-  }
-
-  //async getCategoryProducts(userId: number, query: QueryProductDto) {
-  //   const { categoryId, page = 1, limit = 10 } = query;
-
-  update(id: number, updateProductDto: UpdateProductDto) {
-    return `This action updates a #${id} product`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} product`;
   }
 }
