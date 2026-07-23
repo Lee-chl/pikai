@@ -14,12 +14,4 @@ export class RecommendationRequestDto {
   @IsInt()
   @Min(1)
   detailColorId: number;
-
-  @ApiProperty({
-    description: '추천 확인 후 실행할 작업',
-    enum: RecommendationAction,
-    example: RecommendationAction.CART,
-  })
-  @IsEnum(RecommendationAction)
-  action: RecommendationAction;
 }
