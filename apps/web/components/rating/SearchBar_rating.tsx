@@ -1,8 +1,7 @@
 "use client";
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import styles from "./SearchBar_Rating.module.css";
 import { Search } from "lucide-react";
-import { Constants } from "@/common/constants";
 import { useRouter, useSearchParams } from "next/navigation";
 
 interface SearchBarRatingProps {
