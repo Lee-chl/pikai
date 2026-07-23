@@ -317,7 +317,7 @@ rgb(${rgb.r}, ${rgb.g}, ${rgb.b})입니다.
             content: aiInput.prompt,
           },
         ],
-        max_completion_tokens: 1000,
+        max_completion_tokens: 2000,
       });
 
       const content = result.choices[0]?.message?.content?.trim();
