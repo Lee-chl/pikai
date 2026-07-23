@@ -43,7 +43,6 @@ export default function ProductDetailClient({
   // AI 추천 API 호출
   const fetchRecommendation = async (
     detailColorId: number,
-    action: "CART" | "BUY_NOW",
   ): Promise<RecommendationResponseType> => {
     const response = await fetch(
       `${process.env.NEXT_PUBLIC_BACK_URL}/recommendations/color`,
@@ -54,7 +53,6 @@ export default function ProductDetailClient({
         },
         body: JSON.stringify({
           detailColorId,
-          action,
         }),
       },
     );
@@ -78,7 +76,8 @@ export default function ProductDetailClient({
 
     // 점수가 문자열로 오거나 다른 이름으로 오는 경우를 함께 처리
     const score = Number(
-      recommendationData.score ??
+      recommendationData.answer ??
+        recommendationData.score ??
         recommendationData.recommendationScore ??
         recommendationData.recommendation_score ??
         0,
@@ -131,6 +130,8 @@ export default function ProductDetailClient({
 
     return result;
   };
+
+  //=====
 
   const getImageUrl = (image: string) => {
     if (image.startsWith("http://") || image.startsWith("https://")) {
@@ -208,16 +209,42 @@ export default function ProductDetailClient({
     setMainImage(product.color_main_image);
   };
 
+  // const totalQuantity = selectedOptions.reduce(
+  //   (total, option) => total + option.quantity,
+  //   0,
+  // );
+
+  // const totalPrice = selectedOptions.reduce(
+  //   (total, option) => total + product.price * option.quantity,
+  //   0,
+  // );
+
+  // //===========
+  // const originalPrice = product.price;
+
+  // const salePrice = Math.floor(originalPrice * 0.9);
+  //===========
+
+  // 정가
+  const originalPrice = product.price;
+
+  // 정가에서 10% 할인한 가격
+  const salePrice = Math.floor(originalPrice * 0.9);
+
+  // 선택한 상품의 전체 수량
   const totalQuantity = selectedOptions.reduce(
     (total, option) => total + option.quantity,
     0,
   );
 
+  // 선택한 상품의 총 할인 가격
   const totalPrice = selectedOptions.reduce(
-    (total, option) => total + product.price * option.quantity,
+    (total, option) => total + salePrice * option.quantity,
     0,
   );
 
+  //==================================================
+  //장바구니함수
   const handleAddCart = async () => {
     // 옵션을 선택하지 않은 경우
     if (selectedOptions.length === 0) {
@@ -246,8 +273,12 @@ export default function ProductDetailClient({
         return;
       }
 
-      const result = await fetchRecommendation(selectedColor.color.id, "CART");
+      //=======================================
+      //const result = await fetchRecommendation(selectedColor.color.id, "CART");
+      // fetchRecommendation(selectedColor.color.id, "CART"); 삭제??
 
+      const result = await fetchRecommendation(selectedColor.color.id);
+      //=====================
       // AI 추천 결과를 state에 저장
       setRecommendation(result);
       // AI 추천 팝업 열기
@@ -267,11 +298,8 @@ export default function ProductDetailClient({
     }
   };
 
-  // const handleBuyNow = () => {
-  //   if (selectedOptions.length === 0) {
-  //     alert("옵션을 하나 이상 선택해 주세요.");
-  //     return;
-  //   }
+  //================================
+  //바로구매 함수
 
   const handleBuyNow = async () => {
     if (selectedOptions.length === 0) {
@@ -298,10 +326,7 @@ export default function ProductDetailClient({
         return;
       }
 
-      const result = await fetchRecommendation(
-        selectedColor.color.id,
-        "BUY_NOW",
-      );
+      const result = await fetchRecommendation(selectedColor.color.id);
 
       // AI 추천 결과 저장
       setRecommendation(result);
@@ -323,6 +348,8 @@ export default function ProductDetailClient({
     }
   };
 
+  //===================================
+
   //   const orderData = selectedOptions.map((option) => ({
   //     productId: product.id,
   //     detailColorId: option.color.id,
@@ -333,7 +360,9 @@ export default function ProductDetailClient({
 
   //   alert("바로 구매 기능을 연결해 주세요.");
   // };
+
   return (
+    //     return (
     <>
       <AIRecommendPopup
         open={isOpen}
@@ -427,14 +456,23 @@ export default function ProductDetailClient({
               </div>
             )}
 
+            {/* 정가와 할인 가격 */}
             <div className={styles.priceSection}>
-              {product.is_sale && (
-                <strong className={styles.saleText}>10% 할인가격</strong>
-              )}
+              <div className={styles.originalPriceRow}>
+                <span className={styles.originalLabel}>정가</span>
 
-              <strong className={styles.productPrice}>
-                {product.price.toLocaleString()}원
-              </strong>
+                <span className={styles.originalPrice}>
+                  {originalPrice.toLocaleString()}원
+                </span>
+              </div>
+
+              <div className={styles.salePriceRow}>
+                <span className={styles.saleText}>10% 할인가</span>
+
+                <strong className={styles.productPrice}>
+                  {salePrice.toLocaleString()}원
+                </strong>
+              </div>
             </div>
 
             <div className={styles.optionTitle}>
@@ -496,12 +534,10 @@ export default function ProductDetailClient({
                           </p>
 
                           <div className={styles.optionPriceRow}>
-                            {product.is_sale && (
-                              <strong className={styles.optionSale}>10%</strong>
-                            )}
+                            <strong className={styles.optionSale}>10%</strong>
 
                             <strong className={styles.optionPrice}>
-                              {product.price.toLocaleString()}원
+                              {salePrice.toLocaleString()}원
                             </strong>
 
                             {isSoldOut && (
@@ -516,13 +552,6 @@ export default function ProductDetailClient({
                               </span>
                             )}
                           </div>
-
-                          {/* 남은 재고 표시 제거 */}
-                          {/* {!isSoldOut && (
-                          <p className={styles.optionStock}>
-                            남은 재고 {color.stock}개
-                          </p>
-                        )} */}
                         </div>
                       </button>
                     );
@@ -552,7 +581,7 @@ export default function ProductDetailClient({
                         </strong>
 
                         <span className={styles.selectedOptionDiscount}>
-                          10% 할인가격
+                          10% 할인가
                         </span>
                       </div>
 
@@ -592,14 +621,9 @@ export default function ProductDetailClient({
                       </div>
 
                       <strong className={styles.optionTotalPrice}>
-                        {(product.price * option.quantity).toLocaleString()}원
+                        {(salePrice * option.quantity).toLocaleString()}원
                       </strong>
                     </div>
-
-                    {/* 남은 재고 표시 제거 */}
-                    {/* <p className={styles.selectedOptionStock}>
-                    남은 재고 {option.color.stock}개
-                  </p> */}
                   </div>
                 ))}
               </div>
