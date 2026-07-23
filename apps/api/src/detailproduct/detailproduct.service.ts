@@ -1,7 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { CreateDetailproductDto } from './dto/create-detailproduct.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { SearchDetailProductDto } from './dto/search-detail-product.dto';
 
 @Injectable()
 export class DetailproductService {
@@ -39,13 +38,9 @@ export class DetailproductService {
     });
 
     if (!detailProduct) {
-      throw new Error(` 상품을 찾을 수 없습니다.`);
+      throw new Error(`상품을 찾을 수 없습니다.`);
     }
 
     return detailProduct;
-  }
-
-  async searchProductByName(query: SearchDetailProductDto) {
-    const { productName } = query;
   }
 }

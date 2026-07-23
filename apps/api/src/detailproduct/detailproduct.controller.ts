@@ -1,7 +1,5 @@
 import { Controller, Get, Param, ParseIntPipe, Query } from '@nestjs/common';
-import { ApiOperation } from '@nestjs/swagger';
 import { ApiQuery } from '@nestjs/swagger';
-import { SearchDetailProductDto } from './dto/search-detail-product.dto';
 import { DetailproductService } from './detailproduct.service';
 
 @Controller('detailproduct')
@@ -23,11 +21,5 @@ export class DetailproductController {
   @Get(':id')
   findOne(@Param('id', ParseIntPipe) id: number) {
     return this.detailproductService.findOne(id);
-  }
-
-  @Get('search')
-  @ApiOperation({ summary: '상품 검색' })
-  searchProductByName(@Query() query: SearchDetailProductDto) {
-    return this.detailproductService.searchProductByName(query);
   }
 }
