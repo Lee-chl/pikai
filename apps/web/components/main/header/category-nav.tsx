@@ -1,26 +1,42 @@
+"use client";
 import Link from "next/link";
 import styles from "./category-nav.module.css";
-import { Constants } from "../../../common/constants";
 import { CategoryType } from "@/types/productDetailType";
+import { useSearchParams } from "next/navigation";
 
-export default async function CategoryNav() {
-  const res = await fetch(`${Constants.back_url}/category`);
-  const categories: CategoryType[] = await res.json();
+interface CategoryNavProps {
+  categories: CategoryType[];
+}
+
+export default function CategoryNav({ categories }: CategoryNavProps) {
+  const searchParams = useSearchParams();
+  const q = searchParams.get("q");
+
   return (
     <div>
       <nav className={styles.nav}>
         <Link className={styles.link} href={`/product`}>
           전체 상품
         </Link>
-        {categories.map((category) => (
-          <Link
-            key={category.id}
-            href={`/product/category/${category.id}`}
-            className={styles.link}
-          >
-            {category.name}
-          </Link>
-        ))}
+        {categories?.map((category) =>
+          q ? (
+            <Link
+              key={category.id}
+              href={`/product/category/${category.id}?q=${encodeURIComponent(q)}`}
+              className={styles.link}
+            >
+              {category.name}
+            </Link>
+          ) : (
+            <Link
+              key={category.id}
+              href={`/product/category/${category.id}`}
+              className={styles.link}
+            >
+              {category.name}
+            </Link>
+          ),
+        )}
       </nav>
     </div>
   );
