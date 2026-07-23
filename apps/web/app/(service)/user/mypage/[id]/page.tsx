@@ -2,6 +2,7 @@ import styles from "./page.module.css";
 import { Constants } from "@/common/constants";
 import { MirrorRound, ClipboardList, UserRoundCog } from "lucide-react";
 import Link from "next/link";
+import DeleteButton from "./deleteButton";
 
 export default async function Mypage({
   params,
@@ -22,12 +23,7 @@ export default async function Mypage({
           <p className={styles.userName}>
             <strong>{userInfo.name}</strong> 님
           </p>
-          <Link
-            href={`/user/mypage/${id}/cancel-user`}
-            className={styles.cancel}
-          >
-            회원 탈퇴
-          </Link>
+          <DeleteButton id={id} />
         </div>
 
         <div className={styles.divider}></div>

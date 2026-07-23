@@ -25,7 +25,8 @@
   justify-content: space-between;
   align-items: center;
 
-  padding: 28px 36px;
+  padding: 30px 60px;
+  margin-top: 10px;
 }
 
 .userName {
@@ -60,7 +61,7 @@
   align-items: center;
   gap: 70px;
 
-  padding: 45px 40px;
+  padding: 60px 40px;
 }
 
 .menu {
