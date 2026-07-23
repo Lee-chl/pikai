@@ -6,6 +6,7 @@ import { ProductSortType } from "@/types/productSortTyps";
 import Pagination from "../../../components/products/Pagination";
 import ProductList from "../../../components/products/ProductList";
 import SortMenu from "../../../components/products/SortMenu";
+import { useSearchParams } from "next/navigation";
 
 interface ProductResponseType {
   items: ProductItemType[];
@@ -21,6 +22,8 @@ export default function Page() {
   const [error, setError] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [total, setTotal] = useState(0);
+  const searchParams = useSearchParams();
+  const q = searchParams.get("q") || "";
 
   const limit = 10;
 
@@ -44,10 +47,12 @@ export default function Page() {
       try {
         setLoading(true);
         setError("");
+        let url = `${process.env.NEXT_PUBLIC_BACK_URL}/products?page=${currentPage}&limit=${limit}&sort=${selectedSort}`;
+        if (q) {
+          url += `&productName=${q}`;
+        }
 
-        const response = await fetch(
-          `${process.env.NEXT_PUBLIC_BACK_URL}/products?page=${currentPage}&limit=${limit}&sort=${selectedSort}`,
-        );
+        const response = await fetch(url);
 
         if (!response.ok) {
           throw new Error("상품 목록을 가져오지 못했습니다.");
@@ -66,7 +71,7 @@ export default function Page() {
     };
 
     fetchProducts();
-  }, [selectedSort, currentPage]);
+  }, [selectedSort, currentPage, q]);
 
   return (
     <div
@@ -77,6 +82,12 @@ export default function Page() {
         boxSizing: "border-box",
       }}
     >
+      {q ? (
+        <h2 style={{ marginBottom: "3rem" }}>{q}에 대한 검색결과 입니다.</h2>
+      ) : (
+        ""
+      )}
+
       <h3>전체상품</h3>
 
       <SortMenu selectedSort={selectedSort} onSortChange={handleSortChange} />

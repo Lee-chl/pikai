@@ -5,6 +5,7 @@ import { use, useEffect, useState } from "react";
 import ProductList from "../../../../../components/products/ProductList";
 import SortMenu from "../../../../../components/products/SortMenu";
 import Pagination from "../../../../../components/products/Pagination";
+import { useSearchParams } from "next/navigation";
 
 import type { ProductItemType } from "@/types/productItemType";
 import type { ProductSortType } from "@/types/productSortTyps";
@@ -25,6 +26,8 @@ export default function CategoryProductPage({
   const [selectedSort, setSelectedSort] = useState<ProductSortType>("latest");
 
   const [currentPage, setCurrentPage] = useState(1);
+  const searchParams = useSearchParams();
+  const q = searchParams.get("q") || "";
 
   // 카테고리 상품 전체 개수
   const [total, setTotal] = useState(0);
@@ -50,9 +53,11 @@ export default function CategoryProductPage({
 
         const backUrl = process.env.NEXT_PUBLIC_BACK_URL;
 
-        const response = await fetch(
-          `${backUrl}/products?page=${currentPage}&limit=10&sort=${selectedSort}&categoryId=${id}`,
-        );
+        let url = `${backUrl}/products?page=${currentPage}&limit=10&sort=${selectedSort}&categoryId=${id}`;
+        if (q) {
+          url += `&productName=${q}`;
+        }
+        const response = await fetch(url);
 
         if (!response.ok) {
           throw new Error("카테고리 상품을 불러오지 못했습니다.");
@@ -109,7 +114,7 @@ export default function CategoryProductPage({
     };
 
     fetchCategoryProducts();
-  }, [id, currentPage, selectedSort]);
+  }, [id, currentPage, selectedSort, q]);
 
   if (loading) {
     return <p>상품을 불러오는 중입니다.</p>;
