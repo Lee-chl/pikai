@@ -69,7 +69,7 @@ export default function OrderItemList({ orderList }: OrderItemListProps) {
             {OrderStatusKor[orderStatus as OrderStatusKor] ?? orderStatus}
           </span>
         ) : (
-          <div>
+          <div className={styles.OrderButtonList}>
             <button
               onClick={() => handleOrderStatusChange(OrderStatus.EXCHANGE)}
             >
