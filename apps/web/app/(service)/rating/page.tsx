@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import PersonalColor from "../../../components/rating/PersonalColor";
 import { UserInfoType } from "@/types/userType";
 import { Constants } from "@/common/constants";
@@ -5,6 +6,12 @@ import { redirect } from "next/navigation";
 import styles from "./rating.module.css";
 import { RatingItemType } from "@/types/ratingType";
 import RatingList from "../../../components/rating/RatingList";
+
+export const metadata: Metadata = {
+  title: "나만의 온라인 화장대",
+  description:
+    "가지고 있는 상품을 온라인에서 바로 확인할 수 있는 단 하나 뿐인 화장대입니다.",
+};
 
 export default async function Page({
   searchParams,
