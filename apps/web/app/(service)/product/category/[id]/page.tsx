@@ -26,10 +26,16 @@ export default function CategoryProductPage({
 
   const [currentPage, setCurrentPage] = useState(1);
 
+  // 카테고리 상품 전체 개수
+  const [total, setTotal] = useState(0);
+
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
   const [categoryName, setCategoryName] = useState("");
+  const limit = 10;
+  // 현재 카테고리의 전체 페이지 수
+  const totalPage = Math.max(1, Math.ceil(total / limit));
 
   const handleSortChange = (sort: ProductSortType) => {
     setSelectedSort(sort);
@@ -56,7 +62,9 @@ export default function CategoryProductPage({
 
         // API가 배열을 반환하는 경우와
         // { items: [...] } 형태를 반환하는 경우 모두 처리
-        setProducts(data.items ?? data);
+        //setProducts(data.items ?? data);
+        setProducts(data.items ?? []);
+        setTotal(data.total ?? 0);
 
         /**
          * 2. 전체 카테고리 목록 가져오기
@@ -136,7 +144,11 @@ export default function CategoryProductPage({
         <ProductList products={products} />
       )}
 
-      <Pagination currentPage={currentPage} onPageChange={setCurrentPage} />
+      <Pagination
+        currentPage={currentPage}
+        totalPage={totalPage}
+        onPageChange={setCurrentPage}
+      />
     </main>
   );
 }
