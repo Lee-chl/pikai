@@ -49,7 +49,7 @@ export default function Page() {
         setError("");
         let url = `${process.env.NEXT_PUBLIC_BACK_URL}/products?page=${currentPage}&limit=${limit}&sort=${selectedSort}`;
         if (q) {
-          url += `&productName=${q}`;
+          url += `&productName=${encodeURIComponent(q)}`;
         }
 
         const response = await fetch(url);

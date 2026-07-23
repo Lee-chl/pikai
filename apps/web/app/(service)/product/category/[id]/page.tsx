@@ -55,7 +55,7 @@ export default function CategoryProductPage({
 
         let url = `${backUrl}/products?page=${currentPage}&limit=10&sort=${selectedSort}&categoryId=${id}`;
         if (q) {
-          url += `&productName=${q}`;
+          url += `&productName=${encodeURIComponent(q)}`;
         }
         const response = await fetch(url);
 
