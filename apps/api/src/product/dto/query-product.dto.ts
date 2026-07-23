@@ -1,6 +1,13 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Transform, Type } from 'class-transformer';
-import { IsEnum, IsInt, IsOptional, Min } from 'class-validator';
+import {
+  IsEnum,
+  IsInt,
+  IsOptional,
+  IsString,
+  Min,
+  MinLength,
+} from 'class-validator';
 
 export enum ProductSort {
   SALES = 'sales',
@@ -49,4 +56,14 @@ export class QueryProductDto {
   @IsOptional()
   @IsEnum(ProductSort)
   sort: ProductSort = ProductSort.LATEST;
+
+  @IsOptional()
+  @ApiProperty({
+    example: '헤라',
+    description: '브랜드 상품 이름',
+    required: false,
+  })
+  @IsString()
+  @MinLength(1)
+  productName: string;
 }

@@ -24,7 +24,13 @@ export class ProductService {
   }
 
   async findAll(query: QueryProductDto) {
-    const { page, limit, categoryId, sort = ProductSort.LATEST } = query;
+    const {
+      page,
+      limit,
+      categoryId,
+      sort = ProductSort.LATEST,
+      productName,
+    } = query;
 
     let orderBy: Prisma.ProductOrderByWithRelationInput;
 
@@ -48,11 +54,12 @@ export class ProductService {
         };
         break;
     }
-    const where: Prisma.ProductWhereInput = categoryId
-      ? {
-          category_id: categoryId,
-        }
-      : {};
+    const where: Prisma.ProductWhereInput = {
+      category_id: categoryId ? categoryId : undefined,
+      name: productName
+        ? { contains: productName, mode: 'insensitive' }
+        : undefined,
+    };
 
     const [items, total] = await Promise.all([
       this.prisma.product.findMany({
