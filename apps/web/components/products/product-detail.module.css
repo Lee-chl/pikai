@@ -656,3 +656,11 @@
     grid-template-columns: 1fr;
   }
 }
+
+.aiNotice {
+  margin: 20px 0 12px;
+  font-size: 12px;
+  color: #f59d96;
+  padding-left: 4px;
+  margin-right: 1.3rem;
+}
