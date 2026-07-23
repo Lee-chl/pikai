@@ -135,13 +135,13 @@ export class OrderService {
               detail_color_id: order.detail_color_id,
             },
             update: {
-              sale_count: { increment: 1 },
-              [userTone]: { increment: 1 },
+              sale_count: { increment: order.quantity },
+              [userTone]: { increment: order.quantity },
             },
             create: {
               detail_color_id: order.detail_color_id,
-              sale_count: 1,
-              [userTone]: 1,
+              sale_count: order.quantity,
+              [userTone]: order.quantity,
             },
           });
         }
