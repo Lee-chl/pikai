@@ -1,6 +1,7 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateDetailproductDto } from './dto/create-detailproduct.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
+import { SearchDetailProductDto } from './dto/search-detailproduct.dto';
 
 @Injectable()
 export class DetailproductService {
@@ -42,5 +43,23 @@ export class DetailproductService {
     }
 
     return detailProduct;
+  }
+
+  async searchProductByName(query: SearchDetailProductDto) {
+    const { colorName, productId } = query;
+    // product 있는 지 확인
+    const existProduct = await this.prisma.product.findUnique({
+      where: { id: productId },
+    });
+    if (!existProduct) {
+      throw new NotFoundException(`[${productId}] 해당하는 제품이 없습니다.`);
+    }
+
+    return this.prisma.detailProduct.findMany({
+      where: {
+        product_id: productId,
+        color_name: { contains: colorName, mode: 'insensitive' },
+      },
+    });
   }
 }
