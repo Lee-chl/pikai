@@ -213,22 +213,6 @@ export default function ProductDetailClient({
     setMainImage(product.color_main_image);
   };
 
-  // const totalQuantity = selectedOptions.reduce(
-  //   (total, option) => total + option.quantity,
-  //   0,
-  // );
-
-  // const totalPrice = selectedOptions.reduce(
-  //   (total, option) => total + product.price * option.quantity,
-  //   0,
-  // );
-
-  // //===========
-  // const originalPrice = product.price;
-
-  // const salePrice = Math.floor(originalPrice * 0.9);
-  //===========
-
   // 정가
   const originalPrice = product.price;
 
@@ -664,7 +648,7 @@ export default function ProductDetailClient({
                   onClick={handleRemoveAllOptions}
                   className={styles.removeAllButton}
                 >
-                  선택 옵션 전체 삭제
+                  상품 전체 삭제
                 </button>
               </div>
             )}
