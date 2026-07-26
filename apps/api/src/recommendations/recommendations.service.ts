@@ -5,17 +5,14 @@ import {
 } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { RecommendationRequestDto } from './dto/recommendation-request.dto';
-import { MockAiProvider } from './providers/mock-ai.provider';
+
 //import { AzureOpenAI } from 'openai';
 import OpenAI from 'openai';
 
 @Injectable()
 export class RecommendationsService {
   AzureAiProvider: any;
-  constructor(
-    private readonly prisma: PrismaService,
-    private readonly mockAiProvider: MockAiProvider,
-  ) {}
+  constructor(private readonly prisma: PrismaService) {}
 
   async recommendColor(dto: RecommendationRequestDto, userId: number) {
     // 1. 선택한 색상과 사용자 정보를 동시에 조회
@@ -153,9 +150,40 @@ export class RecommendationsService {
     // 6. AI에게 전달할 프롬프트 만들기
 
     // 먼저 사용자의 퍼스널 컬러를 알려준다.
-    let prompt = `${user.personal_color} 톤 사용자입니다.`;
+
+    //==> systemPrompt (고정 지침)
+    const systemPrompt = `
+    너는 온라인 화장품 쇼핑몰의 전문 컬러 컨설턴트이다.
+
+    사용자의 퍼스널 컬러와 이전 색상 평가 기록을 참고하여
+    현재 선택한 색상이 얼마나 잘 어울리는지 판단한다.
+
+    평가 기준은 다음과 같다.
+
+    1 : 매우 어울리지 않음
+    2 : 어울리지 않음
+    3 : 보통
+    4 : 잘 어울림
+    5 : 매우 잘 어울림
+
+    단,
+    현재 선택한 색상이 사용자가 이전에 높은 점수를 준 색상과
+    사람의 눈으로 거의 구분하기 어려울 정도로 매우 유사하다면
+    6을 반환한다.
+
+    반드시 1, 2, 3, 4, 5, 6 중
+    숫자 하나만 반환한다.
+
+    설명, 문장, 기호는 절대 출력하지 않는다.
+    `;
+
+    // let prompt = `${user.personal_color} 톤 사용자입니다.`;
+    // 1.항목 이름(Label) 을 붙여주는 것이 GPT가 정보를 구분하기 훨씬 쉽다고 함
+    let prompt = `퍼스널 컬러: ${user.personal_color}`;
+    //==============================================
 
     // 사용자가 4~5점을 준 색상이 있는 경우
+    //2.긍정 평가 문장을 라벨 형식으로 변경
     if (positiveRating) {
       const positiveRgb = this.hslToRgb(
         positiveRating.detail_color.h,
@@ -165,12 +193,14 @@ export class RecommendationsService {
 
       prompt += `
 
-rgb(${positiveRgb.r}, ${positiveRgb.g}, ${positiveRgb.b}) 색상은
-사용자가 ${positiveRating.star_rating}점으로 평가했고
-잘 어울렸던 색상입니다.`;
+긍정 평가 색상:
+- RGB: rgb(${positiveRgb.r}, ${positiveRgb.g}, ${positiveRgb.b})
+- 평점: ${positiveRating.star_rating}
+- 평가 결과: 잘 어울렸던 색상`;
     }
 
     // 사용자가 1~2점을 준 색상이 있는 경우
+    //3.부정 평가도 같은 형식으로 변경
     if (negativeRating) {
       const negativeRgb = this.hslToRgb(
         negativeRating.detail_color.h,
@@ -180,44 +210,22 @@ rgb(${positiveRgb.r}, ${positiveRgb.g}, ${positiveRgb.b}) 색상은
 
       prompt += `
 
-rgb(${negativeRgb.r}, ${negativeRgb.g}, ${negativeRgb.b}) 색상은
-사용자가 ${negativeRating.star_rating}점으로 평가했고
-잘 어울리지 않았던 색상입니다.`;
+부정 평가 색상:
+- RGB: rgb(${negativeRgb.r}, ${negativeRgb.g}, ${negativeRgb.b})
+- 평점: ${negativeRating.star_rating}
+- 평가 결과: 잘 어울리지 않았던 색상`;
     }
 
     // 현재 선택한 상품 정보와 평가 규칙을 추가한다.
+    //4. 현재 선택한 상품 정보도 라벨 형식으로 정리
     prompt += `
 
-현재 사용자가 선택한 상품은
-${detailColor.products.category.name} 카테고리의
-${detailColor.color_name} 색상입니다.
-
-현재 선택한 색상의 HSL 값은
-hsl(${detailColor.h}, ${detailColor.s}%, ${detailColor.l}%)입니다.
-
-현재 선택한 색상의 RGB 값은
-rgb(${rgb.r}, ${rgb.g}, ${rgb.b})입니다.
-
-사용자의 퍼스널 컬러와 이전 평점 기록을 기준으로
-현재 선택한 ${detailColor.products.category.name} 색상이
-사용자에게 어울리는지 판단하세요.
-
-평가 방법:
-
-1부터 5까지 중 하나의 숫자로
-어울림 정도를 평가하세요.
-
-단, 현재 선택한 색상이
-사용자가 잘 어울렸다고 평가한 기존 색상과
-사람이 육안으로 보기에 거의 구분하기 어려울 정도로 비슷하다면
-6을 반환하세요.
-
-반드시 1, 2, 3, 4, 5, 6 중
-숫자 하나만 반환하세요.
-
-설명, 문장, 기호는 반환하지 마세요.`;
-
-    // 7. Mock AI에게 전달할 데이터 만들기
+현재 선택한 상품:
+- 카테고리: ${detailColor.products.category.name}
+- 색상명: ${detailColor.color_name}
+- HSL: hsl(${detailColor.h}, ${detailColor.s}%, ${detailColor.l}%)
+- RGB: rgb(${rgb.r}, ${rgb.g}, ${rgb.b})
+위 정보를 바탕으로 현재 선택한 색상을 평가하세요.`;
 
     const aiInput = {
       // 실제 AI가 읽고 판단할 프롬프트
@@ -247,39 +255,6 @@ rgb(${rgb.r}, ${rgb.g}, ${rgb.b})입니다.
       negativeColor,
     };
 
-    // 8. Mock AI 호출
-    // Azure OpenAI 연결 전까지 임시로 사용
-    // const endpoint = process.env['AZURE_OPENAI_ENDPOINT'];
-    // const azureApiKey = process.env['AZURE_OPENAI_KEY'];
-    // const apiVersion = process.env['AZURE_OPENAI_API_VERSION'];
-    //===============================
-
-    //환경 변수 검증
-
-    // if (!endpoint || !azureApiKey || !apiVersion) {
-    //   throw new Error('Azure OpenAI 환경변수가 누락되었습니다.');
-    // }
-    // const deploymentId = 'gpt-5';
-    // const client = new OpenAI({
-    //   endpoint,
-    //   apiKey: azureApiKey,
-    //   deployment: deploymentId,
-    //   apiVersion: process.env.AZURE_OPENAI_API_VERSION,
-    // });
-    // //====
-
-    // //====
-    // const result = await client.chat.completions.create({
-    //   model: deploymentId,
-    //   messages: [{ role: 'user', content: aiInput.prompt }],
-    //   //temperature: 1,
-    //   max_completion_tokens: 100,
-    // });
-
-    // const answer = result.choices[0]?.message?.content?.trim();
-    // if (!answer) throw new NotFoundException('Azure OpenAI API 호출 중 오류');
-
-    // console.log(answer);
     //=========================
     // Azure OpenAI 환경변수
     const endpoint = process.env['AZURE_OPENAI_ENDPOINT'];
@@ -313,8 +288,12 @@ rgb(${rgb.r}, ${rgb.g}, ${rgb.b})입니다.
         model: deploymentId,
         messages: [
           {
+            role: 'system',
+            content: systemPrompt, //(고정 지침)
+          },
+          {
             role: 'user',
-            content: aiInput.prompt,
+            content: aiInput.prompt, //(매번 바뀌는 데이터)
           },
         ],
         max_completion_tokens: 2000,
