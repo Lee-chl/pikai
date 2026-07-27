@@ -43,7 +43,7 @@ export class RatingService {
       throw new NotFoundException(`${userId}는 존재하지 않는 유저입니다.`);
     }
     if (createRatingDto.is_comp) {
-      await this.getCompRatingCount();
+      await this.getCompRatingCount(userId);
     }
 
     return this.prisma.rating.create({
@@ -91,11 +91,9 @@ export class RatingService {
           is_comp: 'desc',
         },
       }),
-      this.prisma.rating.count(),
       this.prisma.rating.count({
         where: {
           user_id: userId,
-          is_comp: true,
         },
       }),
     ]);
@@ -182,10 +180,10 @@ export class RatingService {
     return compRatings;
   }
 
-  async findOne(id: number) {
+  async findOne(id: number, userId: number) {
     const [existRating, compRatingNum] = await Promise.all([
       this.prisma.rating.findUnique({
-        where: { id },
+        where: { id, user_id: userId },
         include: {
           detail_color: {
             select: {
@@ -203,20 +201,21 @@ export class RatingService {
       }),
       this.prisma.rating.count({
         where: {
-          user_id: 1,
+          user_id: userId,
           is_comp: true,
         },
       }),
     ]);
+
     if (!existRating) {
       throw new NotFoundException(`[${id}] 해당 별점이 존재하지 않아요`);
     }
     return { existRating, compRatingNum };
   }
 
-  async getCompRatingCount() {
+  async getCompRatingCount(userId: number) {
     const ratingCount = await this.prisma.rating.count({
-      where: { is_comp: true },
+      where: { is_comp: true, user_id: userId },
     });
 
     if (ratingCount >= 10) {
@@ -226,12 +225,16 @@ export class RatingService {
     }
   }
 
-  async update(id: number, updateRatingDto: UpdateRatingDto) {
+  async update(id: number, updateRatingDto: UpdateRatingDto, userId: number) {
     // 컬러 제품이 있는 지 확인
-    await this.findOne(id);
+    const { compRatingNum } = await this.findOne(id, userId);
     // 비교 제품이 10개 이상인 경우 추가 못하게 설정
     if (updateRatingDto.is_comp === true) {
-      await this.getCompRatingCount();
+      if (compRatingNum >= 10) {
+        throw new BadRequestException(
+          `비교 상품 등록 최대 갯수(10개)를 초과했습니다.`,
+        );
+      }
     }
 
     return this.prisma.rating.update({
@@ -240,10 +243,10 @@ export class RatingService {
     });
   }
 
-  async remove(deleteDto: DeleteRatingDto) {
+  async remove(deleteDto: DeleteRatingDto, userId: number) {
     const { ids } = deleteDto;
     // 컬러 제품이 있는 지 확인
-    await Promise.all(ids.map((id) => this.findOne(id)));
+    await Promise.all(ids.map((id) => this.findOne(id, userId)));
 
     await this.prisma.rating.deleteMany({
       where: {

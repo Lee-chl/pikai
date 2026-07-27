@@ -20,7 +20,7 @@ import {
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
-import { PersonalColor, Rating } from '@prisma/client';
+import { Rating } from '@prisma/client';
 import { QueryDto } from '../common/query.dto';
 import { DeleteRatingDto } from './dto/delete-rating.dto';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth/jwt-auth.guard';
@@ -67,8 +67,11 @@ export class RatingController {
 
   @Get(':id')
   @ApiOperation({ summary: '별점 하나 가져오기' })
-  findOne(@Param('id', ParseIntPipe) id: number) {
-    return this.ratingService.findOne(id);
+  findOne(
+    @Param('id', ParseIntPipe) id: number,
+    @CurrentUser('id') userId: number,
+  ) {
+    return this.ratingService.findOne(id, userId);
   }
 
   @Patch(':id')
@@ -76,13 +79,14 @@ export class RatingController {
   update(
     @Param('id', ParseIntPipe) id: number,
     @Body() updateRatingDto: UpdateRatingDto,
+    @CurrentUser('id') userId: number,
   ) {
-    return this.ratingService.update(id, updateRatingDto);
+    return this.ratingService.update(id, updateRatingDto, userId);
   }
 
   @Delete()
   @ApiOperation({ summary: '별점 상품 삭제하기' })
-  remove(@Query() query: DeleteRatingDto) {
-    return this.ratingService.remove(query);
+  remove(@Query() query: DeleteRatingDto, @CurrentUser('id') userId: number) {
+    return this.ratingService.remove(query, userId);
   }
 }
