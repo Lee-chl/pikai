@@ -4,7 +4,7 @@ import { MirrorRound, ClipboardList, UserRoundCog } from "lucide-react";
 import Link from "next/link";
 import DeleteButton from "../../../../../components/mypage/deleteButton";
 
-export default async function Mypage({
+export default async function Page({
   params,
 }: {
   params: Promise<{ id: number }>;

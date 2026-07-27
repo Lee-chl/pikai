@@ -2,7 +2,7 @@ import { Constants } from "@/common/constants";
 import PasswordForm from "../../../../../../../components/mypage/passwordForm";
 import styles from "./page.module.css";
 
-export default async function ChangePassword({
+export default async function Page({
   params,
 }: {
   params: Promise<{ id: number }>;

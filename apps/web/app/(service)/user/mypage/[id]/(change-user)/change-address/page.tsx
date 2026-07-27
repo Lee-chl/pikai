@@ -3,7 +3,7 @@ import React from "react";
 import AddressForm from "../../../../../../../components/mypage/addressForm";
 import styles from "./page.module.css";
 
-export default async function ChangeAddress({
+export default async function Page({
   params,
 }: {
   params: Promise<{ id: number }>;
