@@ -80,11 +80,30 @@ export class CartService {
       },
 
       include: {
-        user: true,
+        user: {
+          select: {
+            // 받는 분
+            name: true,
+
+            // 연락처
+            phone: true,
+
+            // 우편번호
+            postal_code: true,
+
+            // 주소
+            address: true,
+          },
+        },
 
         cartItems: {
           include: {
-            detailColor: true,
+            detailColor: {
+              include: {
+                // 상품 정보도 함께 조회
+                products: true,
+              },
+            },
           },
 
           orderBy: {
@@ -108,9 +127,9 @@ export class CartService {
   //장바구니 상품 추가
   //같은 장바구니에 같은 DetailProduct가 이미 있으면
   //새로운 행을 만들지 않고 quantity를 증가시킵니다.
-
+  // 요청값에서 장바구니 ID, 상품 옵션 ID, 수량만 꺼냅니다
   async createCartitem(createCartitemDto: CreateCartitemDto) {
-    const { cart_id, detail_color_id, quantity, price } = createCartitemDto;
+    const { cart_id, detail_color_id, quantity } = createCartitemDto;
 
     // 장바구니 존재 여부 확인
     const cart = await this.prisma.cart.findUnique({
@@ -126,9 +145,13 @@ export class CartService {
     }
 
     // DetailProduct 존재 여부 확인
+    // 상품 옵션과 함께 상품 정보(가격)도 조회합니다.
     const detailColor = await this.prisma.detailProduct.findUnique({
       where: {
         id: detail_color_id,
+      },
+      include: {
+        products: true,
       },
     });
 
@@ -163,7 +186,10 @@ export class CartService {
         `재고가 부족합니다. 현재 재고는 ${detailColor.stock}개이고, 장바구니에는 이미 ${existingCartItem.quantity}개가 담겨 있습니다.`,
       );
     }
-
+    // 원가에서 항상 10% 할인한 판매 가격을 계산합니다.
+    const discountedPrice = Math.floor(detailColor.products.price * 0.9);
+    //
+    //
     //schema.prisma의 아래 제약조건을 사용합니다.
     //@@unique([cart_id, detail_color_id])
     //Prisma에서는 복합 unique 이름이
@@ -190,7 +216,8 @@ export class CartService {
         cart_id,
         detail_color_id,
         quantity,
-        price,
+        // 할인된 판매 가격을 저장합니다.
+        price: discountedPrice,
       },
 
       include: {

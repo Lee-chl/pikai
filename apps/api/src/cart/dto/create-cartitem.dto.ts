@@ -25,11 +25,12 @@ export class CreateCartitemDto {
   @Min(1)
   quantity: number;
 
-  @ApiProperty({
-    example: 15000,
-    description: '장바구니 담을 당시 상품 가격',
-  })
-  @IsInt()
-  @Min(0)
-  price: number;
+  // 가격은 DB에서 조회하므로 DTO에서는 받지 않습니다.
+  // @ApiProperty({
+  //   example: 15000,
+  //   description: '장바구니 담을 당시 상품 가격',
+  // })
+  // @IsInt()
+  // @Min(0)
+  // price: number;
 }
