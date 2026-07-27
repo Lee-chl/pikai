@@ -37,11 +37,15 @@ export default async function Page({
       </div>
       <div className={styles.searchGroupContainer}>
         <div className={styles.searchItem}>
-          <label className={styles.label}>브랜드 상품 이름</label>
+          <label htmlFor="productSearch" className={styles.label}>
+            브랜드 상품 이름
+          </label>
           <SearchBarRating isProduct={true} />
         </div>
         <div className={styles.searchItem}>
-          <label className={styles.label}>컬러 이름</label>
+          <label htmlFor="detailProductSearch" className={styles.label}>
+            컬러 이름
+          </label>
           <SearchBarRating
             isProduct={false}
             productId={productId ? Number(productId) : undefined}
