@@ -47,9 +47,17 @@ export class PayService {
       throw new NotFoundException('회원을 찾을 수 없습니다.');
     }
 
+    if (!user.is_active) {
+      throw new BadRequestException('탈퇴한 회원입니다.');
+    }
+
     const orderId = await this.generateOrderId();
 
     return await this.prisma.$transaction(async (tx) => {
+      if (createPayDto.items.length === 0) {
+        throw new BadRequestException('주문 상품이 없습니다.');
+      }
+
       //상품 확인
       for (const item of createPayDto.items) {
         const product = await tx.detailProduct.findUnique({
@@ -142,7 +150,33 @@ export class PayService {
     });
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} pay`;
+  async findOne(userId: number) {
+    const user = await this.prisma.user.findUnique({
+      where: {
+        id: userId,
+      },
+      select: {
+        name: true,
+        phone: true,
+        postal_code: true,
+        address: true,
+        is_active: true,
+      },
+    });
+
+    if (!user) {
+      throw new NotFoundException('회원을 찾을 수 없습니다.');
+    }
+
+    if (!user.is_active) {
+      throw new BadRequestException('탈퇴한 회원입니다.');
+    }
+
+    return {
+      recipient: user.name,
+      phone_number: user.phone,
+      postal_code: user.postal_code,
+      delivery_info: user.address,
+    };
   }
 }

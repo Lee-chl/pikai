@@ -14,7 +14,9 @@ export class PayController {
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.payService.findOne(+id);
+  @ApiOperation({ summary: '결제 페이지 조회' })
+  findOne() {
+    // 임시 회원 id, 추후 수정
+    return this.payService.findOne(1);
   }
 }
