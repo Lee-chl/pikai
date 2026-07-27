@@ -4,4 +4,5 @@ export const Constants = {
   secret: process.env.JWT_SECRET ?? '',
   port: process.env.PORT ?? 0,
   front: process.env.FRONT_URL ?? '',
+  round: Number(process.env.ROUND) ?? 0,
 };

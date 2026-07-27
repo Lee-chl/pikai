@@ -13,21 +13,21 @@ import { DeleteRatingDto } from './dto/delete-rating.dto';
 @Injectable()
 export class RatingService {
   constructor(private readonly prisma: PrismaService) {}
-  async create(createRatingDto: CreateRatingDto) {
+  async create(createRatingDto: CreateRatingDto, userId: number) {
     // 이미 등록된 별점인지 와 상품과 유저가 있는 지 확인
     const [existRating, detail_color, user] = await Promise.all([
       this.prisma.rating.findUnique({
         where: {
           detail_color_id_user_id: {
             detail_color_id: createRatingDto.detail_color_id,
-            user_id: createRatingDto.user_id,
+            user_id: userId,
           },
         },
       }),
       this.prisma.detailProduct.findUnique({
         where: { id: createRatingDto.detail_color_id },
       }),
-      this.prisma.user.findUnique({ where: { id: createRatingDto.user_id } }),
+      this.prisma.user.findUnique({ where: { id: userId } }),
     ]);
 
     if (existRating) {
@@ -40,15 +40,15 @@ export class RatingService {
       );
     }
     if (!user) {
-      throw new NotFoundException(
-        `${createRatingDto.user_id}는 존재하지 않는 유저입니다.`,
-      );
+      throw new NotFoundException(`${userId}는 존재하지 않는 유저입니다.`);
     }
     if (createRatingDto.is_comp) {
       await this.getCompRatingCount();
     }
 
-    return this.prisma.rating.create({ data: createRatingDto });
+    return this.prisma.rating.create({
+      data: { ...createRatingDto, user_id: userId },
+    });
   }
 
   async getUserRatings(query: QueryDto, userId: number) {

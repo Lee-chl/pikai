@@ -14,7 +14,7 @@ import { AuthService } from './auth.service';
       // login에서 sign() jwt token 만들기 위한 시크릿 정보
       secret: Constants.secret,
       // access_token 은 짧게(1시간) , Refresh_token은 길게(14d)
-      // 이건 access_token
+      // 이건 access_token , 테스트용으로 길게 설정
       signOptions: { expiresIn: '14d' },
     }),
   ],

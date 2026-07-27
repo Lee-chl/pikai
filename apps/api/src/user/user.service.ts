@@ -6,6 +6,7 @@ import {
 import { UpdateUserDto } from './dto/update-user.dto';
 import { checkPermissionId } from '../common/check-permission';
 import { PrismaService } from '../prisma/prisma.service';
+import { CreateUserDto } from './dto/create-user.dto';
 
 @Injectable()
 export class UserService {
@@ -57,5 +58,29 @@ export class UserService {
     const { password, ...result } = user;
 
     return result;
+  }
+  async createUser(data: CreateUserDto) {
+    return this.prisma.user.create({ data });
+  }
+
+  async findByEmail(email: string) {
+    // 한달 전 날짜 먼저 구하기
+    const oneMonthAgo = new Date();
+    oneMonthAgo.setMonth(oneMonthAgo.getMonth() - 1);
+
+    return this.prisma.user.findFirst({
+      where: {
+        email,
+        OR: [
+          { is_active: true },
+          {
+            is_active: false,
+            update_at: {
+              gte: oneMonthAgo,
+            },
+          },
+        ],
+      },
+    });
   }
 }

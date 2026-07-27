@@ -8,47 +8,55 @@ import {
   Delete,
   ParseIntPipe,
   Query,
+  UseGuards,
 } from '@nestjs/common';
 import { RatingService } from './rating.service';
 import { CreateRatingDto } from './dto/create-rating.dto';
 import { UpdateRatingDto } from './dto/update-rating.dto';
 import { RatingEntity } from './entities/rating.entity';
-import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiOperation,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 import { PersonalColor, Rating } from '@prisma/client';
 import { QueryDto } from '../common/query.dto';
 import { DeleteRatingDto } from './dto/delete-rating.dto';
+import { JwtAuthGuard } from 'src/auth/guards/jwt-auth/jwt-auth.guard';
+import { CurrentUser } from 'src/common/current-user.decorator';
 
 @Controller('rating')
 @ApiTags('Rating')
+@UseGuards(JwtAuthGuard)
+@ApiBearerAuth()
 export class RatingController {
   constructor(private readonly ratingService: RatingService) {}
-  // 가짜 유저 만들기 (유저 개발 전이므로)
-  private mockUser = {
-    id: 1,
-    email: 'user@email.com',
-    isAdmin: false,
-    tone: PersonalColor.WARM,
-  };
 
   @Post()
   @ApiOperation({ summary: '제품에 대한 별점 추가' })
   @ApiResponse({ type: RatingEntity })
-  async create(@Body() createRatingDto: CreateRatingDto) {
-    const create_rating: Rating =
-      await this.ratingService.create(createRatingDto);
+  async create(
+    @Body() createRatingDto: CreateRatingDto,
+    @CurrentUser('id') userId: number,
+  ) {
+    const create_rating: Rating = await this.ratingService.create(
+      createRatingDto,
+      userId,
+    );
     return new RatingEntity(create_rating);
   }
 
   @Get()
   @ApiOperation({ summary: '사용자 별 사용자가 작성한 모든 별점 찾기' })
-  getUserRatings(@Query() query: QueryDto) {
-    return this.ratingService.getUserRatings(query, this.mockUser.id);
+  getUserRatings(@Query() query: QueryDto, @CurrentUser('id') userId: number) {
+    return this.ratingService.getUserRatings(query, userId);
   }
 
   @Get('/comp')
   @ApiOperation({ summary: '비교 제품들 가져오기' })
-  getCompRatings() {
-    return this.ratingService.getCompRatings(this.mockUser.id);
+  getCompRatings(@CurrentUser('id') userId: number) {
+    return this.ratingService.getCompRatings(userId);
   }
 
   @Get('/comp/:id')

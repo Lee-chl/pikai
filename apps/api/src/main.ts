@@ -12,6 +12,7 @@ async function bootstrap() {
     .setTitle('pikai 쇼핑몰')
     .setDescription('API')
     .setVersion('1.0')
+    .addBearerAuth()
     .build();
   app.setGlobalPrefix('pikai');
   SwaggerModule.setup('docs', app, SwaggerModule.createDocument(app, config));

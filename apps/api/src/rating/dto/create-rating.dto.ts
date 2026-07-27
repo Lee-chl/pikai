@@ -21,11 +21,6 @@ export class CreateRatingDto {
   @IsBoolean()
   is_comp: boolean;
 
-  @ApiProperty({ example: 1, description: '회원 번호' })
-  @IsInt()
-  @Min(1)
-  user_id: number;
-
   @IsInt()
   @Min(1)
   @ApiProperty({ example: 1, description: '제품 색상 번호' })
