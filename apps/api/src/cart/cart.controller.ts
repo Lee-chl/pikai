@@ -10,13 +10,12 @@ import {
 } from '@nestjs/common';
 import { CartService } from './cart.service';
 import { CreateCartDto } from './dto/create-cart.dto';
-import { UpdateCartDto } from './dto/update-cart.dto';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { CreateCartitemDto } from './dto/create-cartitem.dto';
 import { UpdateCartitemDto } from './dto/update-cartitem.dto';
 import { UpdateCartitemSelectDto } from './dto/update-cartitemselect.dto';
 
-@ApiTags('장바구니')
+@ApiTags('Cart')
 @Controller('cart')
 export class CartController {
   constructor(private readonly cartService: CartService) {}
