@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsString, ValidateNested } from 'class-validator';
+import { IsBoolean, IsString, ValidateNested } from 'class-validator';
 import { CreatePayItemDto } from './create-pay-item.dto';
 import { Type } from 'class-transformer';
 
@@ -29,6 +29,10 @@ export class CreatePayDto {
   @ApiProperty({ example: '수령인', description: '받는 사람' })
   @IsString()
   recipient: string;
+
+  @ApiProperty({ example: 'true' })
+  @IsBoolean()
+  isCartOrder: boolean;
 
   //주문 상품
   @ApiProperty({ type: [CreatePayItemDto], description: '주문 상품 목록' })
