@@ -2,9 +2,9 @@ import {
   ConflictException,
   Injectable,
   NotFoundException,
+  BadRequestException,
 } from '@nestjs/common';
 import { CreateCartDto } from './dto/create-cart.dto';
-import { UpdateCartDto } from './dto/update-cart.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateCartitemDto } from './dto/create-cartitem.dto';
 import { UpdateCartitemDto } from './dto/update-cartitem.dto';
@@ -16,9 +16,7 @@ export class CartService {
 
   // Cart
 
-  /**
-   * 장바구니 생성
-   */
+  /* 장바구니 생성 */
   async createCart(createCartDto: CreateCartDto) {
     const { userId } = createCartDto;
 
@@ -55,10 +53,7 @@ export class CartService {
     });
   }
 
-  /**
-   * 전체 장바구니 조회
-   * 관리자용
-   */
+  /** 전체 장바구니 조회 관리자용 */
   async findAll() {
     return this.prisma.cart.findMany({
       include: {
@@ -77,9 +72,7 @@ export class CartService {
     });
   }
 
-  /**
-   * 회원 ID로 장바구니 조회
-   */
+  /*  회원 ID로 장바구니 조회 */
   async findCartByUserId(userId: number) {
     const cart = await this.prisma.cart.findUnique({
       where: {
@@ -144,6 +137,32 @@ export class CartService {
         `ID가 ${detail_color_id}인 상품 옵션을 찾을 수 없습니다.`,
       );
     }
+    // 요청 수량이 재고보다 많은지 확인
+    if (quantity > detailColor.stock) {
+      throw new BadRequestException(
+        `재고가 부족합니다. 현재 재고는 ${detailColor.stock}개입니다.`,
+      );
+    }
+
+    // 같은 상품 옵션이 장바구니에 이미 담겨 있는지 확인
+    const existingCartItem = await this.prisma.cartItem.findUnique({
+      where: {
+        cart_id_detail_color_id: {
+          cart_id,
+          detail_color_id,
+        },
+      },
+    });
+
+    // 기존 수량과 새로 추가할 수량의 합이 재고를 초과하는지 확인
+    if (
+      existingCartItem &&
+      existingCartItem.quantity + quantity > detailColor.stock
+    ) {
+      throw new BadRequestException(
+        `재고가 부족합니다. 현재 재고는 ${detailColor.stock}개이고, 장바구니에는 이미 ${existingCartItem.quantity}개가 담겨 있습니다.`,
+      );
+    }
 
     //schema.prisma의 아래 제약조건을 사용합니다.
     //@@unique([cart_id, detail_color_id])
@@ -181,14 +200,32 @@ export class CartService {
     });
   }
 
-  /**
-   * 장바구니 상품 수량 수정
-   */
+  /* 장바구니 상품 수량 수정 */
   async updateCartitem(
     cartItemId: number,
     updateCartItemDto: UpdateCartitemDto,
   ) {
-    await this.findCartitemById(cartItemId);
+    const cartItem = await this.findCartitemById(cartItemId);
+
+    /* 재고 조사 */
+    const detailColor = await this.prisma.detailProduct.findUnique({
+      where: {
+        id: cartItem.detail_color_id,
+      },
+    });
+
+    if (!detailColor) {
+      throw new NotFoundException(
+        `ID가 ${cartItem.detail_color_id}인 상품 옵션을 찾을 수 없습니다.`,
+      );
+    }
+
+    // 변경하려는 수량이 현재 상품 재고보다 많은지 확인
+    if (updateCartItemDto.quantity > detailColor.stock) {
+      throw new BadRequestException(
+        `재고가 부족합니다. 현재 재고는 ${detailColor.stock}개입니다.`,
+      );
+    }
 
     return this.prisma.cartItem.update({
       where: {
@@ -205,9 +242,7 @@ export class CartService {
     });
   }
 
-  /**
-   * 장바구니 상품 선택 또는 선택 해제
-   */
+  /* 장바구니 상품 선택 또는 선택 해제 */
   async updateCartitemSelect(
     cartItemId: number,
     updateCartItemSelectDto: UpdateCartitemSelectDto,
@@ -229,9 +264,7 @@ export class CartService {
     });
   }
 
-  /**
-   * 장바구니 상품 한 개 삭제
-   */
+  /* 장바구니 상품 한 개 삭제 */
   async deleteCartitem(cartItemId: number) {
     await this.findCartitemById(cartItemId);
 
@@ -247,11 +280,9 @@ export class CartService {
     };
   }
 
-  /**
-   * 특정 장바구니의 모든 상품 삭제
-   *
-   * Cart는 삭제하지 않고 CartItem만 삭제합니다.
-   */
+  /* 특정 장바구니의 모든 상품 삭제
+   
+   * Cart는 삭제하지 않고 CartItem만 삭제합니다. */
   async clearCart(cartId: number) {
     const cart = await this.prisma.cart.findUnique({
       where: {

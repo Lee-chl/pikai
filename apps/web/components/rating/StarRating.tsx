@@ -34,7 +34,7 @@ export default function StarRating({
         } = {
           star_rating: score,
         };
-        if (isComp && isComp !== rating.is_comp) {
+        if (isComp !== rating.is_comp) {
           if (compRatingNum >= 10) {
             alert(`비교 상품은 10개까지만 추가 가능합니다`);
             return setIsComp(false);
