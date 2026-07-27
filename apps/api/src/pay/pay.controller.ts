@@ -21,6 +21,11 @@ export class PayController {
     @Query('quantity') quantity?: number,
   ) {
     // 임시 회원 id, 추후 수정
-    return this.payService.findOne(1, isCartOrder, detailColorId, quantity);
+    return this.payService.findOne(
+      1,
+      isCartOrder,
+      Number(detailColorId),
+      Number(quantity),
+    );
   }
 }
