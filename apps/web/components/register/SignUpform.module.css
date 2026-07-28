@@ -1,0 +1,30 @@
+.colorOptionsGrid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.75rem;
+  margin-top: 0.9375rem;
+}
+.colorItemBtn {
+  border: 1px solid #e5e5e5;
+  background-color: #fff;
+  color: #444;
+  padding: 0.75rem 0.2rem;
+  font-size: 0.75rem;
+  text-align: center;
+  cursor: pointer;
+  border-radius: 0.25rem;
+  transition: all 0.2s ease;
+}
+
+.colorItemBtn:hover {
+  background-color: #fff5f4;
+  border-color: #ffc7c2;
+}
+
+.activeTone {
+  background-color: #ffc7c2 !important;
+  border-color: #ffc7c2 !important;
+  color: #fff !important;
+  font-weight: bold;
+  box-shadow: 0 2px 8px rgba(255, 199, 194, 0.4);
+}
