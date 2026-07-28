@@ -1,5 +1,10 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsBoolean, IsString, ValidateNested } from 'class-validator';
+import {
+  IsBoolean,
+  IsNotEmpty,
+  IsString,
+  ValidateNested,
+} from 'class-validator';
 import { CreatePayItemDto } from './create-pay-item.dto';
 import { Type } from 'class-transformer';
 
@@ -12,6 +17,7 @@ export class CreatePayDto {
   //배송 정보
   @ApiProperty({ example: '서울시 금천구', description: '배송지 정보' })
   @IsString()
+  @IsNotEmpty()
   delivery_info: string;
 
   @ApiProperty({ example: '11111', description: '배송 우편 번호' })
@@ -24,10 +30,12 @@ export class CreatePayDto {
 
   @ApiProperty({ example: '010-1234-5678', description: '휴대폰 번호' })
   @IsString()
+  @IsNotEmpty()
   phone_number: string;
 
   @ApiProperty({ example: '수령인', description: '받는 사람' })
   @IsString()
+  @IsNotEmpty()
   recipient: string;
 
   @ApiProperty({ example: 'true' })
