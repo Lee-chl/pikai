@@ -1,6 +1,5 @@
 import SignUpForm from "@/components/register/SignUpform";
 import type { Metadata } from "next";
-import { useKakaoPostcodePopup } from "react-daum-postcode";
 
 export const metadata: Metadata = {
   title: "회원가입",
@@ -11,7 +10,6 @@ export const metadata: Metadata = {
 export default async function Page() {
   return (
     <div>
-      <h3>회원가입</h3>
       <SignUpForm />
     </div>
   );
