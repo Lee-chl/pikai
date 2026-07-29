@@ -7,3 +7,8 @@ export interface PayItemType {
   price: number;
   sale_price: number;
 }
+
+export interface BuyItem {
+  detailColorId: number;
+  quantity: number;
+}

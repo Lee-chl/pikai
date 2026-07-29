@@ -36,7 +36,7 @@ export interface PayContainerProps {
 export interface PayProps {
   searchParams: Promise<{
     isCartOrder?: string;
-    detailColorId?: string;
-    quantity?: string;
+    selectedOnly?: string;
+    buyItems?: string;
   }>;
 }
