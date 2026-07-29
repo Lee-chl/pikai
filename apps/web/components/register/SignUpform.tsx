@@ -5,26 +5,36 @@ import { personalColorEnum } from "@repo/common";
 import { ChangeEvent, useState } from "react";
 import styles from "./SignUpform.module.css";
 import { Address, useKakaoPostcodePopup } from "react-daum-postcode";
+import { useRouter } from "next/navigation";
 
 export default function SignUpForm() {
   const scriptUrl =
     "//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js";
 
+  const router = useRouter();
   const [email, setEmail] = useState("");
   const [emailError, setEmailError] = useState("");
   const [password, setPassword] = useState("");
+  const [passwordError, setPasswordError] = useState("");
   const [name, setName] = useState("");
+  const [nameError, setNameError] = useState("");
   const [phone, setPhone] = useState("");
+  const [phoneError, setPhoneError] = useState("");
+  const [postcode, setPostcode] = useState("");
   const [address, setAddress] = useState("");
   const [detailAddress, setDetailAddress] = useState("");
+  const [detailAddressError, setDetailAddressError] = useState("");
   const [tone, setTone] = useState<personalColorEnum | null>(null);
+  const [isAgreed, setIsAgreed] = useState<boolean>(false);
+  const [agreeError, setAgreeError] = useState<string>("");
 
   const open = useKakaoPostcodePopup(scriptUrl);
 
   const personalColorList = Object.values(personalColorEnum);
 
   const handleSetAddress = (data: Address) => {
-    setAddress(`[${data.zonecode}] ${data.address}`);
+    setPostcode(data.zonecode);
+    setAddress(data.address);
   };
 
   const handleAddressClick = () => {
@@ -50,12 +60,84 @@ export default function SignUpForm() {
     validationEmail(value);
   };
 
+  const handlePasswordClick = (e: ChangeEvent<HTMLInputElement>): void => {
+    const value = e.target.value;
+    setPassword(value);
+    if (value.trim().length < 6) {
+      setPasswordError("비밀번호는 최소 6자 이상이어야 합니다.");
+    } else {
+      setPasswordError("");
+    }
+  };
+
+  const handleNameClick = (e: ChangeEvent<HTMLInputElement>): void => {
+    const value = e.target.value;
+    setName(value);
+    if (!value.trim()) {
+      setNameError("이름을 입력해주세요.");
+    } else {
+      setNameError("");
+    }
+  };
+
+  const handlePhoneClick = (e: ChangeEvent<HTMLInputElement>): void => {
+    const onlyNumbers = e.target.value.replace(/[^0-9]/g, "");
+    setPhone(onlyNumbers);
+    if (!onlyNumbers.trim() || onlyNumbers.length < 11) {
+      setPhoneError("올바른 전화번호(숫자로)를 입력해주세요.");
+    } else {
+      setPhoneError("");
+    }
+  };
+
+  const handleDetailAddressClick = (e: ChangeEvent<HTMLInputElement>): void => {
+    const value = e.target.value;
+    setDetailAddress(value);
+    if (!value.trim()) {
+      setDetailAddressError("상세주소를 입력해주세요.");
+    } else {
+      setDetailAddressError("");
+    }
+  };
+
+  const handleAgreeChange = (e: ChangeEvent<HTMLInputElement>) => {
+    setIsAgreed(e.target.checked);
+    if (!e.target.checked) {
+      setAgreeError("정보 수집 동의가 필요합니다.");
+    } else {
+      setAgreeError("");
+    }
+  };
+
   const handleSubmit = async () => {
     // 이메일 체크 + error 메세지 체크 하기
+    if (email === "" || emailError) {
+      alert("이메일을 확인 해주세요.");
+      return;
+    }
     // 비번도 6자 이상 아님 에러 발생하게
-    // 전화번호는 번호아님 오류나게
-    if (address === "" || detailAddress === "") {
-      alert("주소를 입력해주세요.");
+    if (password === "" || passwordError) {
+      alert("비밀번호를 확인 해주세요.");
+      return;
+    }
+
+    if (name === "" || nameError) {
+      alert("이름을 확인 해주세요.");
+      return;
+    }
+
+    if (phone === "" || phoneError) {
+      alert("전화번호를 확인 해주세요.");
+      return;
+    }
+
+    if (
+      address === "" ||
+      detailAddress === "" ||
+      detailAddressError ||
+      postcode === ""
+    ) {
+      alert("주소를 확인 해주세요.");
       return;
     }
 
@@ -64,9 +146,16 @@ export default function SignUpForm() {
       return;
     }
 
+    if (!isAgreed) {
+      alert("정보 수집 동의가 필요합니다.");
+      setAgreeError("정보 수집 동의가 필요합니다.");
+      return;
+    }
+
     const addressData = `${address} ${detailAddress}`;
+
     try {
-      const response = await fetch(`${Constants.back_url}/user/register`, {
+      const response = await fetch(`${Constants.back_url}/auth/register`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -76,10 +165,18 @@ export default function SignUpForm() {
           password,
           name,
           phone,
+          postal_code: postcode,
           address: addressData,
-          tone,
+          personal_color: tone,
         }),
       });
+      if (!response.ok) {
+        alert("회원가입에 실패했습니다.");
+        throw new Error(response.statusText);
+      }
+
+      alert("회원가입이 완료되었습니다. 로그인 페이지로 이동합니다.");
+      router.push("/user/login");
     } catch (err) {
       console.log(err);
     }
@@ -115,22 +212,27 @@ export default function SignUpForm() {
           id="password"
           name="password"
           value={password}
-          onChange={(e) => setPassword(e.target.value)}
+          onChange={handlePasswordClick}
         />
+        {passwordError && (
+          <p className={styles.errorMessage}>{passwordError}</p>
+        )}
       </div>
       <div className={styles.inputGroup}>
         <label className={styles.sectionTitle} htmlFor="name">
           이름 <span className={styles.requiredStar}>*</span>
         </label>
         <input
+          onChange={handleNameClick}
           className={styles.input}
           required
           type="text"
           id="name"
           name="name"
           value={name}
-          onChange={(e) => setName(e.target.value)}
+          placeholder="이름을 입력해주세요"
         />
+        {nameError && <p className={styles.errorMessage}>{nameError}</p>}
       </div>
       <div className={styles.inputGroup}>
         <label className={styles.sectionTitle} htmlFor="phone">
@@ -145,8 +247,9 @@ export default function SignUpForm() {
           placeholder="01012345678"
           maxLength={11}
           value={phone}
-          onChange={(e) => setPhone(e.target.value)}
+          onChange={handlePhoneClick}
         />
+        {phoneError && <p className={styles.errorMessage}>{phoneError}</p>}
       </div>
       <div className={styles.inputGroup}>
         <label className={styles.sectionTitle} htmlFor="address">
@@ -182,9 +285,12 @@ export default function SignUpForm() {
           id="addressDetail"
           name="addressDetail"
           value={detailAddress}
-          onChange={(e) => setDetailAddress(e.target.value)}
+          onChange={handleDetailAddressClick}
           placeholder="상세주소를 입력해주세요"
         />
+        {detailAddressError && (
+          <p className={styles.errorMessage}>{detailAddressError}</p>
+        )}
       </div>
       <div className={styles.colorSection}>
         <h3 className={styles.sectionTitle}>
@@ -207,32 +313,50 @@ export default function SignUpForm() {
             (필수)
           </p>
           <p>A4 용지(생화이트)를 턱 밑에 댔을 때, 시선이 어디로 가나요?</p>
-          <p>
+          <p
+            onClick={() => setTone(personalColorEnum.WARM)}
+            className={styles.clickCheckbox}
+          >
             <strong>A)</strong> 옷이 너무 하얘서 옷만 보이고, 내 얼굴은
             상대적으로 누렇게 둥둥 뜨거나 기운 없어 보인다. ➡ WARM
           </p>
-          <p>
+          <p
+            onClick={() => setTone(personalColorEnum.COOL)}
+            className={styles.clickCheckbox}
+          >
             <strong>B)</strong> 이목구비가 또렷해 보이고, 안색이 맑아지며, 옷과
             얼굴이 자연스럽게 어우러진다. ➡ COOL
           </p>
         </div>
       </div>
       <div className={styles.checkboxContainer}>
-        <input type="checkbox" required />
-        <label htmlFor="terms">
+        <input
+          type="checkbox"
+          id="terms"
+          checked={isAgreed}
+          onChange={handleAgreeChange}
+          required
+        />
+        <label htmlFor="terms" className={styles.clickCheckbox}>
           정보 수집 동의 <span className={styles.requiredStar}>*</span>
         </label>
+        {agreeError && <p className={styles.errorMessage}>{agreeError}</p>}
       </div>
       <button
         className={`${styles.btn} ${styles.btnSave}`}
         type="submit"
-        onClick={(e) => e.preventDefault()}
+        onClick={handleSubmit}
       >
         회원가입
       </button>
       <div className={styles.footerText}>
         <p>계정이 이미 있으신가요?? </p>
-        <p className={styles.loginLink}>로그인</p>
+        <p
+          onClick={() => router.push("/user/login")}
+          className={styles.loginLink}
+        >
+          로그인
+        </p>
       </div>
     </div>
   );
