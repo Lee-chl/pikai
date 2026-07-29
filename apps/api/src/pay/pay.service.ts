@@ -2,7 +2,8 @@ import { BadRequestException, Injectable } from '@nestjs/common';
 import { CreatePayDto } from './dto/create-pay.dto';
 import { NotFoundException } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { PayItemType } from './pay.type';
+import { BuyItem, PayItemType } from './pay.type';
+import { Product } from 'src/product/entities/product.entity';
 
 @Injectable()
 export class PayService {
@@ -159,8 +160,8 @@ export class PayService {
   async findOne(
     userId: number,
     isCartOrder: boolean,
-    detailColorId?: number,
-    quantity?: number,
+    selectedOnly?: boolean,
+    buyItems?: BuyItem[],
   ) {
     const user = await this.prisma.user.findUnique({
       where: {
@@ -192,6 +193,11 @@ export class PayService {
         },
         include: {
           cartItems: {
+            where: selectedOnly
+              ? {
+                  is_selected: true,
+                }
+              : undefined,
             include: {
               detailColor: {
                 include: {
@@ -217,34 +223,42 @@ export class PayService {
         sale_price: this.getSalePrice(item.detailColor.products.price),
       }));
     } else {
-      if (!detailColorId || quantity === undefined) {
+      if (!buyItems || buyItems.length === 0) {
         throw new BadRequestException('상품 정보가 올바르지 않습니다.');
       }
 
-      const product = await this.prisma.detailProduct.findUnique({
+      const products = await this.prisma.detailProduct.findMany({
         where: {
-          id: detailColorId,
+          id: {
+            in: buyItems.map((item) => item.detailColorId),
+          },
         },
         include: {
           products: true,
         },
       });
 
-      if (!product) {
+      if (products.length === 0) {
         throw new NotFoundException('상품을 찾을 수 없습니다.');
       }
 
-      items = [
-        {
+      items = buyItems.map((buyItem) => {
+        const product = products.find((p) => p.id === buyItem.detailColorId);
+
+        if (!product) {
+          throw new NotFoundException('상품을 찾을 수 없습니다.');
+        }
+
+        return {
           detail_color_id: product.id,
           name: product.products.name,
           colorName: product.color_name,
           image: product.products.color_main_image,
-          quantity,
+          quantity: buyItem.quantity,
           price: product.products.price,
           sale_price: this.getSalePrice(product.products.price),
-        },
-      ];
+        };
+      });
     }
 
     return {
@@ -252,6 +266,7 @@ export class PayService {
       phone_number: user.phone,
       postal_code: user.postal_code,
       delivery_info: user.address,
+      isCartOrder,
       items,
     };
   }

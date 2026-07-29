@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Param, Query } from '@nestjs/common';
+import { Controller, Post, Body } from '@nestjs/common';
 import { PayService } from './pay.service';
 import { CreatePayDto } from './dto/create-pay.dto';
 import { ApiOperation } from '@nestjs/swagger';
@@ -13,19 +13,25 @@ export class PayController {
     return this.payService.create(1, createPayDto);
   }
 
-  @Get()
+  @Post('page')
   @ApiOperation({ summary: '결제 페이지 조회' })
   findOne(
-    @Query('isCartOrder') isCartOrder: boolean,
-    @Query('detailColorId') detailColorId?: number,
-    @Query('quantity') quantity?: number,
+    @Body()
+    body: {
+      isCartOrder: boolean;
+      selectedOnly?: boolean;
+      buyItems?: {
+        detailColorId: number;
+        quantity: number;
+      }[];
+    },
   ) {
     // 임시 회원 id, 추후 수정
     return this.payService.findOne(
       1,
-      isCartOrder,
-      Number(detailColorId),
-      Number(quantity),
+      body.isCartOrder,
+      body.selectedOnly,
+      body.buyItems,
     );
   }
 }
