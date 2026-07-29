@@ -6,6 +6,7 @@ import { Trash2 } from "lucide-react";
 import styles from "./RatingList.module.css";
 import { Constants } from "@/common/constants";
 import { useRouter, useSearchParams } from "next/navigation";
+import Cookies from "js-cookie";
 
 interface RatingItemProps {
   ratingItem: RatingItemType[];
@@ -22,6 +23,8 @@ export default function RatingList({
   const router = useRouter();
   const [selectDelIds, setSelectDelIds] = useState<number[]>([]);
   const searchParams = useSearchParams();
+  const token = Cookies.get("accessToken");
+
   // 별점 클릭 시 삭제할 별점 id 저장
   const handleDelSelect = (id: number, isChecked: boolean) => {
     if (isChecked) {
@@ -32,9 +35,7 @@ export default function RatingList({
   };
 
   const handleNavigateTOAddPage = () => {
-    const params = new URLSearchParams(searchParams.toString());
-    const userId = params.get("userId");
-    router.push(`/rating/add?userId=${userId}`);
+    router.push(`/rating/add`);
   };
 
   const handlePageChange = (pageNum: number) => {
@@ -94,6 +95,7 @@ export default function RatingList({
             method: "DELETE",
             headers: {
               "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
             },
           },
         );
@@ -121,6 +123,7 @@ export default function RatingList({
           method: "PATCH",
           headers: {
             "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
           },
           body: JSON.stringify({
             is_comp: false,

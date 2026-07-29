@@ -5,7 +5,7 @@ import { Constants } from "@/common/constants";
 import Image from "next/image";
 import { Star } from "lucide-react";
 import styles from "./Rating-item.module.css";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 
 interface RatingItemProps {
   ratingItem: RatingItemType;
@@ -24,7 +24,6 @@ export default function RatingItem({
   setComDel,
 }: RatingItemProps) {
   const router = useRouter();
-  const searchParams = useSearchParams();
   const color_main_image = ratingItem.detail_color.products.color_main_image;
   const imageURL = `${Constants.image_url}/${color_main_image}`;
   const { color_name, h, s, l } = ratingItem.detail_color;
@@ -40,8 +39,7 @@ export default function RatingItem({
   };
   const handleTwoClick = () => {
     if (onSelect) {
-      const userId = searchParams.get("userId");
-      router.push(`/rating/${id.toString()}?userId=${userId}`);
+      router.push(`/rating/${id.toString()}`);
     }
   };
 

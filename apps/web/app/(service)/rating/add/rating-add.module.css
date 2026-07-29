@@ -30,7 +30,7 @@
 }
 
 .helpText {
-    font-size: 12px;
+    font-size: 14px;
     color: #666666;
     padding-left: 4px;
     margin-right: 1.3rem;
@@ -40,6 +40,7 @@
     display: flex;
     flex-direction: column;
     margin-bottom: 1rem;
+    background-color: #f8f7f7;
 }
 
 .ratingWrapper {

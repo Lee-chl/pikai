@@ -8,14 +8,13 @@ import { cookies } from "next/headers";
 export default async function Page({
   searchParams,
 }: {
-  searchParams: Promise<{ id?: number; productId?: number }>;
+  searchParams: Promise<{ id?: number; productId?: number; error?: string }>;
 }) {
-  const { id, productId } = await searchParams;
+  const { id, productId, error } = await searchParams;
   let comCount: number = 0;
 
   const cookieStore = await cookies();
   const token = cookieStore.get("accessToken")?.value;
-
   if (!token) {
     redirect("/login");
   }
@@ -40,8 +39,15 @@ export default async function Page({
 
   return (
     <div className={styles.pageWrapper}>
-      <h4 style={{ marginBottom: "1.5rem" }}>나만의 온라인 화장대</h4>
+      <h2 style={{ marginBottom: "1.5rem" }}>나만의 온라인 화장대</h2>
       <div className={styles.helpTextContainer}>
+        {error ? (
+          <p className={styles.helpText} style={{ color: "#1890ff" }}>
+            ℹ️ 비교 상품은 무조건 하나 추가 해주세요!
+          </p>
+        ) : (
+          ""
+        )}
         <p className={styles.helpText}>
           사이트에 등록되지 않은 상품을 입력하고 싶으실 때는 엔터를 쳐주세요
         </p>

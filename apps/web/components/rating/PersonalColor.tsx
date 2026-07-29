@@ -2,18 +2,12 @@
 
 import { useEffect, useState } from "react";
 import { personalColorEnum } from "@repo/common";
-import { Constants } from "../../common/constants";
+import { Constants } from "@/common/constants";
 import styles from "./PersonalColor.module.css";
 import { useRouter } from "next/navigation";
 import { jwtDecode } from "jwt-decode";
 import Cookies from "js-cookie";
-
-interface jwtPayloadType {
-  id: number;
-  email: string;
-  isAdmin: boolean;
-  tone: personalColorEnum;
-}
+import { jwtPayloadType } from "@/types/JwtPayLoadType";
 
 export default function PersonalColor() {
   const router = useRouter();
@@ -39,6 +33,7 @@ export default function PersonalColor() {
       try {
         const decodedPayload = jwtDecode<jwtPayloadType>(token);
         setDecodePayload(decodedPayload);
+        SetUserTone(decodedPayload.tone);
       } catch (err) {
         console.error("잘못된 토큰입니다.", err);
         router.push("/user/login");
@@ -58,7 +53,7 @@ export default function PersonalColor() {
     const token = Cookies.get("accessToken");
 
     try {
-      const response = await fetch(`${Constants.back_url}/user/${id}`, {
+      const response = await fetch(`${Constants.back_url}/user`, {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",

@@ -1,7 +1,9 @@
-import { RatingItemType } from "../../../../types/ratingType";
-import { Constants } from "../../../../common/constants";
+import { RatingItemType } from "@/types/ratingType";
+import { Constants } from "@/common/constants";
 import styles from "./rating-id.module.css";
 import StarRating from "../../../../components/rating/StarRating";
+import { cookies } from "next/headers";
+import { redirect } from "next/navigation";
 
 export default async function Page({
   params,
@@ -10,17 +12,35 @@ export default async function Page({
 }) {
   let rating: RatingItemType | null = null;
   let compRatingNum: number = 0;
+  const cookieStore = await cookies();
+  const token = cookieStore.get("accessToken")?.value;
+
+  if (!token) {
+    redirect("/login");
+  }
+
   try {
     const { id } = await params;
-    const response = await fetch(`${Constants.back_url}/rating/${id}`);
+    const response = await fetch(`${Constants.back_url}/rating/${id}`, {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      cache: "no-store",
+    });
+
     if (!response.ok) throw new Error(response.statusText);
+
     const ratingJson = await response.json();
     if (ratingJson && ratingJson.existRating) {
       rating = ratingJson.existRating;
       compRatingNum = ratingJson.compRatingNum;
+    } else {
+      throw new Error(response.statusText);
     }
   } catch (error) {
     console.error("별점 가져오는 중 error 내용:", error);
+    redirect("/rating");
   }
 
   if (!rating) {

@@ -52,6 +52,10 @@ export default async function Page({
   } catch (error) {
     console.error(error);
   }
+
+  if (compRating.length < 1) {
+    redirect("/rating/add?error=noComp");
+  }
   // 전체 별 점 매긴 화장품 가져오기
   try {
     const response = await fetch(
@@ -97,12 +101,7 @@ export default async function Page({
           비교 상품 별점 수정은 밑의 전체 상품 별점에서 가능합니다.
         </p>
       </div>
-      {compRating ? (
-        <RatingList ratingItem={compRating} is_com={true} />
-      ) : (
-        <p>비교 상품을 추가해주세요.</p>
-      )}
-
+      <RatingList ratingItem={compRating} is_com={true} />
       <hr className={styles.line} />
       <h3 className={styles.titleMain}>전체 상품</h3>
       <div className={styles.helpTextContainer}>
