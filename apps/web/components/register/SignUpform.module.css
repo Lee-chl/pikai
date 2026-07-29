@@ -144,9 +144,9 @@
 
 .input:focus {
   outline: none;
-  border-color: #4a90e2;
-  background-color: #ffffff;
-  box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.15);
+  border-color: #ffc7c2;
+  background-color: #ffff;
+  box-shadow: 0 0 0 3px rgba(255, 199, 194, 0.15);
 }
 
 .readOnlyInput {
