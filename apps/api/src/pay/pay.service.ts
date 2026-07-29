@@ -3,7 +3,6 @@ import { CreatePayDto } from './dto/create-pay.dto';
 import { NotFoundException } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { BuyItem, PayItemType } from './pay.type';
-import { Product } from 'src/product/entities/product.entity';
 
 @Injectable()
 export class PayService {
@@ -36,6 +35,11 @@ export class PayService {
     }
 
     return `${date}${String(sequence).padStart(4, '0')}`;
+  }
+
+  // 상품 가격(할인가)
+  private getSalePrice(price: number): number {
+    return Math.floor(price * 0.9);
   }
 
   async create(userId: number, createPayDto: CreatePayDto) {
@@ -104,12 +108,16 @@ export class PayService {
           },
         });
 
+        if (!product) {
+          throw new NotFoundException('상품을 찾을 수 없습니다.');
+        }
+
         await tx.orderItem.create({
           data: {
             order_id: order.id,
             detail_color_id: item.detail_color_id,
             quantity: item.quantity,
-            price: product!.products.price,
+            price: this.getSalePrice(product.products.price),
           },
         });
 
@@ -150,11 +158,6 @@ export class PayService {
 
       return order;
     });
-  }
-
-  // 상품 가격(할인가)
-  private getSalePrice(price: number): number {
-    return Math.floor(price * 0.9);
   }
 
   async findOne(
@@ -211,6 +214,10 @@ export class PayService {
 
       if (!cart) {
         throw new NotFoundException('장바구니를 찾을 수 없습니다.');
+      }
+
+      if (cart.cartItems.length === 0) {
+        throw new BadRequestException('장바구니가 비어 있습니다.');
       }
 
       items = cart.cartItems.map((item) => ({
