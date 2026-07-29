@@ -150,3 +150,9 @@ dist
 .stylelintcache
 
 .idea
+
+# Azure Local Emulator & Extensions
+AzuriteConfig*
+**/__azurite_db_table__.json
+azurite/
+*.db
