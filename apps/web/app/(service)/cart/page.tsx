@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { ChevronRight } from "lucide-react";
+
 import styles from "./page.module.css";
 
 // 장바구니 페이지
@@ -55,45 +55,6 @@ export default function CartPage() {
 
       {/* 에러 메시지 */}
       {error && <p className={styles.errorMessage}>{error}</p>}
-
-      {/* 배송 정보 제목과 주문 단계 */}
-      <div className={styles.cartTopHeader}>
-        <h2 className={styles.shippingTitle}>배송 정보</h2>
-
-        <div className={styles.orderSteps}>
-          <strong className={styles.currentStep}>장바구니</strong>
-
-          <ChevronRight size={16} />
-
-          <span>주문/결제</span>
-
-          <ChevronRight size={16} />
-
-          <span>완료</span>
-        </div>
-      </div>
-
-      {/* 배송 정보 박스 */}
-      <section className={styles.shippingSection}>
-        <div className={styles.shippingHeader}>
-          <button type="button" className={styles.editButton}>
-            수정
-          </button>
-        </div>
-
-        <div className={styles.shippingInfo}>
-          {/* 장바구니 API에서 받은 회원 배송정보 */}
-          <p>받는 분 : {cart?.user?.name ?? "-"}</p>
-          <p>연락처 : {cart?.user?.phone ?? "-"}</p>
-          <p>
-            주소 : {cart?.user?.postal_code ?? ""} {cart?.user?.address ?? "-"}
-          </p>
-        </div>
-
-        <p className={styles.shippingNotice}>
-          ※ 장바구니 페이지를 벗어나면 배송 정보는 초기화됩니다.
-        </p>
-      </section>
 
       {/* 전체선택과 삭제 버튼 */}
       <div className={styles.cartToolbar}>
