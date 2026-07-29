@@ -6,8 +6,10 @@ import PayItem from "@/components/pay/PayItem";
 import { DeliveryData, PayContainerProps } from "@/types/payType";
 import { Constants } from "@/common/constants";
 import styles from "./PayContainer.module.css";
+import { useRouter } from "next/navigation";
 
 export default function PayContainer({ data, params }: PayContainerProps) {
+  const router = useRouter();
   const [delivery, setDelivery] = useState<DeliveryData>({
     recipient: data.recipient,
     phone_number: data.phone_number,
@@ -45,7 +47,7 @@ export default function PayContainer({ data, params }: PayContainerProps) {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        payment: "계좌이체",
+        payment,
         ...delivery,
         items: data.items,
         isCartOrder: params.isCartOrder === "true",
@@ -56,6 +58,10 @@ export default function PayContainer({ data, params }: PayContainerProps) {
       alert("결제에 실패했습니다.");
       return;
     }
+
+    const order = await response.json();
+
+    router.replace(`/pay/complete?orderId=${order.id}`);
   };
 
   return (
