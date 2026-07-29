@@ -11,24 +11,24 @@ export const metadata: Metadata = {
 
 export default async function Page({ searchParams }: PayProps) {
   const params = await searchParams;
-  const query = new URLSearchParams();
 
-  if (params.isCartOrder) {
-    query.append("isCartOrder", params.isCartOrder);
-  }
-
-  if (params.detailColorId) {
-    query.append("detailColorId", params.detailColorId);
-  }
-
-  if (params.quantity) {
-    query.append("quantity", params.quantity);
-  }
-
-  const response = await fetch(`${Constants.back_url}/pay?${query.toString()}`);
-  console.log(query.toString());
+  const response = await fetch(`${Constants.back_url}/pay/page`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      isCartOrder: params.isCartOrder === "true",
+      selectedOnly: params.selectedOnly === "true",
+      buyItems: params.buyItems ? JSON.parse(params.buyItems) : undefined,
+    }),
+  });
   const data = await response.json();
-  console.log(data);
-  console.log(data.items);
-  return <PayContainer data={data} params={params} />;
+
+  return (
+    <div className={styles.container}>
+      <h2 className={styles.title}>주문/결제</h2>
+      <PayContainer data={data} params={params} />
+    </div>
+  );
 }

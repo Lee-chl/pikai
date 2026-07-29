@@ -3,7 +3,7 @@
 import { DeliveryInfoProps } from "@/types/payType";
 import { useEffect, useState } from "react";
 import { Address, useKakaoPostcodePopup } from "react-daum-postcode";
-import styles from "./Delivery-info.module.css";
+import styles from "./DeliveryInfo.module.css";
 
 export default function DeliveryInfo({
   recipient,
@@ -55,8 +55,7 @@ export default function DeliveryInfo({
   ]);
 
   return (
-    <div>
-      <h2>주문/결제</h2>
+    <div className={styles.container}>
       <div className={styles.form}>
         <h3 className={styles.subTitle}>배송 정보</h3>
         <p>
@@ -69,7 +68,7 @@ export default function DeliveryInfo({
           />
         </p>
         <p>
-          <label>연락처 (하이픈(-)도 함께 입력해주세요.)</label>
+          <label>연락처</label>
 
           <input
             className={styles.postInput}
