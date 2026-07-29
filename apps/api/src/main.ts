@@ -18,7 +18,7 @@ async function bootstrap() {
   SwaggerModule.setup('docs', app, SwaggerModule.createDocument(app, config));
   app.enableCors({
     origin: `${Constants.front}`,
-    Credential: true, // 쿠키나 인증 헤더를 허용할지 여부
+    credentials: true, // 쿠키나 인증 헤더를 허용할지 여부
   });
   await app.listen(Constants.port);
   console.log(
