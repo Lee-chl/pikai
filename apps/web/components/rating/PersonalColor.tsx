@@ -1,27 +1,50 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { personalColorEnum } from "@repo/common";
 import { Constants } from "../../common/constants";
-import { UserInfoType } from "../../types/userType";
 import styles from "./PersonalColor.module.css";
+import { useRouter } from "next/navigation";
+import { jwtDecode } from "jwt-decode";
+import Cookies from "js-cookie";
 
-interface PersonalColorProps {
-  userInfo: UserInfoType;
+interface jwtPayloadType {
+  id: number;
+  email: string;
+  isAdmin: boolean;
+  tone: personalColorEnum;
 }
 
-export default function PersonalColor({ userInfo }: PersonalColorProps) {
-  const [userTone, SetUserTone] = useState<personalColorEnum | null>(
-    userInfo.personal_color || null,
+export default function PersonalColor() {
+  const router = useRouter();
+  const [decodePayload, setDecodePayload] = useState<jwtPayloadType | null>(
+    null,
   );
+  const [userTone, SetUserTone] = useState<personalColorEnum | null>(null);
 
-  const [changeTone, setChangeTone] = useState<personalColorEnum | null>(
-    userInfo.personal_color || null,
-  );
+  const [changeTone, setChangeTone] = useState<personalColorEnum | null>(null);
 
   const [isEditing, SetIsEditing] = useState(false);
 
   const personalColorList = Object.values(personalColorEnum);
+
+  useEffect(() => {
+    const token = Cookies.get("accessToken");
+    if (!token) {
+      router.push("/user/login");
+      return;
+    }
+
+    if (token) {
+      try {
+        const decodedPayload = jwtDecode<jwtPayloadType>(token);
+        setDecodePayload(decodedPayload);
+      } catch (err) {
+        console.error("잘못된 토큰입니다.", err);
+        router.push("/user/login");
+      }
+    }
+  }, [router]);
 
   const handleColorUpdate = async (
     personalColor: personalColorEnum | null,
@@ -32,11 +55,14 @@ export default function PersonalColor({ userInfo }: PersonalColorProps) {
       return;
     }
 
+    const token = Cookies.get("accessToken");
+
     try {
       const response = await fetch(`${Constants.back_url}/user/${id}`, {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({
           personal_color: personalColor,
@@ -76,7 +102,7 @@ export default function PersonalColor({ userInfo }: PersonalColorProps) {
             <>
               <button
                 className={`${styles.btn} ${styles.btnSave}`}
-                onClick={() => handleColorUpdate(changeTone, userInfo.id)}
+                onClick={() => handleColorUpdate(changeTone, decodePayload!.id)}
               >
                 저장
               </button>

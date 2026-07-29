@@ -59,6 +59,12 @@ export class RatingController {
     return this.ratingService.getCompRatings(userId);
   }
 
+  @Get('/comp/count')
+  @ApiOperation({ summary: '사용자 별 비교 제품 수 가져오기' })
+  getCompRatingCount(@CurrentUser('id') userId: number) {
+    return this.ratingService.getCompRatingCount(userId);
+  }
+
   @Get('/comp/:id')
   @ApiOperation({ summary: '비교 제품 가져오기' })
   getCompRating(@Param('id', ParseIntPipe) id: number) {

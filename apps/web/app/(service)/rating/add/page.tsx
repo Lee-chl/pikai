@@ -3,21 +3,35 @@ import SearchBarRating from "@/components/rating/SearchBar_rating";
 import styles from "./rating-add.module.css";
 import StarRating from "@/components/rating/StarRating";
 import { Constants } from "@/common/constants";
+import { cookies } from "next/headers";
+
 export default async function Page({
   searchParams,
 }: {
-  searchParams: Promise<{ userId: string; id?: number; productId?: number }>;
+  searchParams: Promise<{ id?: number; productId?: number }>;
 }) {
-  const { userId, id, productId } = await searchParams;
+  const { id, productId } = await searchParams;
   let comCount: number = 0;
 
-  if (!userId) {
-    redirect("user/login");
+  const cookieStore = await cookies();
+  const token = cookieStore.get("accessToken")?.value;
+
+  if (!token) {
+    redirect("/login");
   }
 
   // 비교 상품 count 가져오기
   try {
-    const response = await fetch(`${Constants.back_url}/rating/comp`);
+    const response = await fetch(`${Constants.back_url}/rating/comp`, {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      cache: "no-store",
+    });
+
+    if (!response.ok) throw new Error(response.statusText);
+
     const comData = await response.json();
     comCount = comData?.length;
   } catch (error) {

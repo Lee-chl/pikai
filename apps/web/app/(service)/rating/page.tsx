@@ -1,11 +1,11 @@
 import type { Metadata } from "next";
 import PersonalColor from "../../../components/rating/PersonalColor";
-import { UserInfoType } from "@/types/userType";
 import { Constants } from "@/common/constants";
 import { redirect } from "next/navigation";
 import styles from "./rating.module.css";
 import { RatingItemType } from "@/types/ratingType";
 import RatingList from "../../../components/rating/RatingList";
+import { cookies } from "next/headers";
 
 export const metadata: Metadata = {
   title: "나만의 온라인 화장대",
@@ -16,51 +16,34 @@ export const metadata: Metadata = {
 export default async function Page({
   searchParams,
 }: {
-  searchParams: Promise<{ userId: string; page: string }>;
+  searchParams: Promise<{ page: string }>;
 }) {
-  let userInfo: UserInfoType | null = null;
   let compRating: RatingItemType[] = [];
   let ratings: RatingItemType[] = [];
   let totalPage = 1;
 
-  const { userId, page } = await searchParams;
-  if (!userId) {
-    redirect("user/login");
+  const cookieStore = await cookies();
+  const token = cookieStore.get("accessToken")?.value;
+
+  const { page } = await searchParams;
+
+  if (!token) {
+    redirect("/login");
   }
 
   const currentPage = Number(page) || 1;
 
-  // 유저 정보 가져오기
-  try {
-    const response = await fetch(
-      `${Constants.back_url}/user/${Number(userId)}`,
-    );
-    if (!response.ok) throw new Error(response.statusText);
-    const userData = await response.json();
-    if (!userData.id) {
-      throw new Error("유저 데이터 가져오다가 오류 발생");
-    }
-
-    userInfo = {
-      id: userData.id,
-      personal_color: userData.personal_color,
-    };
-  } catch (error) {
-    console.log(error);
-  }
-
-  if (!userInfo) {
-    return (
-      <div>
-        <h3 className={styles.titleMain}>나만의 온라인 화장대</h3>
-        <p>유저 정보를 불러올 수 없습니다. 다시 시도해주세요</p>
-      </div>
-    );
-  }
-
   // 비교 상품 과 전체 상품 가져오기
   try {
-    const response = await fetch(`${Constants.back_url}/rating/comp`);
+    const response = await fetch(`${Constants.back_url}/rating/comp`, {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      cache: "no-store",
+    });
+    if (!response.ok) throw new Error(response.statusText);
+
     const compData = await response.json();
     // 비교 상품 가져오기
     if (compData) {
@@ -73,6 +56,12 @@ export default async function Page({
   try {
     const response = await fetch(
       `${Constants.back_url}/rating?page=${Number(currentPage)}`,
+      {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      },
     );
     if (!response.ok) throw new Error(response.statusText);
     const ratingJson = await response.json();
@@ -88,7 +77,7 @@ export default async function Page({
   return (
     <div>
       <h3 className={styles.titleMain}>나만의 온라인 화장대</h3>
-      <PersonalColor userInfo={userInfo} />
+      <PersonalColor />
       <hr className={styles.line} />
       <h3 className={styles.titleMain}>비교 상품</h3>
       <div

@@ -223,6 +223,7 @@ export class RatingService {
         `비교 상품 등록 최대 갯수(10개)를 초과했습니다.`,
       );
     }
+    return { ratingCount };
   }
 
   async update(id: number, updateRatingDto: UpdateRatingDto, userId: number) {
