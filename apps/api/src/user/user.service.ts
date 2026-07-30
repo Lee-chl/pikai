@@ -11,13 +11,13 @@ import { CreateUserDto } from './dto/create-user.dto';
 @Injectable()
 export class UserService {
   constructor(private readonly prisma: PrismaService) {}
-  async findOne(id: number, currentUserId: number) {
-    // 본인 id 만 조회 가능
-    checkPermissionId(id, currentUserId);
-    const existUser = await this.prisma.user.findUnique({ where: { id } });
+  async findOne(currentUserId: number) {
+    const existUser = await this.prisma.user.findUnique({
+      where: { id: currentUserId },
+    });
 
     if (!existUser) {
-      throw new NotFoundException(`[${id}] 유저가 없어요`);
+      throw new NotFoundException(`[${currentUserId}] 유저가 없어요`);
     }
 
     const { password, ...result } = existUser;

@@ -22,11 +22,8 @@ export class UserController {
 
   @Get()
   @ApiOperation({ summary: '사용자 본인의 상세 정보 조회' })
-  findOne(
-    @Param('id', ParseIntPipe) id: number,
-    @CurrentUser('id') userId: number,
-  ) {
-    return this.userService.findOne(id, userId);
+  findOne(@CurrentUser('id') userId: number) {
+    return this.userService.findOne(userId);
   }
 
   @Patch()
