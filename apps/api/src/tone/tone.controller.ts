@@ -1,29 +1,32 @@
-import { Controller, Get } from '@nestjs/common';
+import { Controller, Get, Type, UseGuards } from '@nestjs/common';
 import { ToneService } from './tone.service';
-import { ApiOperation } from '@nestjs/swagger';
-import { PersonalColor } from '@prisma/client';
+import { ApiBearerAuth, ApiOperation } from '@nestjs/swagger';
+import { JwtAuthGuard } from 'src/auth/guards/jwt-auth/jwt-auth.guard';
+import { CurrentUser } from 'src/common/current-user.decorator';
+import { type jwtPayloadType } from '@repo/common';
 
 @Controller('tone')
 export class ToneController {
   constructor(private readonly toneService: ToneService) {}
 
+  // 로그인 안 해도 조회 가능
   @Get()
-  @ApiOperation({ summary: '톤 별 베스트' })
-  async findAll() {
-    // 사용자 임시 데이터 (추후 auth 개발 후 수정)
-    const mockUser = {
-      id: 3,
-      email: 'user@email.com',
-      isAdmin: false,
-      tone: PersonalColor.COOL,
-    };
+  @ApiOperation({ summary: '전체 베스트 상품' })
+  findAll() {
+    return this.toneService.findAll();
+  }
 
-    const products = await this.toneService.findAll(mockUser?.tone);
+  @Get('me')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: '회원의 톤 별 베스트' })
+  async findTone(@CurrentUser() user: jwtPayloadType) {
+    console.log(user);
 
-    let title = '베스트 상품';
-    if (!mockUser.isAdmin && mockUser.tone) {
-      title = `${mockUser.tone} 상품 베스트`;
+    if (!user) {
+      throw new Error('유저 정보 없음');
     }
-    return { products, title };
+
+    return this.toneService.findAll(user.tone);
   }
 }

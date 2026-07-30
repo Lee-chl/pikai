@@ -3,10 +3,26 @@ import RankingItem from "./Ranking-item";
 import styles from "./Ranking.module.css";
 import { Constants } from "../../common/constants";
 import { ToneResponse } from "@/types/rankingType";
+import { cookies } from "next/headers";
 
 export default async function Ranking() {
-  const res = await fetch(`${Constants.back_url}/tone`);
+  const cookieStore = await cookies();
+  const token = cookieStore.get("accessToken")?.value;
+
+  const url = token
+    ? `${Constants.back_url}/tone/me`
+    : `${Constants.back_url}/tone`;
+
+  const res = await fetch(url, {
+    headers: token
+      ? {
+          Authorization: `Bearer ${token}`,
+        }
+      : {},
+    cache: "no-store",
+  });
   const tones: ToneResponse = await res.json();
+  console.log("tone 응답:", tones);
   return (
     <div className={styles.container}>
       <h2 className={styles.title}>{tones.title}</h2>
