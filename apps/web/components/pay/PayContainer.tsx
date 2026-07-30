@@ -3,18 +3,26 @@
 import { useState } from "react";
 import DeliveryInfo from "@/components/pay/DeliveryInfo";
 import PayItem from "@/components/pay/PayItem";
-import { DeliveryData, PayContainerProps } from "@/types/payType";
+import { DeliveryData } from "@/types/payType";
 import { Constants } from "@/common/constants";
 import styles from "./PayContainer.module.css";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
+import { Cart } from "@/types/cartType";
 
-export default function PayContainer({ data, params }: PayContainerProps) {
+interface Props {
+  data: Cart;
+}
+
+export default function PayContainer({ data }: Props) {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const isCartOrder = searchParams.get("isCartOrder") ?? true;
+  const selectedOnly = searchParams.get("selectedOnly") ?? false;
   const [delivery, setDelivery] = useState<DeliveryData>({
-    recipient: data.recipient,
-    phone_number: data.phone_number,
-    postal_code: data.postal_code,
-    delivery_info: data.delivery_info,
+    recipient: data.user.name,
+    phone_number: data.user.phone,
+    postal_code: data.user.postal_code,
+    delivery_info: data.user.address,
     delivery_inst: "",
   });
 
@@ -41,6 +49,10 @@ export default function PayContainer({ data, params }: PayContainerProps) {
       return;
     }
 
+    const cartItem = data.cartItems.map((item) => ({
+      detailColorId: item.detailColor.id,
+      quantity: item.quantity,
+    }));
     const response = await fetch(`${Constants.back_url}/pay`, {
       method: "POST",
       headers: {
@@ -49,8 +61,7 @@ export default function PayContainer({ data, params }: PayContainerProps) {
       body: JSON.stringify({
         payment,
         ...delivery,
-        items: data.items,
-        isCartOrder: params.isCartOrder === "true",
+        items: cartItem,
       }),
     });
 
@@ -67,14 +78,14 @@ export default function PayContainer({ data, params }: PayContainerProps) {
   return (
     <div className={styles.container}>
       <DeliveryInfo
-        recipient={data.recipient}
-        phone_number={data.phone_number}
-        postal_code={data.postal_code}
-        delivery_info={data.delivery_info}
+        recipient={delivery.recipient}
+        phone_number={delivery.phone_number}
+        postal_code={delivery.postal_code}
+        delivery_info={delivery.delivery_info}
         onChange={setDelivery}
       />
 
-      <PayItem items={data.items} />
+      <PayItem items={data} />
 
       <div className={styles.paymentBox}>
         <h3 className={styles.title}>결제 수단</h3>

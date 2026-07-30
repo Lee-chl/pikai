@@ -20,12 +20,7 @@ export interface DeliveryInfoProps extends DeliveryData {
   onChange: (data: DeliveryData) => void;
 }
 
-export interface PayResponse extends DeliveryData {
-  items: PayItemType[];
-}
-
 export interface PayContainerProps {
-  data: PayResponse;
   params: {
     isCartOrder?: string;
     detailColorId?: string;
@@ -35,8 +30,7 @@ export interface PayContainerProps {
 
 export interface PayProps {
   searchParams: Promise<{
-    isCartOrder?: string;
-    selectedOnly?: string;
-    buyItems?: string;
+    isCartOrder: boolean;
+    selectedOnly?: boolean;
   }>;
 }

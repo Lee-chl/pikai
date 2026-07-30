@@ -1,16 +1,16 @@
 import { Constants } from "@/common/constants";
-import { PayItemType } from "@/types/payType";
 import Image from "next/image";
 import styles from "./PayItem.module.css";
+import { Cart } from "@/types/cartType";
 
 interface PayItemProps {
-  items: PayItemType[];
+  items: Cart;
 }
 
 export default function PayItem({ items }: PayItemProps) {
   const imageUrl = `${Constants.image_url}/`;
 
-  if (!items || items.length === 0) {
+  if (!items || items.cartItems.length === 0) {
     return (
       <div className={styles.container}>
         <h2 className={styles.title}>주문 상품</h2>
@@ -19,27 +19,28 @@ export default function PayItem({ items }: PayItemProps) {
     );
   }
 
-  const totalPrice = items.reduce(
-    (sum, item) => sum + item.sale_price * item.quantity,
+  const totalPrice = items.cartItems.reduce(
+    (sum, item) => sum + Math.floor(item.price * 0.9) * item.quantity,
     0,
   );
   return (
     <div className={styles.container}>
       <h2 className={styles.title}>주문 상품</h2>
 
-      {items.map((item) => (
-        <div className={styles.card} key={item.detail_color_id}>
+      {items.cartItems.map((item) => (
+        <div className={styles.card} key={item.detailProduct.id}>
           <Image
-            src={`${imageUrl}${item.image}`}
-            alt={item.name}
+            src={`${imageUrl}${item.detailProduct.products.color_main_image}`}
+            alt={item.detailProduct.products.name}
             width={110}
             height={110}
             className={styles.image}
+            loading="eager"
           />
 
           <div className={styles.productName}>
-            <h3>{item.name}</h3>
-            <p>[{item.colorName}]</p>
+            <h3>{item.detailProduct.products.name}</h3>
+            <p>[{item.detailProduct.color_name}]</p>
           </div>
 
           <div className={styles.info}>
@@ -51,7 +52,10 @@ export default function PayItem({ items }: PayItemProps) {
             <div className={styles.row}>
               <span>구매가</span>
               <span>
-                {(item.sale_price * item.quantity).toLocaleString()}원
+                {(
+                  Math.floor(item.price * 0.9) * item.quantity
+                ).toLocaleString()}
+                원
               </span>
             </div>
           </div>

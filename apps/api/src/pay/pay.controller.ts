@@ -1,16 +1,23 @@
-import { Controller, Post, Body } from '@nestjs/common';
+import { Controller, Post, Body, UseGuards } from '@nestjs/common';
 import { PayService } from './pay.service';
 import { CreatePayDto } from './dto/create-pay.dto';
-import { ApiOperation } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOperation } from '@nestjs/swagger';
+import { JwtAuthGuard } from 'src/auth/guards/jwt-auth/jwt-auth.guard';
+import { CurrentUser } from 'src/common/current-user.decorator';
 
 @Controller('pay')
+@UseGuards(JwtAuthGuard)
+@ApiBearerAuth()
 export class PayController {
   constructor(private readonly payService: PayService) {}
 
   @Post()
   @ApiOperation({ summary: '결제' })
-  create(@Body() createPayDto: CreatePayDto) {
-    return this.payService.create(1, createPayDto);
+  create(
+    @Body() createPayDto: CreatePayDto,
+    @CurrentUser('id') userId: number,
+  ) {
+    return this.payService.create(userId, createPayDto);
   }
 
   @Post('page')
@@ -25,10 +32,10 @@ export class PayController {
         quantity: number;
       }[];
     },
+    @CurrentUser('id') userId: number,
   ) {
-    // 임시 회원 id, 추후 수정
     return this.payService.findOne(
-      1,
+      userId,
       body.isCartOrder,
       body.selectedOnly,
       body.buyItems,

@@ -8,7 +8,7 @@ interface DetailProduct {
   id: number;
   color_name: string;
   stock: number;
-  product: Product;
+  products: Product;
 }
 
 interface CartItem {
@@ -18,7 +18,7 @@ interface CartItem {
   is_selected: boolean;
   is_now: boolean;
   price: number;
-  detailProduct: DetailProduct[];
+  detailColor: DetailProduct;
 }
 
 interface User {
