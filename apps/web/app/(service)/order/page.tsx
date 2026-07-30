@@ -2,6 +2,7 @@ import { Constants } from "@/common/constants";
 import { OrderListType } from "@/types/OrderType";
 import styles from "./order.module.css";
 import OrderList from "@/components/order/OrderList";
+import { cookies } from "next/headers";
 
 export default async function Page({
   searchParams,
@@ -12,10 +13,19 @@ export default async function Page({
   let totalPage = 1;
   const currentPage = Number(page) || 1;
   let orderList: OrderListType[] = [];
+  const cookieStore = await cookies();
+  const token = cookieStore.get("accessToken")?.value;
 
   try {
     const response = await fetch(
       `${Constants.back_url}/order?page=${currentPage}`,
+      {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        cache: "no-store",
+      },
     );
     if (!response.ok) throw new Error(response.statusText);
     const orderJson = await response.json();

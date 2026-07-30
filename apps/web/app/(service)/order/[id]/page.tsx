@@ -4,6 +4,8 @@ import { OrderListType } from "@/types/OrderType";
 import styles from "./order-id.module.css";
 import OrderItemList from "@/components/order/Order-itemList";
 import Link from "next/link";
+import { redirect } from "next/navigation";
+import { cookies } from "next/headers";
 
 export default async function Page({
   params,
@@ -11,9 +13,22 @@ export default async function Page({
   params: Promise<{ id: string }>;
 }) {
   let orderList: OrderListType | null = null;
+  const cookieStore = await cookies();
+  const token = cookieStore.get("accessToken")?.value;
+
+  if (!token) {
+    redirect("/user/login");
+  }
+
   try {
     const { id } = await params;
-    const response = await fetch(`${Constants.back_url}/order/${id}`);
+    const response = await fetch(`${Constants.back_url}/order/${id}`, {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      cache: "no-store",
+    });
     if (!response.ok) {
       throw new Error(response.statusText);
     }
@@ -86,7 +101,7 @@ export default async function Page({
               <span>총 금액</span>
             </div>
             <div className={styles.paymentRow}>
-              <h4>{orderList.payment} 계좌이체로 진행</h4>
+              <h4>{orderList.payment}로 진행</h4>
               <h4>총 {totalPrice.toLocaleString("ko-KR")}원</h4>
             </div>
           </div>

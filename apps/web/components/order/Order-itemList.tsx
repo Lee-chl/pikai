@@ -6,6 +6,7 @@ import OrderItem from "@/components/order/Order-item";
 import { Constants } from "@/common/constants";
 import { useState } from "react";
 import styles from "./Order-itemList.module.css";
+import Cookies from "js-cookie";
 
 interface OrderItemListProps {
   orderList: OrderListType;
@@ -14,6 +15,7 @@ export default function OrderItemList({ orderList }: OrderItemListProps) {
   const [orderStatus, setOrderStatus] = useState<OrderStatus>(
     orderList.order_status,
   );
+  const token = Cookies.get("accessToken");
 
   const handleOrderStatusChange = async (orderState: OrderStatus) => {
     if (!orderState) {
@@ -33,6 +35,7 @@ export default function OrderItemList({ orderList }: OrderItemListProps) {
             method: "PATCH",
             headers: {
               "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
             },
             body: JSON.stringify({
               order_status: orderState,
