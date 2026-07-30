@@ -86,6 +86,7 @@ export default function LoginForm() {
 
       if (compRatingCount >= 1) {
         router.push(`/`);
+        router.refresh();
       } else {
         router.push(`/rating/add`);
       }
