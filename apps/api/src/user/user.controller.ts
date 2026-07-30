@@ -20,7 +20,7 @@ import { CurrentUser } from 'src/common/current-user.decorator';
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
-  @Get(':id')
+  @Get()
   @ApiOperation({ summary: '사용자 본인의 상세 정보 조회' })
   findOne(
     @Param('id', ParseIntPipe) id: number,
@@ -29,7 +29,7 @@ export class UserController {
     return this.userService.findOne(id, userId);
   }
 
-  @Patch(':id')
+  @Patch()
   @ApiOperation({
     summary: '사용자 본인의 정보 수정(주소,사용 여부,퍼스널 컬러 등)',
   })
