@@ -85,7 +85,7 @@ export default function LoginForm() {
       const compRatingCount = ratingCountData.ratingCount;
 
       if (compRatingCount >= 1) {
-        router.push(`${Constants.back_url}`);
+        router.push(`/`);
       } else {
         router.push(`/rating/add`);
       }
