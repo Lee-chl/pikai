@@ -7,7 +7,7 @@ import styles from "./PersonalColor.module.css";
 import { useRouter } from "next/navigation";
 import { jwtDecode } from "jwt-decode";
 import Cookies from "js-cookie";
-import { jwtPayloadType } from "@/types/JwtPayLoadType";
+import { jwtPayloadType } from "@repo/common";
 
 export default function PersonalColor() {
   const router = useRouter();

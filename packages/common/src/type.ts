@@ -1,4 +1,4 @@
-import { personalColorEnum } from "@repo/common";
+import { personalColorEnum } from "./enum";
 
 export interface jwtPayloadType {
   id: number;
