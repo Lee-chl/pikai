@@ -7,15 +7,20 @@ import {
   Param,
   Delete,
   ParseIntPipe,
+  UseGuards,
+  Req,
 } from '@nestjs/common';
 import { CartService } from './cart.service';
 import { CreateCartDto } from './dto/create-cart.dto';
-import { ApiOperation, ApiTags } from '@nestjs/swagger';
+import { ApiOperation, ApiTags, ApiBearerAuth } from '@nestjs/swagger';
 import { CreateCartitemDto } from './dto/create-cartitem.dto';
 import { UpdateCartitemDto } from './dto/update-cartitem.dto';
 import { UpdateCartitemSelectDto } from './dto/update-cartitemselect.dto';
+//import { JwtAuthGuard } from 'src/auth/guards/jwt-auth/jwt-auth.guard';
 
 @ApiTags('Cart')
+//@ApiBearerAuth()
+//@UseGuards(JwtAuthGuard)
 @Controller('cart')
 export class CartController {
   constructor(private readonly cartService: CartService) {}
@@ -31,14 +36,14 @@ export class CartController {
     return this.cartService.createCart(createCartDto);
   }
 
-  @ApiOperation({
-    summary: '모든 회원의 장바구니 조회 (관리자)',
-    description: '모든 장바구니를 조회합니다.',
-  })
-  @Get()
-  findAll() {
-    return this.cartService.findAll();
-  }
+  // @ApiOperation({
+  //   summary: '모든 회원의 장바구니 조회 (관리자)',
+  //   description: '모든 장바구니를 조회합니다.',
+  // })
+  // @Get()
+  // findAll() {
+  //   return this.cartService.findAll();
+  // }
 
   @Get('user/:userId')
   @ApiOperation({
