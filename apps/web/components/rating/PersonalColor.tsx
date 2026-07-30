@@ -125,7 +125,7 @@ export default function PersonalColor() {
             <button
               key={color}
               onClick={() => handleChangeTone(color)}
-              className={`${styles.colorItemBtn}  ${changeTone === color ? styles.activeTone : ""}`}
+              className={`${styles.colorItemBtn}  ${changeTone ? (changeTone === color ? styles.activeTone : "") : userTone === color ? styles.activeTone : ""}`}
             >
               {color}
             </button>
