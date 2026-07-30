@@ -16,7 +16,7 @@ export default async function Page({
   const cookieStore = await cookies();
   const token = cookieStore.get("accessToken")?.value;
   if (!token) {
-    redirect("/login");
+    redirect("/user/login");
   }
 
   // 비교 상품 count 가져오기

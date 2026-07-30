@@ -28,7 +28,7 @@ export default async function Page({
   const { page } = await searchParams;
 
   if (!token) {
-    redirect("/login");
+    redirect("/user/login");
   }
 
   const currentPage = Number(page) || 1;
