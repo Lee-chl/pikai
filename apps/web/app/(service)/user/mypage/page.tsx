@@ -2,16 +2,19 @@ import styles from "./page.module.css";
 import { Constants } from "@/common/constants";
 import { MirrorRound, ClipboardList, UserRoundCog } from "lucide-react";
 import Link from "next/link";
-import DeleteButton from "../../../../../components/mypage/deleteButton";
+import DeleteButton from "../../../../components/mypage/deleteButton";
+import { cookies } from "next/headers";
 
-export default async function Page({
-  params,
-}: {
-  params: Promise<{ id: number }>;
-}) {
-  const { id } = await params;
+export default async function Page() {
+  const cookieStore = await cookies();
+  const token = cookieStore.get("accessToken")?.value;
 
-  const response = await fetch(`${Constants.back_url}/user/${id}`);
+  const response = await fetch(`${Constants.back_url}/user`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+    cache: "no-store",
+  });
   const userInfo = await response.json();
 
   return (
@@ -23,24 +26,24 @@ export default async function Page({
           <p className={styles.userName}>
             <strong>{userInfo.name}</strong> 님
           </p>
-          <DeleteButton id={id} />
+          <DeleteButton id={userInfo.id} />
         </div>
 
         <div className={styles.divider}></div>
 
         <div className={styles.menuBox}>
-          <Link href={`/order?userId=${id}`} className={styles.menu}>
+          <Link href={`/order?userId=${userInfo.id}`} className={styles.menu}>
             <ClipboardList size={60} strokeWidth={1.8} />
             <span>주문내역</span>
           </Link>
 
-          <Link href={`/rating?userId=${id}`} className={styles.menu}>
+          <Link href={`/rating?userId=${userInfo.id}`} className={styles.menu}>
             <MirrorRound size={60} strokeWidth={1.8} />
             <span>나만의 온라인 화장대</span>
           </Link>
 
           <Link
-            href={`/user/mypage/${id}/change-address`}
+            href={`/user/mypage/${userInfo.id}/change-address`}
             className={styles.menu}
           >
             <UserRoundCog size={60} strokeWidth={1.8} />
