@@ -173,7 +173,7 @@ model User {
   is_admin       Boolean       @default(true)
   create_at      DateTime      @default(now())
   update_at      DateTime      @default(now())
-  carts          Cart[]
+  cart           Cart?
   ratings        Rating[]
   orders         Order[]
 }
