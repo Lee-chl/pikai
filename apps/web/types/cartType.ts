@@ -21,7 +21,15 @@ interface CartItem {
   detailProduct: DetailProduct[];
 }
 
+interface User {
+  name: string;
+  postal_code: string;
+  address: string;
+  phone: string;
+}
+
 export interface Cart {
   id: number;
   cartItems: CartItem[];
+  user: User;
 }
