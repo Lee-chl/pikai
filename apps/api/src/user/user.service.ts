@@ -25,17 +25,10 @@ export class UserService {
     return result;
   }
 
-  async update(
-    id: number,
-    updateUserDto: UpdateUserDto,
-    currentUserId: number,
-  ) {
-    // 유저 존재 확인
-    await this.findOne(id, currentUserId);
-
+  async update(updateUserDto: UpdateUserDto, currentUserId: number) {
     // 현재 회원 조회
     const currentUser = await this.prisma.user.findUnique({
-      where: { id },
+      where: { id: currentUserId },
     });
 
     if (!currentUser) {
@@ -52,13 +45,14 @@ export class UserService {
     const { current_password, ...data } = updateUserDto;
 
     const user = await this.prisma.user.update({
-      where: { id },
+      where: { id: currentUserId },
       data,
     });
     const { password, ...result } = user;
 
     return result;
   }
+
   async createUser(data: CreateUserDto) {
     return this.prisma.user.create({ data });
   }

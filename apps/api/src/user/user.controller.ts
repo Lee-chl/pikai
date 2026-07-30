@@ -5,35 +5,38 @@ import {
   Patch,
   Param,
   ParseIntPipe,
+  UseGuards,
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { PersonalColor } from '@prisma/client';
-import { ApiOperation } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { JwtAuthGuard } from 'src/auth/guards/jwt-auth/jwt-auth.guard';
+import { CurrentUser } from 'src/common/current-user.decorator';
 
 @Controller('user')
+@ApiTags('User')
+@UseGuards(JwtAuthGuard)
+@ApiBearerAuth()
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
-  // 가짜 유저 만들기 (유저 개발 전이므로)
-  private mockUser = {
-    id: 1,
-    email: 'user@email.com',
-    isAdmin: false,
-    tone: PersonalColor.WARM,
-  };
-
   @Get(':id')
   @ApiOperation({ summary: '사용자 본인의 상세 정보 조회' })
-  findOne(@Param('id', ParseIntPipe) id: number) {
-    return this.userService.findOne(id, this.mockUser.id);
+  findOne(
+    @Param('id', ParseIntPipe) id: number,
+    @CurrentUser('id') userId: number,
+  ) {
+    return this.userService.findOne(id, userId);
   }
 
   @Patch(':id')
   @ApiOperation({
     summary: '사용자 본인의 정보 수정(주소,사용 여부,퍼스널 컬러 등)',
   })
-  update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
-    return this.userService.update(+id, updateUserDto, this.mockUser.id);
+  update(
+    @Body() updateUserDto: UpdateUserDto,
+    @CurrentUser('id') userId: number,
+  ) {
+    return this.userService.update(updateUserDto, userId);
   }
 }
