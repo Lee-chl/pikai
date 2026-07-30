@@ -73,9 +73,10 @@ export class CartService {
   }
 
   /*  회원 ID로 장바구니 조회 */
-  async findCartByUserId(userId: number) {
+  async findCartByUserId(cartId: number, userId: number) {
     const cart = await this.prisma.cart.findUnique({
       where: {
+        id: cartId,
         userId,
       },
 
