@@ -9,6 +9,7 @@ import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateCartitemDto } from './dto/create-cartitem.dto';
 import { UpdateCartitemDto } from './dto/update-cartitem.dto';
 import { UpdateCartitemSelectDto } from './dto/update-cartitemselect.dto';
+import { QueryCartDto } from './dto/query-cart.dto';
 
 @Injectable()
 export class CartService {
@@ -73,10 +74,9 @@ export class CartService {
   }
 
   /*  회원 ID로 장바구니 조회 */
-  async findCartByUserId(cartId: number, userId: number) {
+  async findCartByUserId(query: QueryCartDto, userId: number) {
     const cart = await this.prisma.cart.findUnique({
       where: {
-        id: cartId,
         userId,
       },
 
@@ -98,6 +98,10 @@ export class CartService {
         },
 
         cartItems: {
+          where: {
+            is_selected: query.selectedOnly ? query.selectedOnly : false,
+            is_now: query.isCartOrder ? query.isCartOrder : false,
+          },
           include: {
             detailColor: {
               include: {

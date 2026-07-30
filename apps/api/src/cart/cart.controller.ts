@@ -9,6 +9,7 @@ import {
   ParseIntPipe,
   UseGuards,
   Req,
+  Query,
 } from '@nestjs/common';
 import { CartService } from './cart.service';
 import { CreateCartDto } from './dto/create-cart.dto';
@@ -17,6 +18,7 @@ import { CreateCartitemDto } from './dto/create-cartitem.dto';
 import { UpdateCartitemDto } from './dto/update-cartitem.dto';
 import { UpdateCartitemSelectDto } from './dto/update-cartitemselect.dto';
 import { PersonalColor } from '@prisma/client';
+import { QueryCartDto } from './dto/query-cart.dto';
 //import { JwtAuthGuard } from 'src/auth/guards/jwt-auth/jwt-auth.guard';
 
 @ApiTags('Cart')
@@ -52,14 +54,13 @@ export class CartController {
   //   return this.cartService.findAll();
   // }
 
-  @Get(':id')
+  @Get()
   @ApiOperation({
     summary: '회원 장바구니 조회',
-    description:
-      '회원 ID와 카트ID를 이용해 장바구니와 장바구니 상품을 조회합니다.',
+    description: '회원 ID를 이용해 장바구니와 장바구니 상품을 조회합니다.',
   })
-  findCartByUserId(@Param('id', ParseIntPipe) id: number) {
-    return this.cartService.findCartByUserId(id, this.mockUser.id);
+  findCartByUserId(@Query() query: QueryCartDto) {
+    return this.cartService.findCartByUserId(query, this.mockUser.id);
   }
 
   // CartItem
