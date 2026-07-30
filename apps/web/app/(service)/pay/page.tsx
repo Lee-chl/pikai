@@ -39,9 +39,6 @@ export default async function Page({ searchParams }: PayProps) {
   } catch (err) {
     console.error(err);
   }
-
-  console.log(cartData);
-
   if (!cartData) {
     redirect("/");
   }

@@ -28,10 +28,10 @@ export default function PayItem({ items }: PayItemProps) {
       <h2 className={styles.title}>주문 상품</h2>
 
       {items.cartItems.map((item) => (
-        <div className={styles.card} key={item.detailProduct.id}>
+        <div className={styles.card} key={item.detailColor.id}>
           <Image
-            src={`${imageUrl}${item.detailProduct.products.color_main_image}`}
-            alt={item.detailProduct.products.name}
+            src={`${imageUrl}${item.detailColor.products.color_main_image}`}
+            alt={item.detailColor.products.name}
             width={110}
             height={110}
             className={styles.image}
@@ -39,8 +39,8 @@ export default function PayItem({ items }: PayItemProps) {
           />
 
           <div className={styles.productName}>
-            <h3>{item.detailProduct.products.name}</h3>
-            <p>[{item.detailProduct.color_name}]</p>
+            <h3>{item.detailColor.products.name}</h3>
+            <p>[{item.detailColor.color_name}]</p>
           </div>
 
           <div className={styles.info}>
