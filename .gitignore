@@ -154,5 +154,7 @@ dist
 # Azure Local Emulator & Extensions
 AzuriteConfig*
 **/__azurite_db_table__.json
+**/__azurite_db_blob__.json
+**/__azurite_db_blob_extent__.json
 azurite/
 *.db

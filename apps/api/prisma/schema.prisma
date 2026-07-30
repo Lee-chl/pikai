@@ -101,6 +101,7 @@ model CartItem {
   quantity        Int           @default(1)
   price           Int
   is_selected     Boolean       @default(true)
+  is_now          Boolean       @default(false)
 
   @@unique([cart_id, detail_color_id])
 }
