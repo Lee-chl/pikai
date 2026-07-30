@@ -99,8 +99,9 @@ export class CartService {
 
         cartItems: {
           where: {
-            is_selected: query.selectedOnly ? query.selectedOnly : false,
-            is_now: query.isCartOrder ? query.isCartOrder : false,
+            is_selected: query.selectedOnly ?? false,
+            is_now:
+              query.isCartOrder !== undefined ? !query.isCartOrder : false,
           },
           include: {
             detailColor: {
