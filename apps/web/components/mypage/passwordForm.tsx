@@ -10,6 +10,16 @@ export default function PasswordForm({ id }: { id: number }) {
   const [confirmPassword, setConfirmPassword] = useState("");
 
   const handleSave = async () => {
+    const token = document.cookie
+      .split("; ")
+      .find((row) => row.startsWith("accessToken="))
+      ?.split("=")[1];
+
+    if (!token) {
+      alert("로그인이 필요합니다.");
+      return;
+    }
+
     if (!currentPassword.trim()) {
       alert("현재 비밀번호를 입력해주세요.");
       return;
@@ -35,26 +45,31 @@ export default function PasswordForm({ id }: { id: number }) {
       return;
     }
 
-    const response = await fetch(`${Constants.back_url}/user/${id}`, {
-      method: "PATCH",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        current_password: currentPassword.trim(),
-        password: newPassword.trim(),
-      }),
-    });
+    try {
+      const response = await fetch(`${Constants.back_url}/user`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          current_password: currentPassword.trim(),
+          password: newPassword.trim(),
+        }),
+      });
 
-    const result = await response.json();
+      const result = await response.json();
 
-    if (!response.ok) {
-      alert(result.message);
-      return;
+      if (!response.ok) {
+        alert(result.message);
+        return;
+      }
+
+      alert("비밀번호가 변경되었습니다.");
+      window.location.reload();
+    } catch (err) {
+      console.error(err);
     }
-
-    alert("비밀번호가 변경되었습니다.");
-    window.location.reload();
   };
 
   return (

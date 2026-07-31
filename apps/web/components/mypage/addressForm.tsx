@@ -1,17 +1,11 @@
 "use client";
 
 import { Constants } from "@/common/constants";
-import { UserInfoType } from "@/types/userType";
 import { useState } from "react";
 import { Address, useKakaoPostcodePopup } from "react-daum-postcode";
 import styles from "./addressForm.module.css";
-import { useRouter } from "next/navigation";
 
-export default function AddressForm({
-  id,
-  postal_code,
-  address,
-}: UserInfoType) {
+export default function AddressForm() {
   const scriptUrl =
     "//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js";
 
@@ -35,22 +29,54 @@ export default function AddressForm({
   const handleSave = async () => {
     const address = `${newAddress} ${detailAddress}`;
 
-    const response = await fetch(`${Constants.back_url}/user/${id}`, {
-      method: "PATCH",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        postal_code: newPostalCode,
-        address: address,
-      }),
-    });
+    if (!newPostalCode.trim()) {
+      alert("주소를 선택해주세요.");
+      return;
+    }
 
-    if (response.ok) {
-      alert("주소가 수정되었습니다.");
-      window.location.reload();
-    } else {
-      alert("주소 수정에 실패했습니다.");
+    if (!newAddress.trim()) {
+      alert("주소를 선택해주세요.");
+      return;
+    }
+
+    if (!detailAddress.trim()) {
+      alert("상세주소를 입력해주세요.");
+      return;
+    }
+
+    const token = document.cookie
+      .split("; ")
+      .find((row) => row.startsWith("accessToken="))
+      ?.split("=")[1];
+
+    if (!token) {
+      alert("로그인이 필요합니다.");
+      return;
+    }
+
+    if (token) {
+      try {
+        const response = await fetch(`${Constants.back_url}/user`, {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({
+            postal_code: newPostalCode,
+            address: address,
+          }),
+        });
+
+        if (response.ok) {
+          alert("주소가 수정되었습니다.");
+          window.location.reload();
+        } else {
+          alert("주소 수정에 실패했습니다.");
+        }
+      } catch (err) {
+        console.error(err);
+      }
     }
   };
 

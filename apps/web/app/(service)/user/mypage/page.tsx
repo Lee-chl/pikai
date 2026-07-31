@@ -4,18 +4,31 @@ import { MirrorRound, ClipboardList, UserRoundCog } from "lucide-react";
 import Link from "next/link";
 import DeleteButton from "../../../../components/mypage/deleteButton";
 import { cookies } from "next/headers";
+import { redirect } from "next/navigation";
 
 export default async function Page() {
   const cookieStore = await cookies();
   const token = cookieStore.get("accessToken")?.value;
 
-  const response = await fetch(`${Constants.back_url}/user`, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-    cache: "no-store",
-  });
-  const userInfo = await response.json();
+  let user = null;
+
+  if (!token) {
+    redirect("/user/login");
+  }
+
+  if (token) {
+    try {
+      const response = await fetch(`${Constants.back_url}/user`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        cache: "no-store",
+      });
+      user = await response.json();
+    } catch (err) {
+      console.error(err);
+    }
+  }
 
   return (
     <div className={styles.container}>
@@ -24,28 +37,25 @@ export default async function Page() {
       <div className={styles.myPageBox}>
         <div className={styles.profile}>
           <p className={styles.userName}>
-            <strong>{userInfo.name}</strong> 님
+            <strong>{user.name}</strong> 님
           </p>
-          <DeleteButton id={userInfo.id} />
+          <DeleteButton id={user.id} />
         </div>
 
         <div className={styles.divider}></div>
 
         <div className={styles.menuBox}>
-          <Link href={`/order?userId=${userInfo.id}`} className={styles.menu}>
+          <Link href={`/order`} className={styles.menu}>
             <ClipboardList size={60} strokeWidth={1.8} />
             <span>주문내역</span>
           </Link>
 
-          <Link href={`/rating?userId=${userInfo.id}`} className={styles.menu}>
+          <Link href={`/rating`} className={styles.menu}>
             <MirrorRound size={60} strokeWidth={1.8} />
             <span>나만의 온라인 화장대</span>
           </Link>
 
-          <Link
-            href={`/user/mypage/${userInfo.id}/change-address`}
-            className={styles.menu}
-          >
+          <Link href={`/user/mypage/change-address`} className={styles.menu}>
             <UserRoundCog size={60} strokeWidth={1.8} />
             <span>회원 정보 수정</span>
           </Link>

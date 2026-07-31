@@ -1,16 +1,33 @@
 import { Constants } from "@/common/constants";
 import React from "react";
-import AddressForm from "../../../../../../../components/mypage/addressForm";
+import AddressForm from "../../../../../../components/mypage/addressForm";
 import styles from "./page.module.css";
+import { cookies } from "next/headers";
 
-export default async function Page({
-  params,
-}: {
-  params: Promise<{ id: number }>;
-}) {
-  const { id } = await params;
-  const response = await fetch(`${Constants.back_url}/user/${id}`);
-  const user = await response.json();
+export default async function Page() {
+  const cookieStore = await cookies();
+  const token = cookieStore.get("accessToken")?.value;
+
+  let user = null;
+
+  if (token) {
+    try {
+      const response = await fetch(`${Constants.back_url}/user`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        cache: "no-store",
+      });
+
+      if (!response.ok) throw new Error(response.statusText);
+
+      if (response.ok) {
+        user = await response.json();
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  }
   return (
     <div className={styles.container}>
       <h2 className={styles.title}>주소 변경</h2>
@@ -31,11 +48,7 @@ export default async function Page({
         </div>
       </div>
 
-      <AddressForm
-        id={id}
-        postal_code={user.postal_code}
-        address={user.address}
-      />
+      <AddressForm />
     </div>
   );
 }

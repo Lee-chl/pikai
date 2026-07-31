@@ -5,7 +5,7 @@ import { useState } from "react";
 import { ChevronDown, ChevronRight } from "lucide-react";
 import styles from "./side-bar.module.css";
 
-export default function SideBar({ id }: { id: number }) {
+export default function SideBar() {
   const [open, setOpen] = useState(true);
   return (
     <div className={styles.sidebar}>
@@ -17,17 +17,11 @@ export default function SideBar({ id }: { id: number }) {
 
       {open && (
         <div className={styles.menu}>
-          <Link
-            href={`/user/mypage/${id}/change-address`}
-            className={styles.link}
-          >
+          <Link href={`/user/mypage/change-address`} className={styles.link}>
             주소 변경
           </Link>
 
-          <Link
-            href={`/user/mypage/${id}/change-password`}
-            className={styles.link}
-          >
+          <Link href={`/user/mypage/change-password`} className={styles.link}>
             비밀번호 변경
           </Link>
         </div>
