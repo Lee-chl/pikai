@@ -22,7 +22,6 @@ export default async function Ranking() {
     cache: "no-store",
   });
   const tones: ToneResponse = await res.json();
-  console.log("tone 응답:", tones);
   return (
     <div className={styles.container}>
       <h2 className={styles.title}>{tones.title}</h2>
