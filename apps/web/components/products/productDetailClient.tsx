@@ -1,6 +1,7 @@
 "use client";
 import AIRecommendPopup from "./aiRecommendpopup";
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import type {
   DetailColorType,
   ProductDetailType,
@@ -20,8 +21,14 @@ interface SelectedOptionType {
 export default function ProductDetailClient({
   product,
 }: ProductDetailClientProps) {
-  // AI 추천 결과 저장
+  // 페이지 이동에 사용하는 Next.js 라우터
+  const router = useRouter();
 
+  // 현재 로그인 기능이 꺼져 있으므로 임시 회원 ID 1을 사용합니다.
+  // 나중에 JWT 로그인을 연결하면 로그인한 사용자의 ID로 변경해야 합니다.
+  const userId = 1;
+
+  // AI 추천 결과 저장
   const [recommendation, setRecommendation] =
     useState<RecommendationResponseType | null>(null);
 
@@ -32,6 +39,10 @@ export default function ProductDetailClient({
   const [isAiLoading, setIsAiLoading] = useState(false);
   //오류 메시지를 저장할 state를 추가
   const [aiError, setAiError] = useState<string | null>(null);
+
+  // 장바구니 API 요청 중인지 저장
+  // true이면 장바구니 버튼을 잠시 비활성화합니다.
+  const [isCartLoading, setIsCartLoading] = useState(false);
 
   // 기존 useEffect
   // 기존 함수들
@@ -231,20 +242,67 @@ export default function ProductDetailClient({
     0,
   );
 
+  //===========================================================
+
   //==================================================
-  //장바구니함수
+  // 회원 ID를 이용해서 해당 회원의 장바구니 ID를 가져오는 함수
+  const getCartId = async (userId: number): Promise<number> => {
+    // 회원 ID로 장바구니 조회 API를 호출합니다.
+    const response = await fetch(
+      `${process.env.NEXT_PUBLIC_BACK_URL}/cart/user/${userId}`,
+      {
+        method: "GET",
+
+        // 항상 최신 장바구니 정보를 가져옵니다.
+        cache: "no-store",
+      },
+    );
+
+    // 백엔드에서 404, 500 등의 오류가 발생한 경우
+    if (!response.ok) {
+      // 백엔드 오류 메시지를 읽습니다.
+      const errorData = await response.json().catch(() => null);
+
+      throw new Error(
+        errorData?.message ?? "회원의 장바구니를 불러오지 못했습니다.",
+      );
+    }
+
+    // 백엔드가 반환한 장바구니 데이터를 JSON으로 변환합니다.
+    const cart = await response.json();
+
+    console.log("조회한 장바구니 데이터:", cart);
+
+    // 응답에 장바구니 ID가 없는 경우
+    if (!cart.id) {
+      throw new Error("장바구니 ID를 확인할 수 없습니다.");
+    }
+
+    // 장바구니 ID만 반환합니다.
+    return cart.id;
+  };
+  //==================================================
+  // 장바구니 버튼을 눌렀을 때 실행되는 함수
   const handleAddCart = async () => {
+    // 이미 API 요청 중이면 다시 실행하지 않습니다.
+    if (isCartLoading) {
+      return;
+    }
+
     // 옵션을 선택하지 않은 경우
     if (selectedOptions.length === 0) {
       alert("옵션을 하나 이상 선택해 주세요.");
       return;
     }
 
+    // 현재 AI 추천은 옵션 1개만 선택했을 때 실행합니다.
     if (selectedOptions.length > 1) {
       alert("1개의 상품을 담았을 때만 AI 색상 추천을 합니다.");
       return;
     }
-    // 재고가 없거나 선택 수량이 재고보다 많은지 확인
+
+    // 선택한 옵션 중 재고가 없거나
+    // 선택 수량이 재고보다 많은 옵션이 있는지 확인합니다.
     const hasInvalidStock = selectedOptions.some(
       (option) =>
         option.color.stock === 0 || option.quantity > option.color.stock,
@@ -255,43 +313,90 @@ export default function ProductDetailClient({
       return;
     }
 
-    try {
-      // 현재 단계에서는 첫 번째로 선택한 색상을 기준으로
-      // AI 추천 API를 호출합니다.
-      const selectedColor = selectedOptions[0];
+    // 현재는 옵션을 1개만 선택할 수 있으므로
+    // selectedOptions 배열의 첫 번째 값을 가져옵니다.
+    const selectedOption = selectedOptions[0];
 
-      // 선택한 옵션이 없는 경우 안전하게 종료
-      if (!selectedColor) {
-        alert("선택된 색상 옵션을 찾을 수 없습니다.");
-        return;
-      }
-      // true: AI 분석 중임 =>AI 분석 시작
+    if (!selectedOption) {
+      alert("선택된 색상 옵션을 찾을 수 없습니다.");
+      return;
+    }
+
+    try {
+      // 장바구니 API 요청 시작
+      setIsCartLoading(true);
+
+      // AI 추천 요청을 시작합니다.
       setIsAiLoading(true);
       setAiError(null);
-      setIsOpen(true); //팝업 열림 --> "AI 분석 중입니다"
-      //=======================================
-      // AI 요청 시작전
-      const result = await fetchRecommendation(selectedColor.color.id);
-      //=====================
-      // AI 추천 결과를 state에 저장
-      setRecommendation(result);
-      // AI 추천 팝업 열기
-      //setIsOpen(true);
+      setIsOpen(true);
 
-      // 기존 장바구니 데이터(다음 단계에서 실제 API 연결 예정)
-      const cartData = selectedOptions.map((option) => ({
-        productId: product.id,
-        detailColorId: option.color.id,
-        quantity: option.quantity,
-      }));
+      const recommendationResult = await fetchRecommendation(
+        selectedOption.color.id,
+      );
 
-      console.log("장바구니 데이터:", cartData);
+      // AI 추천 결과를 팝업에 저장합니다.
+      setRecommendation(recommendationResult);
+
+      // 회원의 장바구니를 조회하여 cart.id를 가져옵니다.
+      const cartId = await getCartId(userId);
+
+      console.log("가져온 장바구니 ID:", cartId);
+
+      // 백엔드 CreateCartitemDto 형식에 맞춘 요청 데이터입니다.
+      const cartItemData = {
+        cart_id: cartId,
+        detail_color_id: selectedOption.color.id,
+        quantity: selectedOption.quantity,
+      };
+
+      console.log("장바구니에 보낼 데이터:", cartItemData);
+
+      // 실제 장바구니 상품 추가 API를 호출합니다.
+      const cartResponse = await fetch(
+        `${process.env.NEXT_PUBLIC_BACK_URL}/cart/items`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(cartItemData),
+        },
+      );
+
+      // 백엔드가 400, 404, 500 등의 오류를 반환한 경우
+      if (!cartResponse.ok) {
+        const errorData = await cartResponse.json().catch(() => null);
+
+        throw new Error(
+          errorData?.message ?? "장바구니에 상품을 담지 못했습니다.",
+        );
+      }
+
+      // 생성 또는 수량 증가된 CartItem 데이터
+      const addedCartItem = await cartResponse.json();
+
+      console.log("장바구니 추가 결과:", addedCartItem);
+
+      alert("상품을 장바구니에 담았습니다.");
+
+      // 장바구니 페이지로 이동합니다.
+      router.push("/cart");
     } catch (error) {
-      console.error("AI 추천 오류:", error);
-      setAiError("AI 추천 결과를 불러오지 못했습니다.");
+      console.error("장바구니 추가 오류:", error);
+
+      // error가 Error 객체인지 확인한 뒤 메시지를 보여줍니다.
+      if (error instanceof Error) {
+        alert(error.message);
+      } else {
+        alert("장바구니 처리 중 오류가 발생했습니다.");
+      }
+
+      setAiError("AI 추천 또는 장바구니 처리에 실패했습니다.");
     } finally {
-      //AI 요청 성공 ==> isAiLoading을 false로 변경 & //AI 요청 실패 ==> 그래도 isAiLoading을 false로 변경
-      setIsAiLoading(false); //"AI 분석은 끝났다."
+      // 성공하거나 실패해도 로딩 상태를 종료합니다.
+      setIsAiLoading(false);
+      setIsCartLoading(false);
     }
   };
 
@@ -347,6 +452,14 @@ export default function ProductDetailClient({
       }));
 
       console.log("바로 구매 데이터:", orderData);
+
+      // 바로구매 상품 배열을 JSON 문자열로 변환합니다.
+      const buyItems = encodeURIComponent(JSON.stringify(orderData));
+
+      // 장바구니 주문이 아닌 바로구매 주문으로 결제 페이지에 이동합니다.
+      router.push(
+        `/pay?isCartOrder=false&selectedOnly=false&buyItems=${buyItems}`,
+      );
     } catch (error) {
       console.error("AI 추천 오류:", error);
       setAiError("AI 추천 결과를 불러오지 못했습니다.");
@@ -662,10 +775,12 @@ export default function ProductDetailClient({
               <button
                 type="button"
                 onClick={handleAddCart}
-                disabled={selectedOptions.length === 0}
+                // 옵션이 없거나 장바구니 요청 중이면 버튼을 누를 수 없습니다.
+                disabled={selectedOptions.length === 0 || isCartLoading}
                 className={styles.cartButton}
               >
-                장바구니
+                {/* 장바구니 요청 중에는 처리 상태를 표시합니다. */}
+                {isCartLoading ? "담는 중..." : "장바구니"}
               </button>
 
               <button
