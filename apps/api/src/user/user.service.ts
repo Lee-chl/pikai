@@ -4,9 +4,9 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { checkPermissionId } from '../common/check-permission';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateUserDto } from './dto/create-user.dto';
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class UserService {
@@ -37,12 +37,21 @@ export class UserService {
 
     // 비밀번호 변경하는 경우 기존 비밀번호 일치 확인
     if (updateUserDto.current_password && updateUserDto.password) {
-      if (updateUserDto.current_password !== currentUser.password) {
+      const isMatch = await bcrypt.compare(
+        updateUserDto.current_password,
+        currentUser.password,
+      );
+
+      if (!isMatch) {
         throw new BadRequestException('현재 비밀번호가 일치하지 않습니다.');
       }
     }
 
     const { current_password, ...data } = updateUserDto;
+
+    if (data.password) {
+      data.password = await bcrypt.hash(data.password, 10);
+    }
 
     const user = await this.prisma.user.update({
       where: { id: currentUserId },
