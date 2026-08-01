@@ -8,6 +8,8 @@ import type {
 } from "@/types/productDetailType";
 import styles from "./product-detail.module.css";
 import { RecommendationResponseType } from "@/types/recommendationType";
+// 로그인할 때 저장된 JWT 토큰을 쿠키에서 읽기 위해 사용합니다.
+import Cookies from "js-cookie";
 
 interface ProductDetailClientProps {
   product: ProductDetailType;
@@ -247,16 +249,18 @@ export default function ProductDetailClient({
   //==================================================
   // 회원 ID를 이용해서 해당 회원의 장바구니 ID를 가져오는 함수
   const getCartId = async (userId: number): Promise<number> => {
+    // 로그인할 때 쿠키에 저장한 JWT 토큰을 가져옵니다.
+    const token = Cookies.get("accessToken");
     // 회원 ID로 장바구니 조회 API를 호출합니다.
-    const response = await fetch(
-      `${process.env.NEXT_PUBLIC_BACK_URL}/cart/user/${userId}`,
-      {
-        method: "GET",
+    const response = await fetch(`${process.env.NEXT_PUBLIC_BACK_URL}/cart`, {
+      method: "GET",
+      cache: "no-store",
 
-        // 항상 최신 장바구니 정보를 가져옵니다.
-        cache: "no-store",
+      // JWT 인증이 필요한 API이므로 토큰을 함께 보냅니다.
+      headers: {
+        Authorization: `Bearer ${token}`,
       },
-    );
+    });
 
     // 백엔드에서 404, 500 등의 오류가 발생한 경우
     if (!response.ok) {
@@ -323,6 +327,8 @@ export default function ProductDetailClient({
     }
 
     try {
+      // 로그인할 때 쿠키에 저장한 JWT 토큰을 가져옵니다.
+      const token = Cookies.get("accessToken");
       // 장바구니 API 요청 시작
       setIsCartLoading(true);
 
@@ -359,6 +365,8 @@ export default function ProductDetailClient({
           method: "POST",
           headers: {
             "Content-Type": "application/json",
+            // 장바구니 상품 추가 API도 JWT 인증이 필요하므로 토큰을 보냅니다.
+            Authorization: `Bearer ${token}`,
           },
           body: JSON.stringify(cartItemData),
         },
