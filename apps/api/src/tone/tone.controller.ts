@@ -21,8 +21,6 @@ export class ToneController {
   @ApiBearerAuth()
   @ApiOperation({ summary: '회원의 톤 별 베스트' })
   async findTone(@CurrentUser() user: jwtPayloadType) {
-    console.log(user);
-
     if (!user) {
       throw new Error('유저 정보 없음');
     }
