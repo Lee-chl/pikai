@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import styles from "./page.module.css";
 import { Cart } from "@/types/cartType";
+import Cookies from "js-cookie";
 
 // 장바구니 페이지
 export default function CartPage() {
@@ -38,12 +39,16 @@ export default function CartPage() {
   // 장바구니 상품 수량 변경
   const updateQuantity = async (cartItemId: number, quantity: number) => {
     try {
+      // 로그인할 때 쿠키에 저장한 JWT 토큰을 가져옵니다.
+      const token = Cookies.get("accessToken");
+
       const response = await fetch(
         `${process.env.NEXT_PUBLIC_BACK_URL}/cart/items/${cartItemId}`,
         {
           method: "PATCH",
           headers: {
             "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
           },
           body: JSON.stringify({
             quantity,
@@ -55,9 +60,17 @@ export default function CartPage() {
         throw new Error("수량 변경 실패");
       }
 
-      // 변경된 장바구니 다시 조회
+      // 수량 변경 후 현재 장바구니 상품을 다시 조회합니다.
       const cartResponse = await fetch(
-        `${process.env.NEXT_PUBLIC_BACK_URL}/cart/user/1`,
+        `${process.env.NEXT_PUBLIC_BACK_URL}/cart?isCartOrder=true&selectedOnly=true`,
+        {
+          method: "GET",
+
+          // JWT 인증이 적용된 CartController를 호출하므로 토큰을 보냅니다.
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        },
       );
 
       const cartData = await cartResponse.json();
@@ -71,10 +84,15 @@ export default function CartPage() {
   // 장바구니 상품 삭제
   const deleteCartItem = async (cartItemId: number) => {
     try {
+      // 로그인할 때 쿠키에 저장한 JWT 토큰을 가져옵니다.
+      const token = Cookies.get("accessToken");
       const response = await fetch(
         `${process.env.NEXT_PUBLIC_BACK_URL}/cart/items/${cartItemId}`,
         {
           method: "DELETE",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
         },
       );
 
@@ -82,10 +100,21 @@ export default function CartPage() {
         throw new Error("장바구니 상품 삭제 실패");
       }
 
-      // 삭제 후 장바구니 다시 조회
+      // 삭제 후 로그인 회원의 장바구니를 다시 조회합니다.
       const cartResponse = await fetch(
-        `${process.env.NEXT_PUBLIC_BACK_URL}/cart/user/1`,
+        `${process.env.NEXT_PUBLIC_BACK_URL}/cart?isCartOrder=true&selectedOnly=true`,
+        {
+          method: "GET",
+
+          // CartController에 JWT 인증이 적용되어 있으므로 토큰을 보냅니다.
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        },
       );
+      if (!cartResponse.ok) {
+        throw new Error("삭제 후 장바구니를 다시 불러오지 못했습니다.");
+      }
 
       const cartData = await cartResponse.json();
 
@@ -112,6 +141,8 @@ export default function CartPage() {
 
   const updateSelectedItems = async () => {
     try {
+      // 로그인할 때 쿠키에 저장한 JWT 토큰을 가져옵니다.
+      const token = Cookies.get("accessToken");
       // 1. 모든 상품 선택 해제
       await Promise.all(
         cartItems.map((item) =>
@@ -122,6 +153,8 @@ export default function CartPage() {
               credentials: "include",
               headers: {
                 "Content-Type": "application/json",
+                // 선택 상태 수정 API도 JWT 인증이 필요하므로 토큰을 보냅니다.
+                Authorization: `Bearer ${token}`,
               },
               body: JSON.stringify({
                 is_selected: false,
@@ -141,6 +174,8 @@ export default function CartPage() {
               credentials: "include",
               headers: {
                 "Content-Type": "application/json",
+                // 선택한 상품을 다시 true로 바꿀 때도 JWT 토큰을 보냅니다.
+                Authorization: `Bearer ${token}`,
               },
               body: JSON.stringify({
                 is_selected: true,
@@ -182,20 +217,24 @@ export default function CartPage() {
       try {
         setLoading(true);
         setError("");
+        // 로그인 시 저장한 JWT 토큰을 쿠키에서 가져옵니다.
+        const token = Cookies.get("accessToken");
 
         // 현재는 테스트용 회원 ID 1
         const response = await fetch(
-          `${process.env.NEXT_PUBLIC_BACK_URL}/cart/user/1`,
+          `${process.env.NEXT_PUBLIC_BACK_URL}/cart?isCartOrder=true&selectedOnly=true`,
+          {
+            method: "GET",
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          },
         );
-
         if (!response.ok) {
           throw new Error("장바구니를 불러오지 못했습니다.");
         }
 
         const data = await response.json();
-
-        console.log("장바구니 전체 데이터:", data);
-        console.log("장바구니 상품:", data.cartItems);
 
         setCart(data);
       } catch (error) {
