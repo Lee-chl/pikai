@@ -17,25 +17,18 @@ import { ApiOperation, ApiTags, ApiBearerAuth } from '@nestjs/swagger';
 import { CreateCartitemDto } from './dto/create-cartitem.dto';
 import { UpdateCartitemDto } from './dto/update-cartitem.dto';
 import { UpdateCartitemSelectDto } from './dto/update-cartitemselect.dto';
-import { PersonalColor } from '@prisma/client';
 import { QueryCartDto } from './dto/query-cart.dto';
-//import { JwtAuthGuard } from 'src/auth/guards/jwt-auth/jwt-auth.guard';
+import { JwtAuthGuard } from 'src/auth/guards/jwt-auth/jwt-auth.guard';
+import { CurrentUser } from 'src/common/current-user.decorator';
 
 @ApiTags('Cart')
-//@ApiBearerAuth()
-//@UseGuards(JwtAuthGuard)
+@ApiBearerAuth()
+@UseGuards(JwtAuthGuard)
 @Controller('cart')
 export class CartController {
   constructor(private readonly cartService: CartService) {}
-  mockUser = {
-    id: 1,
-    email: 'user1@email.com',
-    isAdmin: false,
-    tone: PersonalColor.COOL,
-  };
 
   // Cart
-
   @Post()
   @ApiOperation({
     summary: '장바구니 생성',
@@ -59,8 +52,11 @@ export class CartController {
     summary: '회원 장바구니 조회',
     description: '회원 ID를 이용해 장바구니와 장바구니 상품을 조회합니다.',
   })
-  findCartByUserId(@Query() query: QueryCartDto) {
-    return this.cartService.findCartByUserId(query, this.mockUser.id);
+  findCartByUserId(
+    @Query() query: QueryCartDto,
+    @CurrentUser('id') userId: number,
+  ) {
+    return this.cartService.findCartByUserId(query, userId);
   }
 
   // CartItem
