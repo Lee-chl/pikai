@@ -28,7 +28,7 @@ export default function ProductDetailClient({
 
   // 현재 로그인 기능이 꺼져 있으므로 임시 회원 ID 1을 사용합니다.
   // 나중에 JWT 로그인을 연결하면 로그인한 사용자의 ID로 변경해야 합니다.
-  const userId = 1;
+  //  const userId = 1;
 
   // AI 추천 결과 저장
   const [recommendation, setRecommendation] =
@@ -45,9 +45,6 @@ export default function ProductDetailClient({
   // 장바구니 API 요청 중인지 저장
   // true이면 장바구니 버튼을 잠시 비활성화합니다.
   const [isCartLoading, setIsCartLoading] = useState(false);
-
-  // 기존 useEffect
-  // 기존 함수들
 
   const [isOptionOpen, setIsOptionOpen] = useState(false);
 
@@ -75,19 +72,12 @@ export default function ProductDetailClient({
     );
 
     if (!response.ok) {
-      const errorMessage = await response.text();
-
-      console.error("AI 추천 API 오류:", errorMessage);
-
       throw new Error("AI 추천 API 호출에 실패했습니다.");
     }
 
     const data = await response.json();
 
-    console.log("AI 추천 API 원본 응답:", data);
-
-    // 백엔드 응답이 data 안에 들어오는 경우도 처리
-    // 백엔드 응답 처리
+    // 백엔드 응답 형태에 맞게 추천 결과를 추출합니다.
     const recommendationData =
       data.aiResult ?? data.data ?? data.recommendation ?? data;
 
@@ -147,8 +137,6 @@ export default function ProductDetailClient({
 
     return result;
   };
-
-  //=====
 
   const getImageUrl = (image: string) => {
     if (image.startsWith("http://") || image.startsWith("https://")) {
@@ -244,11 +232,10 @@ export default function ProductDetailClient({
     0,
   );
 
-  //===========================================================
-
   //==================================================
   // 회원 ID를 이용해서 해당 회원의 장바구니 ID를 가져오는 함수
-  const getCartId = async (userId: number): Promise<number> => {
+  //const getCartId = async (userId: number): Promise<number> => {
+  const getCartId = async (): Promise<number> => {
     // 로그인할 때 쿠키에 저장한 JWT 토큰을 가져옵니다.
     const token = Cookies.get("accessToken");
     // 회원 ID로 장바구니 조회 API를 호출합니다.
@@ -331,11 +318,6 @@ export default function ProductDetailClient({
       alert("선택된 색상 옵션을 찾을 수 없습니다.");
       return;
     }
-    // 선택한 옵션이 하나도 없는지 다시 확인합니다.
-    //if (selectedOptions.length === 0) {
-    // alert("선택된 색상 옵션을 찾을 수 없습니다.");
-    // return;
-    // }
 
     try {
       // 로그인할 때 쿠키에 저장한 JWT 토큰을 가져옵니다.
@@ -359,7 +341,7 @@ export default function ProductDetailClient({
       }
 
       // 회원의 장바구니를 조회하여 cart.id를 가져옵니다.
-      const cartId = await getCartId(userId);
+      const cartId = await getCartId();
 
       console.log("가져온 장바구니 ID:", cartId);
 
@@ -406,9 +388,6 @@ export default function ProductDetailClient({
       }
 
       alert("상품을 장바구니에 담았습니다.");
-      // 장바구니 상품 추가 API가 반환한 실제 데이터를 확인합니다.
-
-      // 장바구니 페이지로 이동합니다.
       router.push("/cart");
     } catch (error) {
       console.error("장바구니 추가 오류:", error);
@@ -457,7 +436,7 @@ export default function ProductDetailClient({
       const token = Cookies.get("accessToken");
       // 로그인 회원의 장바구니 ID를 가져옵니다.
       // 바로구매 상품도 CartItem에 is_now=true로 임시 저장하기 위해 필요합니다.
-      const cartId = await getCartId(userId);
+      const cartId = await getCartId();
 
       console.log("바로구매용 장바구니 ID:", cartId);
 
