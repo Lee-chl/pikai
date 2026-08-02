@@ -71,6 +71,16 @@ export class CartController {
     return this.cartService.findCartPageByUserId(userId);
   }
   //=======================================================
+  @Get('buy-now')
+  @ApiOperation({
+    summary: '바로구매 결제화면 전용 조회',
+    description:
+      '로그인 회원의 is_now=true 상품을 is_selected 값과 관계없이 모두 조회합니다.',
+  })
+  findBuyNowCartByUserId(@CurrentUser('id') userId: number) {
+    return this.cartService.findBuyNowCartByUserId(userId);
+  }
+  //=======================================================
   // CartItem
 
   @Post('items')
