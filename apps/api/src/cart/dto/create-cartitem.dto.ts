@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsInt, Min } from 'class-validator';
+import { IsBoolean, IsOptional, IsInt, Min } from 'class-validator';
 
 export class CreateCartitemDto {
   @ApiProperty({
@@ -24,7 +24,17 @@ export class CreateCartitemDto {
   @IsInt()
   @Min(1)
   quantity: number;
-
+  // 바로구매 상품인지 구분합니다.
+  // true이면 바로구매용, false이면 일반 장바구니용입니다.
+  @ApiProperty({
+    example: false,
+    description: '바로구매 상품 여부',
+    required: false,
+    default: false,
+  })
+  @IsOptional()
+  @IsBoolean()
+  is_now?: boolean;
   // 가격은 DB에서 조회하므로 DTO에서는 받지 않습니다.
   // @ApiProperty({
   //   example: 15000,

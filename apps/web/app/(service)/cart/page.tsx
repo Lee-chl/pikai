@@ -62,7 +62,7 @@ export default function CartPage() {
 
       // 수량 변경 후 현재 장바구니 상품을 다시 조회합니다.
       const cartResponse = await fetch(
-        `${process.env.NEXT_PUBLIC_BACK_URL}/cart?isCartOrder=true&selectedOnly=true`,
+        `${process.env.NEXT_PUBLIC_BACK_URL}/cart/page`,
         {
           method: "GET",
 
@@ -99,10 +99,11 @@ export default function CartPage() {
       if (!response.ok) {
         throw new Error("장바구니 상품 삭제 실패");
       }
-
-      // 삭제 후 로그인 회원의 장바구니를 다시 조회합니다.
+      //==================================================
+      // 삭제 후에도 장바구니 화면 전용 API로 다시 조회합니다.
+      // is_now=false인 상품을 선택 상태와 관계없이 모두 가져옵니다.
       const cartResponse = await fetch(
-        `${process.env.NEXT_PUBLIC_BACK_URL}/cart?isCartOrder=true&selectedOnly=true`,
+        `${process.env.NEXT_PUBLIC_BACK_URL}/cart/page`,
         {
           method: "GET",
 
@@ -190,24 +191,62 @@ export default function CartPage() {
     }
   };
 
-  const handleOrder = async () => {
+  // 체크된 상품만 결제 페이지로 보내는 함수입니다.
+  const handleSelectedOrder = async () => {
     try {
-      // 선택 상태 DB 저장
+      // 현재 화면의 체크 상태를 DB의 is_selected 값에 저장합니다.
       await updateSelectedItems();
 
-      // searchParams 생성
+      // selectedOnly=true:
+      // DB에서 is_selected=true인 상품만 결제 페이지에서 조회합니다.
       const params = new URLSearchParams();
       params.set("isCartOrder", "true");
       params.set("selectedOnly", "true");
 
-      // 결제 페이지 이동
+      // 선택 상품 결제 페이지로 이동합니다.
       router.push(`/pay?${params.toString()}`);
     } catch (error) {
       console.error(error);
-      alert("주문하기 중 오류가 발생했습니다.");
+      alert("선택 상품 주문 중 오류가 발생했습니다.");
     }
   };
 
+  // 장바구니의 모든 상품을 결제 페이지로 보내는 함수입니다.
+  const handleAllOrder = async () => {
+    try {
+      // 전체 구매이므로 selectedOnly=false를 전달합니다.
+      const params = new URLSearchParams();
+      params.set("isCartOrder", "true");
+      params.set("selectedOnly", "false");
+      //=====================
+      // 전체 상품 주문에서는 기존 결제 API가
+      // is_selected=false인 상품을 조회하므로,
+      // 일반 장바구니 상품의 선택 상태를 모두 false로 저장합니다.
+      await Promise.all(
+        cartItems.map((item) =>
+          fetch(
+            `${process.env.NEXT_PUBLIC_BACK_URL}/cart/items/${item.id}/select`,
+            {
+              method: "PATCH",
+              headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${Cookies.get("accessToken")}`,
+              },
+              body: JSON.stringify({
+                is_selected: false,
+              }),
+            },
+          ),
+        ),
+      );
+      //=====================
+      // 전체 상품 결제 페이지로 이동합니다.
+      router.push(`/pay?${params.toString()}`);
+    } catch (error) {
+      console.error(error);
+      alert("전체 상품 주문 중 오류가 발생했습니다.");
+    }
+  };
   // 에러 메시지
   const [error, setError] = useState("");
 
@@ -219,10 +258,11 @@ export default function CartPage() {
         setError("");
         // 로그인 시 저장한 JWT 토큰을 쿠키에서 가져옵니다.
         const token = Cookies.get("accessToken");
-
-        // 현재는 테스트용 회원 ID 1
+        //=====================================================
+        // 장바구니 화면 전용 API를 호출합니다.
+        // is_now=false인 상품을 is_selected 값과 관계없이 모두 가져옵니다.
         const response = await fetch(
-          `${process.env.NEXT_PUBLIC_BACK_URL}/cart?isCartOrder=true&selectedOnly=true`,
+          `${process.env.NEXT_PUBLIC_BACK_URL}/cart/page`,
           {
             method: "GET",
             headers: {
@@ -237,6 +277,13 @@ export default function CartPage() {
         const data = await response.json();
 
         setCart(data);
+        // DB에서 is_selected=true인 상품의 id만 골라서
+        // 화면의 체크박스가 처음부터 체크되도록 합니다.
+        const selectedIds = data.cartItems
+          .filter((item: Cart["cartItems"][number]) => item.is_selected)
+          .map((item: Cart["cartItems"][number]) => item.id);
+
+        setSelectedItems(selectedIds);
       } catch (error) {
         console.error(error);
         setError("장바구니 조회 중 오류가 발생했습니다.");
@@ -422,9 +469,17 @@ export default function CartPage() {
               <button
                 type="button"
                 className={styles.orderButton}
-                onClick={handleOrder}
+                onClick={handleSelectedOrder}
               >
-                주문하기
+                선택 상품 주문
+              </button>
+              {/* 체크 여부와 관계없이 장바구니의 모든 상품을 주문합니다. */}
+              <button
+                type="button"
+                className={styles.orderButton}
+                onClick={handleAllOrder}
+              >
+                전체 상품 주문
               </button>
             </section>
           </div>
