@@ -203,14 +203,16 @@
 .discountArea {
   display: flex;
   align-items: center;
-  justify-content: flex-end;
-  min-width: 120px;
+  /*justify-content: flex-end;
+  min-width: 120px;*/
+  gap: 15px;
 }
 
 .discountLabel {
   margin: 0;
-  color: #666666;
+  color: #ffc7c2;
   font-size: 14px;
+  font-weight: bold;
 }
 
 /* .discountPrice {
@@ -376,4 +378,14 @@
   font-size: 20px;
   font-weight: 600;
   color: #666;
+}
+.toolbarDeleteButton,
+.orderButton {
+  transition: background-color 0.2s ease;
+  cursor: pointer;
+}
+
+.toolbarDeleteButton:hover,
+.orderButton:hover {
+  background-color: #ffb0aa;
 }
