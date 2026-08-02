@@ -301,8 +301,9 @@ export default function ProductDetailClient({
 
     // 현재 AI 추천은 옵션 1개만 선택했을 때 실행합니다.
     if (selectedOptions.length > 1) {
-      alert("1개의 상품을 담았을 때만 AI 색상 추천을 합니다.");
-      return;
+      alert(
+        "1개의 상품을 담았을 때만 AI 색상 추천을 합니다. 선택한 상품들은 장바구니에 담습니다.",
+      );
     }
 
     // 선택한 옵션 중 재고가 없거나
@@ -317,6 +318,11 @@ export default function ProductDetailClient({
       return;
     }
 
+    // 선택한 옵션이 하나도 없으면 함수를 종료합니다.
+    if (selectedOptions.length === 0) {
+      alert("선택된 색상 옵션을 찾을 수 없습니다.");
+      return;
+    }
     // 현재는 옵션을 1개만 선택할 수 있으므로
     // selectedOptions 배열의 첫 번째 값을 가져옵니다.
     const selectedOption = selectedOptions[0];
@@ -325,6 +331,11 @@ export default function ProductDetailClient({
       alert("선택된 색상 옵션을 찾을 수 없습니다.");
       return;
     }
+    // 선택한 옵션이 하나도 없는지 다시 확인합니다.
+    //if (selectedOptions.length === 0) {
+    // alert("선택된 색상 옵션을 찾을 수 없습니다.");
+    // return;
+    // }
 
     try {
       // 로그인할 때 쿠키에 저장한 JWT 토큰을 가져옵니다.
@@ -332,61 +343,70 @@ export default function ProductDetailClient({
       // 장바구니 API 요청 시작
       setIsCartLoading(true);
 
-      // AI 추천 요청을 시작합니다.
-      setIsAiLoading(true);
-      setAiError(null);
-      setIsOpen(true);
+      // 옵션을 1개 선택한 경우에만
+      // AI 추천 팝업을 열고 추천 API를 실행합니다.
+      if (selectedOptions.length === 1) {
+        setIsAiLoading(true);
+        setAiError(null);
+        setIsOpen(true);
 
-      const recommendationResult = await fetchRecommendation(
-        selectedOption.color.id,
-      );
+        const recommendationResult = await fetchRecommendation(
+          selectedOption.color.id,
+        );
 
-      // AI 추천 결과를 팝업에 저장합니다.
-      setRecommendation(recommendationResult);
+        // AI 추천 결과를 팝업에 저장합니다.
+        setRecommendation(recommendationResult);
+      }
 
       // 회원의 장바구니를 조회하여 cart.id를 가져옵니다.
       const cartId = await getCartId(userId);
 
       console.log("가져온 장바구니 ID:", cartId);
 
-      // 백엔드 CreateCartitemDto 형식에 맞춘 요청 데이터입니다.
-      const cartItemData = {
-        cart_id: cartId,
-        detail_color_id: selectedOption.color.id,
-        quantity: selectedOption.quantity,
-      };
+      // 선택한 모든 옵션을 하나씩 장바구니에 추가합니다.
+      for (const option of selectedOptions) {
+        // 백엔드 CreateCartitemDto 형식에 맞춘 요청 데이터입니다.
+        const cartItemData = {
+          cart_id: cartId,
+          detail_color_id: option.color.id,
+          quantity: option.quantity,
+        };
 
-      console.log("장바구니에 보낼 데이터:", cartItemData);
+        console.log("장바구니에 보낼 데이터:", cartItemData);
 
-      // 실제 장바구니 상품 추가 API를 호출합니다.
-      const cartResponse = await fetch(
-        `${process.env.NEXT_PUBLIC_BACK_URL}/cart/items`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            // 장바구니 상품 추가 API도 JWT 인증이 필요하므로 토큰을 보냅니다.
-            Authorization: `Bearer ${token}`,
+        // 현재 옵션 하나를 장바구니에 추가합니다.
+        const cartResponse = await fetch(
+          `${process.env.NEXT_PUBLIC_BACK_URL}/cart/items`,
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+
+              // CartController에 JWT 인증이 적용되어 있으므로 토큰을 보냅니다.
+              Authorization: `Bearer ${token}`,
+            },
+            body: JSON.stringify(cartItemData),
           },
-          body: JSON.stringify(cartItemData),
-        },
-      );
-
-      // 백엔드가 400, 404, 500 등의 오류를 반환한 경우
-      if (!cartResponse.ok) {
-        const errorData = await cartResponse.json().catch(() => null);
-
-        throw new Error(
-          errorData?.message ?? "장바구니에 상품을 담지 못했습니다.",
         );
+
+        // 옵션 하나라도 추가에 실패하면 장바구니 이동을 중단합니다.
+        if (!cartResponse.ok) {
+          const errorData = await cartResponse.json().catch(() => null);
+
+          throw new Error(
+            errorData?.message ??
+              `${option.color.color_name} 상품을 장바구니에 담지 못했습니다.`,
+          );
+        }
+
+        // 응답 본문은 한 번만 읽습니다.
+        const addedCartItem = await cartResponse.json();
+
+        console.log("장바구니 추가 결과:", addedCartItem);
       }
 
-      // 생성 또는 수량 증가된 CartItem 데이터
-      const addedCartItem = await cartResponse.json();
-
-      console.log("장바구니 추가 결과:", addedCartItem);
-
       alert("상품을 장바구니에 담았습니다.");
+      // 장바구니 상품 추가 API가 반환한 실제 데이터를 확인합니다.
 
       // 장바구니 페이지로 이동합니다.
       router.push("/cart");
@@ -417,8 +437,9 @@ export default function ProductDetailClient({
       return;
     }
     if (selectedOptions.length > 1) {
-      alert("1개의 상품을 담았을 때만 AI 색상 추천을 합니다.");
-      return;
+      alert(
+        "1개의 상품을 담았을 때만 AI 색상 추천을 합니다. 선택한 상품들을 바로 구매합니다.",
+      );
     }
 
     const hasInvalidStock = selectedOptions.some(
@@ -432,6 +453,39 @@ export default function ProductDetailClient({
     }
 
     try {
+      // 로그인할 때 쿠키에 저장한 JWT 토큰을 가져옵니다.
+      const token = Cookies.get("accessToken");
+      // 로그인 회원의 장바구니 ID를 가져옵니다.
+      // 바로구매 상품도 CartItem에 is_now=true로 임시 저장하기 위해 필요합니다.
+      const cartId = await getCartId(userId);
+
+      console.log("바로구매용 장바구니 ID:", cartId);
+
+      //=======================================
+      // 이전 바로구매에서 남아 있는 is_now=true 상품을 먼저 삭제합니다.
+      // 일반 장바구니 상품인 is_now=false 상품은 삭제되지 않습니다.
+      const deleteBuyNowResponse = await fetch(
+        `${process.env.NEXT_PUBLIC_BACK_URL}/cart/items/now`,
+        {
+          method: "DELETE",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        },
+      );
+
+      if (!deleteBuyNowResponse.ok) {
+        const errorData = await deleteBuyNowResponse.json().catch(() => null);
+
+        throw new Error(
+          errorData?.message ?? "기존 바로구매 상품을 정리하지 못했습니다.",
+        );
+      }
+
+      const deleteResult = await deleteBuyNowResponse.json();
+
+      console.log("기존 바로구매 상품 삭제 결과:", deleteResult);
+      //=======================================
       // 첫 번째로 선택한 색상으로 AI 추천 결과를 요청
       const selectedColor = selectedOptions[0];
 
@@ -439,18 +493,56 @@ export default function ProductDetailClient({
         alert("선택된 색상 옵션을 찾을 수 없습니다.");
         return;
       }
-      // AI 분석 시작
-      setIsAiLoading(true);
-      setAiError(null);
-      setIsOpen(true);
+      // 옵션을 1개 선택한 경우에만
+      // AI 추천 팝업을 열고 추천 API를 실행합니다.
+      if (selectedOptions.length === 1) {
+        setIsAiLoading(true);
+        setAiError(null);
+        setIsOpen(true);
 
-      const result = await fetchRecommendation(selectedColor.color.id);
+        const result = await fetchRecommendation(selectedColor.color.id);
 
-      // AI 추천 결과 저장
-      setRecommendation(result);
+        // AI 추천 결과를 팝업에 저장합니다.
+        setRecommendation(result);
+      }
+      //==========================================
+      // 선택한 모든 옵션을 바로구매용 CartItem으로 저장합니다.
+      for (const option of selectedOptions) {
+        const buyNowCartItemData = {
+          cart_id: cartId,
+          detail_color_id: option.color.id,
+          quantity: option.quantity,
 
-      // AI 추천 팝업 열기
-      setIsOpen(true);
+          // 바로구매 상품이므로 true로 저장합니다.
+          is_now: true,
+        };
+
+        console.log("바로구매용 장바구니 데이터:", buyNowCartItemData);
+
+        const cartResponse = await fetch(
+          `${process.env.NEXT_PUBLIC_BACK_URL}/cart/items`,
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+            body: JSON.stringify(buyNowCartItemData),
+          },
+        );
+
+        if (!cartResponse.ok) {
+          const errorData = await cartResponse.json().catch(() => null);
+
+          throw new Error(
+            errorData?.message ?? "바로구매 상품을 저장하지 못했습니다.",
+          );
+        }
+
+        const savedCartItem = await cartResponse.json();
+
+        console.log("바로구매 상품 저장 결과:", savedCartItem);
+      }
 
       // 바로 구매 데이터
       const orderData = selectedOptions.map((option) => ({
