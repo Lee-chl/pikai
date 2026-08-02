@@ -72,7 +72,7 @@ export class CartService {
       },
     });
   }
-
+  //결제 페이지용
   /*  회원 ID로 장바구니 조회 */
   async findCartByUserId(query: QueryCartDto, userId: number) {
     const cart = await this.prisma.cart.findUnique({
@@ -97,12 +97,14 @@ export class CartService {
           },
         },
 
+        // 원래코드
         cartItems: {
           where: {
             is_selected: query.selectedOnly ?? false,
             is_now:
               query.isCartOrder !== undefined ? !query.isCartOrder : false,
           },
+
           include: {
             detailColor: {
               include: {
@@ -127,7 +129,64 @@ export class CartService {
 
     return cart;
   }
+  //===============================================
+  /* 장바구니 화면 전용 조회 */
+  async findCartPageByUserId(userId: number) {
+    const cart = await this.prisma.cart.findUnique({
+      where: {
+        userId,
+      },
 
+      include: {
+        user: {
+          select: {
+            // 받는 분
+            name: true,
+
+            // 연락처
+            phone: true,
+
+            // 우편번호
+            postal_code: true,
+
+            // 주소
+            address: true,
+          },
+        },
+
+        cartItems: {
+          where: {
+            // 일반 장바구니 상품만 조회합니다.
+            // is_selected 값은 조회 조건으로 사용하지 않고
+            // 체크박스 표시용 값으로 그대로 가져옵니다.
+            is_now: false,
+          },
+
+          include: {
+            detailColor: {
+              include: {
+                // 상품 정보도 함께 조회합니다.
+                products: true,
+              },
+            },
+          },
+
+          orderBy: {
+            id: 'desc',
+          },
+        },
+      },
+    });
+
+    if (!cart) {
+      throw new NotFoundException(
+        `userId가 ${userId}인 회원의 장바구니를 찾을 수 없습니다.`,
+      );
+    }
+
+    return cart;
+  }
+  //===============================================
   // CartItem
 
   //장바구니 상품 추가
@@ -135,7 +194,12 @@ export class CartService {
   //새로운 행을 만들지 않고 quantity를 증가시킵니다.
   // 요청값에서 장바구니 ID, 상품 옵션 ID, 수량만 꺼냅니다
   async createCartitem(createCartitemDto: CreateCartitemDto) {
-    const { cart_id, detail_color_id, quantity } = createCartitemDto;
+    const {
+      cart_id,
+      detail_color_id,
+      quantity,
+      is_now = false,
+    } = createCartitemDto;
 
     // 장바구니 존재 여부 확인
     const cart = await this.prisma.cart.findUnique({
@@ -193,7 +257,7 @@ export class CartService {
       );
     }
     // 원가에서 항상 10% 할인한 판매 가격을 계산합니다.
-    const discountedPrice = Math.floor(detailColor.products.price * 0.9);
+    //const discountedPrice = Math.floor(detailColor.products.price * 0.9);
     //
     //
     //schema.prisma의 아래 제약조건을 사용합니다.
@@ -215,6 +279,7 @@ export class CartService {
           increment: quantity,
         },
         is_selected: true,
+        is_now,
       },
 
       // 처음 담는 상품이면 새로 생성
@@ -222,8 +287,12 @@ export class CartService {
         cart_id,
         detail_color_id,
         quantity,
-        // 할인된 판매 가격을 저장합니다.
-        price: discountedPrice,
+        // 정가 가격을 저장합니다.
+        price: detailColor.products.price,
+
+        // 바로구매이면 true,
+        // 일반 장바구니이면 false로 저장합니다.
+        is_now,
       },
 
       include: {
@@ -296,7 +365,38 @@ export class CartService {
       },
     });
   }
+  //=========================================
+  /* 로그인 회원의 바로구매 임시 상품 삭제 */
+  async deleteBuyNowItems(userId: number) {
+    // 로그인 회원의 장바구니를 찾습니다.
+    const cart = await this.prisma.cart.findUnique({
+      where: {
+        userId,
+      },
+    });
 
+    if (!cart) {
+      throw new NotFoundException(
+        `userId가 ${userId}인 회원의 장바구니를 찾을 수 없습니다.`,
+      );
+    }
+
+    // 일반 장바구니 상품은 남겨두고
+    // is_now=true인 바로구매 임시 상품만 삭제합니다.
+    const result = await this.prisma.cartItem.deleteMany({
+      where: {
+        cart_id: cart.id,
+        is_now: true,
+      },
+    });
+
+    return {
+      message: '기존 바로구매 상품이 삭제되었습니다.',
+      deletedCount: result.count,
+    };
+  }
+
+  //=========================================
   /* 장바구니 상품 한 개 삭제 */
   async deleteCartitem(cartItemId: number) {
     await this.findCartitemById(cartItemId);
