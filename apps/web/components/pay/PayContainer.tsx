@@ -76,6 +76,7 @@ export default function PayContainer({ data }: Props) {
             payment,
             ...delivery,
             isCartOrder: isCartOrder === "true",
+            selectedOnly: selectedOnly === "true",
             items: cartItem,
           }),
         });

@@ -42,6 +42,10 @@ export class CreatePayDto {
   @IsBoolean()
   isCartOrder: boolean;
 
+  @ApiProperty()
+  @IsBoolean()
+  selectedOnly: boolean;
+
   //주문 상품
   @ApiProperty({ type: [CreatePayItemDto], description: '주문 상품 목록' })
   @ValidateNested({ each: true })

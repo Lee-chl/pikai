@@ -134,26 +134,46 @@ export class PayService {
         });
       }
 
-      if (createPayDto.isCartOrder) {
-        const cart = await tx.cart.findUnique({
+      const cart = await tx.cart.findUnique({
+        where: {
+          userId,
+        },
+      });
+
+      if (!cart) {
+        throw new NotFoundException('장바구니를 찾을 수 없습니다.');
+      }
+
+      //장바구니, 바로구매에 맞게 결제 후 제품 삭제
+      if (!createPayDto.isCartOrder) {
+        await tx.cartItem.deleteMany({
           where: {
-            userId: userId,
+            cart_id: cart.id,
+            is_now: true,
+            detail_color_id: {
+              in: createPayDto.items.map((item) => item.detail_color_id),
+            },
           },
         });
-
-        if (!cart) {
-          throw new NotFoundException('장바구니를 찾을 수 없습니다.');
-        }
-
-        //장바구니에서 구매한 상품 삭제
-        for (const item of createPayDto.items) {
-          await tx.cartItem.deleteMany({
-            where: {
-              cart_id: cart.id,
-              detail_color_id: item.detail_color_id,
+      } else if (createPayDto.selectedOnly) {
+        await tx.cartItem.deleteMany({
+          where: {
+            cart_id: cart.id,
+            detail_color_id: {
+              in: createPayDto.items.map((item) => item.detail_color_id),
             },
-          });
-        }
+          },
+        });
+      } else {
+        await tx.cartItem.deleteMany({
+          where: {
+            cart_id: cart.id,
+            is_now: false,
+            detail_color_id: {
+              in: createPayDto.items.map((item) => item.detail_color_id),
+            },
+          },
+        });
       }
 
       return order;
