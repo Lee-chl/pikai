@@ -49,30 +49,49 @@ export default function PayContainer({ data }: Props) {
       return;
     }
 
-    const cartItem = data.cartItems.map((item) => ({
-      detailColorId: item.detailColor.id,
-      quantity: item.quantity,
-    }));
-    const response = await fetch(`${Constants.back_url}/pay`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        payment,
-        ...delivery,
-        items: cartItem,
-      }),
-    });
+    const token = document.cookie
+      .split("; ")
+      .find((row) => row.startsWith("accessToken="))
+      ?.split("=")[1];
 
-    if (!response.ok) {
-      alert("결제에 실패했습니다.");
+    if (!token) {
+      alert("로그인이 필요합니다.");
       return;
     }
 
-    const order = await response.json();
+    const cartItem = data.cartItems.map((item) => ({
+      detail_color_id: item.detailColor.id,
+      quantity: item.quantity,
+    }));
 
-    router.replace(`/pay/complete?orderId=${order.id}`);
+    if (token) {
+      try {
+        const response = await fetch(`${Constants.back_url}/pay`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({
+            payment,
+            ...delivery,
+            isCartOrder: isCartOrder === "true",
+            items: cartItem,
+          }),
+        });
+
+        if (!response.ok) {
+          alert("결제에 실패했습니다.");
+          return;
+        }
+
+        const order = await response.json();
+
+        router.replace(`/pay/complete?orderId=${order.id}`);
+      } catch (err) {
+        console.error(err);
+      }
+    }
   };
 
   return (
