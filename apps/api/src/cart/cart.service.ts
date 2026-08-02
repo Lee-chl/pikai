@@ -187,6 +187,62 @@ export class CartService {
     return cart;
   }
   //===============================================
+  /* 바로구매 결제화면 전용 조회 */
+  async findBuyNowCartByUserId(userId: number) {
+    const cart = await this.prisma.cart.findUnique({
+      where: {
+        userId,
+      },
+
+      include: {
+        user: {
+          select: {
+            // 받는 분
+            name: true,
+
+            // 연락처
+            phone: true,
+
+            // 우편번호
+            postal_code: true,
+
+            // 주소
+            address: true,
+          },
+        },
+
+        cartItems: {
+          where: {
+            // 바로구매를 위해 임시 저장한 상품만 조회합니다.
+            // is_selected 값은 조회 조건으로 사용하지 않습니다.
+            is_now: true,
+          },
+
+          include: {
+            detailColor: {
+              include: {
+                // 결제 화면에 필요한 상품 정보도 함께 조회합니다.
+                products: true,
+              },
+            },
+          },
+
+          orderBy: {
+            id: 'desc',
+          },
+        },
+      },
+    });
+
+    if (!cart) {
+      throw new NotFoundException(
+        `userId가 ${userId}인 회원의 장바구니를 찾을 수 없습니다.`,
+      );
+    }
+
+    return cart;
+  }
+  //===============================================
   // CartItem
 
   //장바구니 상품 추가
