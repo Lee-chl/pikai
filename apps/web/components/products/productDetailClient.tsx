@@ -557,9 +557,7 @@ export default function ProductDetailClient({
       const buyItems = encodeURIComponent(JSON.stringify(orderData));
 
       // 장바구니 주문이 아닌 바로구매 주문으로 결제 페이지에 이동합니다.
-      router.push(
-        `/pay?isCartOrder=false&selectedOnly=false&buyItems=${buyItems}`,
-      );
+      router.push(`/pay?isCartOrder=false&selectedOnly=true`);
     } catch (error) {
       console.error("AI 추천 오류:", error);
       setAiError("AI 추천 결과를 불러오지 못했습니다.");
