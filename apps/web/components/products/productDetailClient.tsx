@@ -532,9 +532,6 @@ export default function ProductDetailClient({
 
       console.log("바로 구매 데이터:", orderData);
 
-      // 바로구매 상품 배열을 JSON 문자열로 변환합니다.
-      const buyItems = encodeURIComponent(JSON.stringify(orderData));
-
       // 장바구니 주문이 아닌 바로구매 주문으로 결제 페이지에 이동합니다.
       router.push(`/pay?isCartOrder=false&selectedOnly=true`);
     } catch (error) {
