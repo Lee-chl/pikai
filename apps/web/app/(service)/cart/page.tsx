@@ -296,11 +296,20 @@ export default function CartPage() {
   }, []);
 
   // 선택된 상품의 총 금액
+  // const selectedTotalPrice =
+  // cart?.cartItems
+  //  ?.filter((item: any) => selectedItems.includes(item.id))
+  // .reduce(
+  //   (total: number, item: any) => total + item.price * item.quantity,
+  //   0,
+  // ) ?? 0;
+  // 선택된 상품들의 할인 적용 총금액
   const selectedTotalPrice =
     cart?.cartItems
       ?.filter((item: any) => selectedItems.includes(item.id))
       .reduce(
-        (total: number, item: any) => total + item.price * item.quantity,
+        (total: number, item: any) =>
+          total + Math.floor(item.price * 0.9) * item.quantity,
         0,
       ) ?? 0;
 
@@ -419,11 +428,19 @@ export default function CartPage() {
                       </div>
                     </div>
 
-                    {/* 상품 가격 */}
+                    {/* 상품 가격
                     <div className={styles.discountArea}>
                       <p className={styles.discountPrice}>
                         {item.price.toLocaleString()}원
                       </p>
+                    </div> */}
+                    {/* 할인 적용 가격 */}
+                    <div className={styles.discountArea}>
+                      <span className={styles.discountLabel}>10% 할인가</span>
+
+                      <span className={styles.discountPrice}>
+                        {Math.floor(item.price * 0.9).toLocaleString("ko-KR")}원
+                      </span>
                     </div>
                   </div>
                   {/* 배송비와 예상 주문금액 */}
@@ -436,7 +453,10 @@ export default function CartPage() {
                     <div className={styles.priceInfoRow}>
                       <span>예상 주문금액</span>
                       <strong>
-                        {(item.price * item.quantity).toLocaleString("ko-KR")}원
+                        {(
+                          Math.floor(item.price * 0.9) * item.quantity
+                        ).toLocaleString("ko-KR")}
+                        원
                       </strong>
                     </div>
                   </div>
