@@ -39,7 +39,8 @@ export default function StarRating({
           if (compRatingNum >= 10) {
             alert(`비교 상품은 10개까지만 추가 가능합니다`);
             return setIsComp(false);
-          } else if (compRatingNum - 1 === 0) {
+            //한 개 이상 있을 경우 오류 나는 것 수정! (비교상품 추가 또는 수정 시 )
+          } else if (!isComp && compRatingNum - 1 === 0) {
             alert(`비교 상품은 하나 이상 필수입니다!`);
             return setIsComp(true);
           }
