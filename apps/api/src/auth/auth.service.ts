@@ -43,8 +43,11 @@ export class AuthService {
 
   async login(dto: LoginDto) {
     const user = await this.userService.findByEmail(dto.email);
-    if (!user) throw new UnauthorizedException('이메일 또는 비밀번호가 틀러요');
 
+    if (!user || !user.is_active) {
+      throw new UnauthorizedException('이메일 또는 비밀번호가 틀러요');
+    }
+    // else if 해서 False 이고 한달전이면 throw
     // db에 저장된 해시 비교
     const isRight = await bcrypt.compare(dto.password, user.password);
     if (!isRight)
