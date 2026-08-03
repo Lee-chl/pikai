@@ -22,6 +22,13 @@ export class ToneService {
     }
 
     let products = await this.prisma.sale.findMany({
+      where: tone
+        ? {
+            [tone]: {
+              gt: 0,
+            },
+          }
+        : {},
       include: {
         detailColor: {
           include: {
