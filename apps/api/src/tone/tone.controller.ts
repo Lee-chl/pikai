@@ -25,6 +25,6 @@ export class ToneController {
       throw new Error('유저 정보 없음');
     }
 
-    return this.toneService.findAll(user.tone);
+    return this.toneService.findAll(user.id);
   }
 }

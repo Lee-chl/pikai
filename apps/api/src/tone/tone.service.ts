@@ -6,27 +6,42 @@ import { PrismaService } from 'src/prisma/prisma.service';
 export class ToneService {
   constructor(private readonly prisma: PrismaService) {}
 
-  async findAll(tone?: PersonalColor) {
-    let products;
-    let title = '베스트 상품';
+  async findAll(userId?: number) {
+    let tone: PersonalColor | undefined;
 
-    if (tone) {
-      products = await this.prisma.sale.findMany({
-        include: {
-          detailColor: {
-            include: {
-              products: true,
-            },
+    if (userId) {
+      const user = await this.prisma.user.findUnique({
+        where: {
+          id: userId,
+        },
+        select: {
+          personal_color: true,
+        },
+      });
+      tone = user?.personal_color;
+    }
+
+    let products = await this.prisma.sale.findMany({
+      include: {
+        detailColor: {
+          include: {
+            products: true,
           },
         },
-        orderBy: {
-          [tone]: 'desc',
-        },
-        take: 6,
-      });
+      },
+      orderBy: tone
+        ? {
+            [tone]: 'desc',
+          }
+        : {
+            sale_count: 'desc',
+          },
+      take: 6,
+    });
 
-      title = `${tone} 상품 베스트`;
-    } else {
+    if (tone && (products.length === 0 || !products[0][tone])) {
+      tone = undefined; // 문구 변경을 위해 tone을 비움
+
       products = await this.prisma.sale.findMany({
         include: {
           detailColor: {
@@ -44,7 +59,7 @@ export class ToneService {
 
     return {
       products,
-      title,
+      title: tone ? `${tone} 상품 베스트` : '베스트 상품',
     };
   }
 }

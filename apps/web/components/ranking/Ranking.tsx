@@ -13,15 +13,28 @@ export default async function Ranking() {
     ? `${Constants.back_url}/tone/me`
     : `${Constants.back_url}/tone`;
 
-  const res = await fetch(url, {
-    headers: token
-      ? {
-          Authorization: `Bearer ${token}`,
-        }
-      : {},
-    cache: "no-store",
-  });
-  const tones: ToneResponse = await res.json();
+  let tones: ToneResponse;
+
+  try {
+    const res = await fetch(url, {
+      headers: token
+        ? {
+            Authorization: `Bearer ${token}`,
+          }
+        : {},
+      cache: "no-store",
+    });
+
+    if (!res.ok) {
+      throw new Error("정보를 불러오지 못했습니다.");
+    }
+
+    tones = await res.json();
+  } catch (err) {
+    console.error(err);
+    return <div>상품 정보를 불러오지 못했습니다.</div>;
+  }
+
   return (
     <div className={styles.container}>
       <h2 className={styles.title}>{tones.title}</h2>
