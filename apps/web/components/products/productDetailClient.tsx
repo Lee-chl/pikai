@@ -492,10 +492,22 @@ export default function ProductDetailClient({
         setAiError(null);
         setIsOpen(true);
 
-        const result = await fetchRecommendation(selectedColor.color.id);
+        try {
+          const result = await fetchRecommendation(selectedColor.color.id);
 
-        // AI 추천 결과를 팝업에 저장합니다.
-        setRecommendation(result);
+          // AI 추천 성공 결과를 팝업에 저장합니다.
+          setRecommendation(result);
+        } catch (error) {
+          // AI 추천이 실패해도 바로구매 상품 저장은 계속 진행합니다.
+          console.error("AI 추천 오류:", error);
+
+          setAiError(
+            "AI 추천 결과를 불러오지 못했습니다. 상품 구매는 계속 진행할 수 있습니다.",
+          );
+        } finally {
+          // AI 추천 요청 종료
+          setIsAiLoading(false);
+        }
       }
       //==========================================
       // 선택한 모든 옵션을 바로구매용 CartItem으로 저장합니다.
@@ -550,11 +562,13 @@ export default function ProductDetailClient({
         router.push(`/pay?isCartOrder=false&selectedOnly=true`);
       }
     } catch (error) {
-      console.error("AI 추천 오류:", error);
-      setAiError("AI 추천 결과를 불러오지 못했습니다.");
-    } finally {
-      // AI 분석 종료
-      setIsAiLoading(false);
+      console.error("바로구매 처리 오류:", error);
+
+      if (error instanceof Error) {
+        alert(error.message);
+      } else {
+        alert("바로구매 처리 중 오류가 발생했습니다.");
+      }
     }
   };
 
