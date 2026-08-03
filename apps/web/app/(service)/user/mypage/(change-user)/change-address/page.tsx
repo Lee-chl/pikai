@@ -3,6 +3,12 @@ import React from "react";
 import AddressForm from "../../../../../../components/mypage/addressForm";
 import styles from "./page.module.css";
 import { cookies } from "next/headers";
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "주소 변경",
+  description: "회원의 주소를 변경할 수 있는 페이지입니다.",
+};
 
 export default async function Page() {
   const cookieStore = await cookies();

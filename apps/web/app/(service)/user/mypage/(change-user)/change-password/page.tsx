@@ -2,6 +2,12 @@ import { Constants } from "@/common/constants";
 import PasswordForm from "../../../../../../components/mypage/passwordForm";
 import styles from "./page.module.css";
 import { cookies } from "next/headers";
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "비밀번호 변경",
+  description: "회원의 비밀번호를 변경할 수 있는 페이지입니다.",
+};
 
 export default async function Page() {
   const cookieStore = await cookies();
