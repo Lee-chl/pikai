@@ -38,7 +38,7 @@ export default async function Page({
   if (orderList.length < 1) {
     return (
       <div>
-        <h3 className={styles.titleMain}>주문/결제 목록</h3>
+        <h3 className={styles.titleMain}>주문내역</h3>
         <p
           style={{
             marginLeft: "2rem",
@@ -56,8 +56,8 @@ export default async function Page({
   return (
     <div>
       <div>
-        <h3 className={styles.titleMain}>주문/결제 목록</h3>
-        <hr className={styles.line} />
+        <h3 className={styles.titleMain}>주문내역</h3>
+
         <div>
           {orderList.map((orders, index) => (
             <OrderList
