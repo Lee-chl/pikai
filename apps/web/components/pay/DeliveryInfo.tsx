@@ -1,7 +1,7 @@
 "use client";
 
 import { DeliveryInfoProps } from "@/types/payType";
-import { useEffect, useState } from "react";
+import { ChangeEvent, useEffect, useState } from "react";
 import { Address, useKakaoPostcodePopup } from "react-daum-postcode";
 import styles from "./DeliveryInfo.module.css";
 
@@ -54,6 +54,13 @@ export default function DeliveryInfo({
     onChange,
   ]);
 
+  const handlePhoneChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const onlyNumbers = e.target.value.replace(/[^0-9]/g, "");
+    setNewPhone(onlyNumbers);
+  };
+
+  const isDetailAddressEmpty = isAddressChanged && detailAddress.trim() === "";
+
   return (
     <div className={styles.container}>
       <div className={styles.form}>
@@ -74,7 +81,8 @@ export default function DeliveryInfo({
             className={styles.postInput}
             type="tel"
             value={newPhone}
-            onChange={(e) => setNewPhone(e.target.value)}
+            maxLength={11}
+            onChange={handlePhoneChange}
             placeholder="연락처"
           />
         </p>
@@ -108,12 +116,21 @@ export default function DeliveryInfo({
         />
 
         {isAddressChanged && (
-          <input
-            className={styles.input}
-            value={detailAddress}
-            onChange={(e) => setDetailAddress(e.target.value)}
-            placeholder="상세주소를 입력해주세요."
-          />
+          <div>
+            <input
+              className={styles.input}
+              value={detailAddress}
+              onChange={(e) => setDetailAddress(e.target.value)}
+              placeholder="상세주소를 입력해주세요."
+            />
+            {isDetailAddressEmpty && (
+              <p
+                style={{ color: "#ff4d4f", fontSize: "12px", marginTop: "4px" }}
+              >
+                상세주소를 입력해주세요.
+              </p>
+            )}
+          </div>
         )}
         <label>배송 요청 사항</label>
         <input

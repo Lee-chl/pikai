@@ -39,6 +39,11 @@ export default function PayContainer({ data }: Props) {
       return;
     }
 
+    if (delivery.phone_number.length !== 11) {
+      alert("전화번호 11자리를 정확히 입력해주세요.");
+      return;
+    }
+
     if (!delivery.postal_code.trim()) {
       alert("주소를 선택해주세요.");
       return;
