@@ -1,1 +1,1 @@
-export type ProductSortType = "sales" | "latest" | "priceAsc" | "priceDesc";
+export type ProductSortType = "latest" | "priceAsc" | "priceDesc";
