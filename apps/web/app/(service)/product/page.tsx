@@ -88,7 +88,13 @@ export default function Page() {
         ""
       )}
 
-      <h3>전체상품</h3>
+      <h1
+        style={{
+          fontSize: "25px",
+        }}
+      >
+        전체 상품
+      </h1>
 
       <SortMenu selectedSort={selectedSort} onSortChange={handleSortChange} />
 
