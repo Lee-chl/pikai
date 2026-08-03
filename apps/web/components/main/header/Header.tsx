@@ -7,6 +7,7 @@ import SearchBar from "./SearchBar";
 import logo from "../../../public/pikai_logo.png";
 import { CategoryType } from "@/types/productDetailType";
 import { Constants } from "@/common/constants";
+import { revalidatePath } from "next/cache";
 
 export default async function Header() {
   let categories: CategoryType[] = [];
@@ -31,7 +32,7 @@ export default async function Header() {
         <UserMenu />
       </div>
       <div className={styles.logo}>
-        <Link href={`/`}>
+        <a href="/pikai">
           <Image
             src={logo}
             alt={`pikai_logo`}
@@ -39,7 +40,7 @@ export default async function Header() {
             height={90}
             loading="eager"
           />
-        </Link>
+        </a>
         <SearchBar />
       </div>
       <div className={styles.category}>

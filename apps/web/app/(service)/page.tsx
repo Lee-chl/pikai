@@ -18,10 +18,10 @@ export default async function Home() {
           loading="eager"
         />
         <Ranking />
-        <Link href="/product" className={styles.button}>
+        <a href="/pikai/product" className={styles.button}>
           전체 상품 보러가기
           <ChevronsRight />
-        </Link>
+        </a>
       </main>
     </div>
   );
