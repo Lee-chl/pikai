@@ -1,13 +1,11 @@
 import Image from "next/image";
 import CategoryNav from "./category-nav";
 import UserMenu from "./UserMenu";
-import Link from "next/link";
 import styles from "./Header.module.css";
 import SearchBar from "./SearchBar";
 import logo from "../../../public/pikai_logo.png";
 import { CategoryType } from "@/types/productDetailType";
 import { Constants } from "@/common/constants";
-import { revalidatePath } from "next/cache";
 
 export default async function Header() {
   let categories: CategoryType[] = [];

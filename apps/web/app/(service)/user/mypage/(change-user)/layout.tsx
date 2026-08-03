@@ -39,7 +39,7 @@ export default async function ChangeUserLayout({
   return (
     <div className={styles.container}>
       <aside className={styles.sidebar}>
-        <SideBar id={user.id} />
+        <SideBar />
       </aside>
 
       <section className={styles.content}>{children}</section>

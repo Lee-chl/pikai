@@ -1,5 +1,4 @@
-import Image, { type ImageProps } from "next/image";
-import Link from "next/link";
+import Image from "next/image";
 import styles from "./page.module.css";
 import Ranking from "../../components/ranking/Ranking";
 import { ChevronsRight } from "lucide-react";

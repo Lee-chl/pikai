@@ -4,7 +4,7 @@ import { useState } from "react";
 import styles from "./passwordForm.module.css";
 import { Constants } from "@/common/constants";
 
-export default function PasswordForm({ id }: { id: number }) {
+export default function PasswordForm() {
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
