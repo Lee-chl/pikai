@@ -89,6 +89,7 @@ export default function LoginForm() {
         router.refresh();
       } else {
         router.push(`/rating/add`);
+        router.refresh();
       }
     } catch (error) {
       console.error(error);
