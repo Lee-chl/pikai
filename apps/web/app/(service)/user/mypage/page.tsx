@@ -54,7 +54,7 @@ export default async function Page() {
         <div className={styles.menuBox}>
           <Link href={`/order`} className={styles.menu}>
             <ClipboardList size={60} strokeWidth={1.8} />
-            <span>주문내역</span>
+            <span>주문 내역</span>
           </Link>
 
           <Link href={`/rating`} className={styles.menu}>
