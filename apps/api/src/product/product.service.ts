@@ -89,7 +89,12 @@ export class ProductService {
       include: {
         category: true,
         brand: true,
-        detail_color: true,
+        // 재고가 많은 순으로 정렬
+        detail_color: {
+          orderBy: {
+            stock: 'desc',
+          },
+        },
       },
     });
 
