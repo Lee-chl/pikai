@@ -54,6 +54,28 @@ export class CartService {
     });
   }
 
+  /* 로그인 회원의 장바구니 조회 또는 생성 */
+  async findOrCreateMyCart(userId: number) {
+    // 로그인 회원의 기존 장바구니를 확인합니다.
+    const existingCart = await this.prisma.cart.findUnique({
+      where: {
+        userId,
+      },
+    });
+
+    // 장바구니가 이미 있다면 새로 만들지 않고 그대로 반환합니다.
+    if (existingCart) {
+      return existingCart;
+    }
+
+    // 새 회원처럼 장바구니가 없다면 로그인 회원 ID로 생성합니다.
+    return this.prisma.cart.create({
+      data: {
+        userId,
+      },
+    });
+  }
+
   /** 전체 장바구니 조회 관리자용 */
   async findAll() {
     return this.prisma.cart.findMany({
