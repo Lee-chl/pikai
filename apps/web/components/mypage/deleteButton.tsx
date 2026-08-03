@@ -2,8 +2,9 @@
 
 import { Constants } from "@/common/constants";
 import styles from "./deleteButton.module.css";
+import { UserInfoType } from "@/types/userType";
 
-export default function DeleteButton() {
+export default function DeleteButton({ id }: UserInfoType) {
   const handleDelete = async () => {
     const userCancel = window.confirm(
       "정말 회원을 탈퇴하시겠습니까?\n(회원은 탈퇴 후 계정을 사용할 수 없으며 한 달 간 재가입이 불가능합니다.)",

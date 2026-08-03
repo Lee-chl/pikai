@@ -5,6 +5,13 @@ import Link from "next/link";
 import DeleteButton from "../../../../components/mypage/deleteButton";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "마이페이지",
+  description:
+    "회원의 주문 정보와 화장대, 정보를 수정할 수 있는 마이페이지입니다.",
+};
 
 export default async function Page() {
   const cookieStore = await cookies();
