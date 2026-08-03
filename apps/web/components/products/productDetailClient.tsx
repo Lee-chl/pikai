@@ -243,16 +243,18 @@ export default function ProductDetailClient({
     // 로그인할 때 쿠키에 저장한 JWT 토큰을 가져옵니다.
     const token = Cookies.get("accessToken");
     // 회원 ID로 장바구니 조회 API를 호출합니다.
-    const response = await fetch(`${process.env.NEXT_PUBLIC_BACK_URL}/cart`, {
-      method: "GET",
-      cache: "no-store",
-
-      // JWT 인증이 필요한 API이므로 토큰을 함께 보냅니다.
-      headers: {
-        Authorization: `Bearer ${token}`,
+    // 로그인 회원의 장바구니를 조회합니다.
+    // 장바구니가 없으면 백엔드에서 새로 생성한 뒤 반환합니다.
+    const response = await fetch(
+      `${process.env.NEXT_PUBLIC_BACK_URL}/cart/me`,
+      {
+        method: "POST",
+        cache: "no-store",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
       },
-    });
-
+    );
     // 백엔드에서 404, 500 등의 오류가 발생한 경우
     if (!response.ok) {
       // 백엔드 오류 메시지를 읽습니다.
