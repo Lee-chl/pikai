@@ -35,8 +35,12 @@ export default function ProductDetailClient({
     useState<RecommendationResponseType | null>(null);
 
   // AI 추천 팝업 열림 여부
-
   const [isOpen, setIsOpen] = useState(false);
+  // AI 추천 팝업 확인 후 어디로 이동할지 구분합니다.
+  // cart: 장바구니 페이지로 이동
+  // buy: 결제 페이지로 이동
+  const [aiAction, setAiAction] = useState<"cart" | "buy" | null>(null);
+
   //  false: AI 분석 중이 아님, true: AI 분석 중임
   const [isAiLoading, setIsAiLoading] = useState(false);
   //오류 메시지를 저장할 state를 추가
@@ -328,6 +332,7 @@ export default function ProductDetailClient({
       // 옵션을 1개 선택한 경우에만
       // AI 추천 팝업을 열고 추천 API를 실행합니다.
       if (selectedOptions.length === 1) {
+        setAiAction("cart");
         setIsAiLoading(true);
         setAiError(null);
         setIsOpen(true);
@@ -387,8 +392,13 @@ export default function ProductDetailClient({
         console.log("장바구니 추가 결과:", addedCartItem);
       }
 
-      alert("상품을 장바구니에 담았습니다.");
-      router.push("/cart");
+      //alert("상품을 장바구니에 담았습니다.");
+      //router.push("/cart");
+      // 옵션이 여러 개라면 AI 팝업이 없으므로 바로 장바구니로 이동합니다.
+      if (selectedOptions.length > 1) {
+        alert("상품을 장바구니에 담았습니다.");
+        router.push("/cart");
+      }
     } catch (error) {
       console.error("장바구니 추가 오류:", error);
 
@@ -475,6 +485,7 @@ export default function ProductDetailClient({
       // 옵션을 1개 선택한 경우에만
       // AI 추천 팝업을 열고 추천 API를 실행합니다.
       if (selectedOptions.length === 1) {
+        setAiAction("buy");
         setIsAiLoading(true);
         setAiError(null);
         setIsOpen(true);
@@ -531,9 +542,11 @@ export default function ProductDetailClient({
       }));
 
       console.log("바로 구매 데이터:", orderData);
-
-      // 장바구니 주문이 아닌 바로구매 주문으로 결제 페이지에 이동합니다.
-      router.push(`/pay?isCartOrder=false&selectedOnly=true`);
+      // 옵션이 여러 개이면 AI 추천 팝업이 없으므로
+      // 상품 저장이 끝난 뒤 결제 페이지로 바로 이동합니다.
+      if (selectedOptions.length > 1) {
+        router.push(`/pay?isCartOrder=false&selectedOnly=true`);
+      }
     } catch (error) {
       console.error("AI 추천 오류:", error);
       setAiError("AI 추천 결과를 불러오지 못했습니다.");
@@ -553,8 +566,26 @@ export default function ProductDetailClient({
         isAiLoading={isAiLoading}
         aiError={aiError}
         onClose={() => {
+          // AI 추천 팝업을 닫습니다.
           setIsOpen(false);
           setAiError(null);
+
+          // 장바구니 버튼으로 연 팝업이면 장바구니로 이동합니다.
+          if (aiAction === "cart") {
+            // AI 추천 결과 확인 후 장바구니 저장 완료 알림을 보여줍니다.
+            alert("상품을 장바구니에 담았습니다.");
+
+            // 알림 확인 후 장바구니 페이지로 이동합니다.
+            router.push("/cart");
+          }
+
+          // 바로구매 버튼으로 연 팝업이면 결제 페이지로 이동합니다.
+          if (aiAction === "buy") {
+            router.push("/pay?isCartOrder=false&selectedOnly=true");
+          }
+
+          // 다음 실행을 위해 상태를 초기화합니다.
+          setAiAction(null);
         }}
       />
 
