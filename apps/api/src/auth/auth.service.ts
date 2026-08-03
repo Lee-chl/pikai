@@ -9,6 +9,7 @@ import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
 import { Constants } from 'src/common/constants';
 import { LoginDto } from './dto/login.dto';
+import { PersonalColor } from '@prisma/client';
 
 @Injectable()
 export class AuthService {
@@ -52,6 +53,26 @@ export class AuthService {
     const isRight = await bcrypt.compare(dto.password, user.password);
     if (!isRight)
       throw new UnauthorizedException('이메일 또는 비밀번호가 틀러요');
+
+    // jwt 내려주기 위해 암호화
+    const payload = {
+      sub: user.id,
+      email: user.email,
+      isAdmin: user.is_admin,
+      tone: user.personal_color,
+    };
+
+    return { access_token: this.jwtService.sign(payload) };
+  }
+
+  async changePersonalColor(userId: number, personalColor: PersonalColor) {
+    const user = await this.userService.update(
+      { personal_color: personalColor },
+      userId,
+    );
+    if (!user) {
+      throw new UnauthorizedException('유저를 수정 중 오류 발생');
+    }
 
     // jwt 내려주기 위해 암호화
     const payload = {

@@ -53,24 +53,30 @@ export default function PersonalColor() {
     const token = Cookies.get("accessToken");
 
     try {
-      const response = await fetch(`${Constants.back_url}/user`, {
+      const response = await fetch(`${Constants.back_url}/auth/personalColor`, {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({
-          personal_color: personalColor,
+          personalColor: personalColor,
         }),
       });
 
       if (!response.ok) {
         throw new Error(response.statusText);
       }
-
+      const data = await response.json();
+      if (!data.access_token) {
+        alert("퍼스널 컬러 변경 중 오류 발생");
+        return;
+      }
+      Cookies.set("accessToken", data.access_token, { path: "/" });
       SetUserTone(personalColor);
       SetIsEditing(false);
       alert("저장이 성공적으로 완료되었습니다.");
+      window.location.reload();
     } catch (error) {
       console.error(error);
     }
