@@ -35,11 +35,20 @@ export default async function Page({
     console.error(error);
   }
 
-  if (!orderList) {
+  if (orderList.length < 1) {
     return (
       <div>
         <h3 className={styles.titleMain}>주문/결제 목록</h3>
-        <p>주문 내역이 없습니다.</p>
+        <p
+          style={{
+            marginLeft: "2rem",
+            textAlign: "center",
+            marginTop: "6rem",
+            marginBottom: "6rem",
+          }}
+        >
+          주문 내역이 없습니다.
+        </p>
       </div>
     );
   }
