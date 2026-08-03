@@ -193,6 +193,12 @@ export default function CartPage() {
 
   // 체크된 상품만 결제 페이지로 보내는 함수입니다.
   const handleSelectedOrder = async () => {
+    // 체크된 상품이 하나도 없으면 결제를 진행하지 않습니다.
+    if (selectedItems.length === 0) {
+      alert("주문할 상품을 선택해 주세요.");
+      return;
+    }
+
     try {
       // 현재 화면의 체크 상태를 DB의 is_selected 값에 저장합니다.
       await updateSelectedItems();
