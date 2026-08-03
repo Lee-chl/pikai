@@ -12,10 +12,6 @@ const sortOptions: {
   value: ProductSortType;
 }[] = [
   {
-    label: "판매순",
-    value: "sales",
-  },
-  {
     label: "최신등록순",
     value: "latest",
   },
@@ -61,21 +57,16 @@ export default function SortMenu({
           >
             <button
               type="button"
-              onClick={() => {
-                //   onSortChange(option.value === "sales" ? "latest" : option.value)
-                // }
-                // aria-pressed={isSelected}
-                // 판매순 기능이 아직 없으므로 최신등록순으로 요청
-                if (option.value === "sales") {
-                  onSortChange("latest");
-                  return;
-                }
-
-                onSortChange(option.value);
+              onClick={() => onSortChange(option.value)}
+              onMouseEnter={(event) => {
+                event.currentTarget.style.color = "#ff8f88";
               }}
-              aria-pressed={
-                option.value === "sales" ? false : selectedSort === option.value
-              }
+              onMouseLeave={(event) => {
+                event.currentTarget.style.color = isSelected
+                  ? "#111111"
+                  : "#777777";
+              }}
+              aria-pressed={isSelected}
               style={{
                 padding: "6px 22px",
                 border: "none",
