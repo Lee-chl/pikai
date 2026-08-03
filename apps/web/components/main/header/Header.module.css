@@ -44,20 +44,6 @@
   padding-bottom: 13px;
 }
 
-.category::after {
-  content: "";
-
-  position: absolute;
-  bottom: 0;
-  left: 50%;
-  transform: translateX(-50%);
-
-  width: min(1200px, calc(100% - 80px));
-  height: 1px;
-
-  background: #ececec;
-}
-
 .category a {
   position: relative;
 
