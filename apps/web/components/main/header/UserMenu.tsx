@@ -53,6 +53,9 @@ export default async function UserMenu() {
       <Link href={`/order`}>주문 내역</Link>
       <Link href={`/user/mypage`}>마이페이지</Link>
       <Link href={`/rating`}>나만의 화장대</Link>
+      <p style={{ fontSize: "14px" }}>
+        <strong>{user.name}</strong> 님
+      </p>
       <LogoutButton />
     </div>
   );
