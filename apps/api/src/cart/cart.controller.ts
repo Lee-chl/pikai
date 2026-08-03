@@ -38,14 +38,15 @@ export class CartController {
     return this.cartService.createCart(createCartDto);
   }
 
-  // @ApiOperation({
-  //   summary: '모든 회원의 장바구니 조회 (관리자)',
-  //   description: '모든 장바구니를 조회합니다.',
-  // })
-  // @Get()
-  // findAll() {
-  //   return this.cartService.findAll();
-  // }
+  @Post('me')
+  @ApiOperation({
+    summary: '로그인 회원 장바구니 조회 또는 생성',
+    description:
+      '로그인 회원의 장바구니가 있으면 기존 장바구니를 반환하고, 없으면 새로 생성합니다.',
+  })
+  findOrCreateMyCart(@CurrentUser('id') userId: number) {
+    return this.cartService.findOrCreateMyCart(userId);
+  }
 
   @Get()
   @ApiOperation({
