@@ -270,6 +270,19 @@ export default function CartPage() {
             },
           },
         );
+        //if (!response.ok) {
+        //  throw new Error("장바구니를 불러오지 못했습니다.");
+        // }
+        // 새로 가입한 회원은 아직 장바구니가 생성되지 않아
+        // 404가 올 수 있으므로 빈 장바구니 화면으로 처리합니다.
+        if (response.status === 404) {
+          setCart(null);
+          setSelectedItems([]);
+          setError("");
+          return;
+        }
+
+        // 404가 아닌 실제 서버 오류는 기존 오류 처리로 넘깁니다.
         if (!response.ok) {
           throw new Error("장바구니를 불러오지 못했습니다.");
         }
