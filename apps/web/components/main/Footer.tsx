@@ -7,10 +7,10 @@ export default function Footer() {
       <footer className={styles.footer}>
         <div className={styles.inner}>
           <div className={styles.top}>
-            <Link href="/">이용약관</Link>
+            <Link href="/termsOfUse">이용약관</Link>
             <Link href="/">개인정보처리방침</Link>
             <Link href="/customerCenter">고객센터</Link>
-            <Link href="/">FAQ</Link>
+            <Link href="/FAQ">FAQ</Link>
           </div>
 
           <div className={styles.info}>

@@ -1,0 +1,13 @@
+.termsContainer {
+  max-width: 800px;
+  margin: 40px auto;
+  padding: 0 20px;
+  color: #4a3e3e;
+  line-height: 1.6;
+  text-align: center;
+}
+
+.ul {
+  margin-top: 3rem;
+  list-style: none;
+}
