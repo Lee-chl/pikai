@@ -2,6 +2,19 @@ import { Injectable } from '@nestjs/common';
 import { PersonalColor } from '@prisma/client';
 import { PrismaService } from 'src/prisma/prisma.service';
 
+const Tone: Record<string, string> = {
+  WARM: '웜',
+  COOL: '쿨',
+  SPRINGWARM: '봄 웜',
+  SUMMERCOOL: '여름 쿨',
+  SUMMERMUTE: '여름 뮤트',
+  FALLWARM: '가을 웜톤',
+  FALLMUTE: '가을 뮤트',
+  FALLDEEP: '가을 딥',
+  WINTERCOOL: '겨울 쿨',
+  WINTERDEEP: '겨울 딥',
+};
+
 @Injectable()
 export class ToneService {
   constructor(private readonly prisma: PrismaService) {}
@@ -47,7 +60,7 @@ export class ToneService {
     });
 
     if (tone && (products.length === 0 || !products[0][tone])) {
-      tone = undefined; // 문구 변경을 위해 tone을 비움
+      tone = undefined;
 
       products = await this.prisma.sale.findMany({
         include: {
@@ -64,9 +77,11 @@ export class ToneService {
       });
     }
 
+    const toneName = tone ? Tone[tone] || tone : null;
+
     return {
       products,
-      title: tone ? `${tone} 상품 베스트` : '베스트 상품',
+      title: toneName ? `${toneName}톤 베스트 상품` : '베스트 상품',
     };
   }
 }
