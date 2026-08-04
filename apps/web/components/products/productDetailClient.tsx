@@ -283,6 +283,14 @@ export default function ProductDetailClient({
 
   // 장바구니 버튼을 눌렀을 때 실행되는 함수
   const handleAddCart = async () => {
+    // 로그인할 때 쿠키에 저장한 JWT 토큰을 가져옵니다.
+    const token = Cookies.get("accessToken");
+
+    // 로그인하지 않은 경우 로그인 페이지로 이동합니다.
+    if (!token) {
+      router.push("/user/login");
+      return;
+    }
     // 이미 API 요청 중이면 다시 실행하지 않습니다.
     if (isCartLoading) {
       return;
@@ -416,6 +424,14 @@ export default function ProductDetailClient({
   //바로구매 함수
 
   const handleBuyNow = async () => {
+    // 로그인할 때 쿠키에 저장한 JWT 토큰을 가져옵니다.
+    const token = Cookies.get("accessToken");
+
+    // 로그인하지 않은 경우 결제를 진행하지 않고 로그인 페이지로 이동합니다.
+    if (!token) {
+      router.push("/user/login");
+      return;
+    }
     if (selectedOptions.length === 0) {
       alert("옵션을 하나 이상 선택해 주세요.");
       return;
@@ -437,8 +453,6 @@ export default function ProductDetailClient({
     }
 
     try {
-      // 로그인할 때 쿠키에 저장한 JWT 토큰을 가져옵니다.
-      const token = Cookies.get("accessToken");
       // 로그인 회원의 장바구니 ID를 가져옵니다.
       // 바로구매 상품도 CartItem에 is_now=true로 임시 저장하기 위해 필요합니다.
       const cartId = await getCartId();
