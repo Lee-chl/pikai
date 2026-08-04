@@ -11,17 +11,17 @@
   width: 100%;
   margin: 0 auto;
 
-  padding: 40px 0 80px;
+  padding: 40px 0 30px;
 }
 
 .image {
   max-width: calc(100% - 80px);
 
-  border-radius: 18px;
+  border-radius: 10px;
 
   object-fit: cover;
 
-  margin-bottom: 70px;
+  margin-bottom: 50px;
 }
 
 .button {
@@ -31,7 +31,7 @@
 
   gap: 8px;
 
-  margin-top: 50px;
+  margin-top: 30px;
 
   padding: 14px 32px;
 

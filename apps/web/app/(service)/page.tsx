@@ -12,8 +12,8 @@ export default async function Home() {
           className={styles.image}
           src={mainBanner}
           alt="광고 배너 이미지"
-          width={1000}
-          height={450}
+          width={1300}
+          height={600}
           loading="eager"
         />
         <Ranking />
