@@ -5,5 +5,4 @@ export interface RecommendationResponseType {
   title: string;
   message: string;
   recommend: boolean;
-  isMock: boolean;
 }

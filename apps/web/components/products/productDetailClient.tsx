@@ -57,17 +57,26 @@ export default function ProductDetailClient({
   );
 
   const [mainImage, setMainImage] = useState(product.color_main_image);
+  // 로그인할 때 쿠키에 저장한 JWT 토큰을 가져옵니다.
+  const token = Cookies.get("accessToken");
 
   // AI 추천 API 호출
   const fetchRecommendation = async (
     detailColorId: number,
   ): Promise<RecommendationResponseType> => {
+    // 로그인할 때 쿠키에 저장한 JWT 토큰을 가져옵니다.
+    const token = Cookies.get("accessToken");
+
     const response = await fetch(
       `${process.env.NEXT_PUBLIC_BACK_URL}/recommendations/color`,
       {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+
+          // JWT 인증이 적용된 추천 API이므로
+          // 로그인 사용자의 토큰을 전송합니다.
+          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({
           detailColorId,
@@ -81,11 +90,12 @@ export default function ProductDetailClient({
 
     const data = await response.json();
 
-    // 백엔드 응답 형태에 맞게 추천 결과를 추출합니다.
+    // 백엔드 응답 구조가 달라질 가능성을 고려하여
+    // 실제 추천 결과 데이터를 추출합니다.
     const recommendationData =
       data.aiResult ?? data.data ?? data.recommendation ?? data;
 
-    // 점수가 문자열로 오거나 다른 이름으로 오는 경우를 함께 처리
+    // 점수가 문자열이거나 다른 필드 이름으로 전달되는 경우도 처리합니다.
     const score = Number(
       recommendationData.answer ??
         recommendationData.score ??
@@ -94,6 +104,7 @@ export default function ProductDetailClient({
         0,
     );
 
+    // 추천 점수에 따라 팝업에 표시할 문구를 반환합니다.
     const getScoreMessage = (scoreValue: number): string => {
       switch (scoreValue) {
         case 6:
@@ -107,10 +118,6 @@ export default function ProductDetailClient({
           return `기존에 쓰시던 색과 매우 흡사해서 현재 사용하시는 컬러가 만족스러우셨다면 아주 실패 없는 선택이 될 거예요!`;
 
         case 4:
-          return `기존 컬러와 비슷한 무드이긴 하지만 미세한 차이가 있어서
-
-평소 즐겨 쓰시던 느낌에서 약간의 변화를 주고 싶으실 때 적합할 것 같아요.`;
-
         case 3:
           return `기존 컬러와 비슷한 무드이긴 하지만 미세한 차이가 있어서
 
@@ -125,19 +132,17 @@ export default function ProductDetailClient({
       }
     };
 
+    // 숫자로 변환할 수 없는 점수는 0으로 처리합니다.
     const safeScore = Number.isNaN(score) ? 0 : score;
 
+    // 프론트 팝업에서 사용하는 형태로 결과를 정리합니다.
     const result: RecommendationResponseType = {
       score: safeScore,
       messageType: recommendationData.messageType ?? "",
       title: recommendationData.title ?? "추천 결과",
       message: getScoreMessage(safeScore),
       recommend: recommendationData.recommend ?? false,
-      isMock: recommendationData.isMock ?? false,
     };
-
-    console.log("팝업 메시지 확인:", result.message);
-    console.log("팝업에 저장할 추천 결과:", result);
 
     return result;
   };
@@ -236,7 +241,6 @@ export default function ProductDetailClient({
     0,
   );
 
-  //==================================================
   // 회원 ID를 이용해서 해당 회원의 장바구니 ID를 가져오는 함수
   //const getCartId = async (userId: number): Promise<number> => {
   const getCartId = async (): Promise<number> => {
@@ -268,8 +272,6 @@ export default function ProductDetailClient({
     // 백엔드가 반환한 장바구니 데이터를 JSON으로 변환합니다.
     const cart = await response.json();
 
-    console.log("조회한 장바구니 데이터:", cart);
-
     // 응답에 장바구니 ID가 없는 경우
     if (!cart.id) {
       throw new Error("장바구니 ID를 확인할 수 없습니다.");
@@ -278,7 +280,7 @@ export default function ProductDetailClient({
     // 장바구니 ID만 반환합니다.
     return cart.id;
   };
-  //==================================================
+
   // 장바구니 버튼을 눌렀을 때 실행되는 함수
   const handleAddCart = async () => {
     // 이미 API 요청 중이면 다시 실행하지 않습니다.
@@ -350,8 +352,6 @@ export default function ProductDetailClient({
       // 회원의 장바구니를 조회하여 cart.id를 가져옵니다.
       const cartId = await getCartId();
 
-      console.log("가져온 장바구니 ID:", cartId);
-
       // 선택한 모든 옵션을 하나씩 장바구니에 추가합니다.
       for (const option of selectedOptions) {
         // 백엔드 CreateCartitemDto 형식에 맞춘 요청 데이터입니다.
@@ -360,8 +360,6 @@ export default function ProductDetailClient({
           detail_color_id: option.color.id,
           quantity: option.quantity,
         };
-
-        console.log("장바구니에 보낼 데이터:", cartItemData);
 
         // 현재 옵션 하나를 장바구니에 추가합니다.
         const cartResponse = await fetch(
@@ -390,12 +388,8 @@ export default function ProductDetailClient({
 
         // 응답 본문은 한 번만 읽습니다.
         const addedCartItem = await cartResponse.json();
-
-        console.log("장바구니 추가 결과:", addedCartItem);
       }
 
-      //alert("상품을 장바구니에 담았습니다.");
-      //router.push("/cart");
       // 옵션이 여러 개라면 AI 팝업이 없으므로 바로 장바구니로 이동합니다.
       if (selectedOptions.length > 1) {
         alert("상품을 장바구니에 담았습니다.");
@@ -419,7 +413,6 @@ export default function ProductDetailClient({
     }
   };
 
-  //================================
   //바로구매 함수
 
   const handleBuyNow = async () => {
@@ -450,9 +443,6 @@ export default function ProductDetailClient({
       // 바로구매 상품도 CartItem에 is_now=true로 임시 저장하기 위해 필요합니다.
       const cartId = await getCartId();
 
-      console.log("바로구매용 장바구니 ID:", cartId);
-
-      //=======================================
       // 이전 바로구매에서 남아 있는 is_now=true 상품을 먼저 삭제합니다.
       // 일반 장바구니 상품인 is_now=false 상품은 삭제되지 않습니다.
       const deleteBuyNowResponse = await fetch(
@@ -475,8 +465,6 @@ export default function ProductDetailClient({
 
       const deleteResult = await deleteBuyNowResponse.json();
 
-      console.log("기존 바로구매 상품 삭제 결과:", deleteResult);
-      //=======================================
       // 첫 번째로 선택한 색상으로 AI 추천 결과를 요청
       const selectedColor = selectedOptions[0];
 
@@ -509,7 +497,7 @@ export default function ProductDetailClient({
           setIsAiLoading(false);
         }
       }
-      //==========================================
+
       // 선택한 모든 옵션을 바로구매용 CartItem으로 저장합니다.
       for (const option of selectedOptions) {
         const buyNowCartItemData = {
@@ -520,8 +508,6 @@ export default function ProductDetailClient({
           // 바로구매 상품이므로 true로 저장합니다.
           is_now: true,
         };
-
-        console.log("바로구매용 장바구니 데이터:", buyNowCartItemData);
 
         const cartResponse = await fetch(
           `${process.env.NEXT_PUBLIC_BACK_URL}/cart/items`,
@@ -544,8 +530,6 @@ export default function ProductDetailClient({
         }
 
         const savedCartItem = await cartResponse.json();
-
-        console.log("바로구매 상품 저장 결과:", savedCartItem);
       }
 
       // 바로 구매 데이터
@@ -555,7 +539,6 @@ export default function ProductDetailClient({
         quantity: option.quantity,
       }));
 
-      console.log("바로 구매 데이터:", orderData);
       // 옵션이 여러 개이면 AI 추천 팝업이 없으므로
       // 상품 저장이 끝난 뒤 결제 페이지로 바로 이동합니다.
       if (selectedOptions.length > 1) {
