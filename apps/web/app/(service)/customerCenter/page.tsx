@@ -10,8 +10,8 @@ export default async function Page() {
         <Image
           src={customerCenter}
           alt={`pikai_customer_center`}
-          width={1300}
-          height={900}
+          width={1100}
+          height={600}
           loading="eager"
         />
       </div>
