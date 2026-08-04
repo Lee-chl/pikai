@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import styles from "./page.module.css";
 import { Cart } from "@/types/cartType";
 import Cookies from "js-cookie";
-
+import Link from "next/link";
 // 장바구니 페이지
 export default function CartPage() {
   const router = useRouter();
@@ -387,18 +387,27 @@ export default function CartPage() {
                     />
 
                     {/* 상품 이미지 */}
-                    <img
-                      src={`${process.env.NEXT_PUBLIC_IMAGE_URL}/${item.detailColor.products.color_main_image}`}
-                      alt={item.detailColor.products.name}
-                      className={styles.productImage}
-                    />
-
+                    <Link href={`/product/${item.detailColor.products.id}`}>
+                      <img
+                        src={`${process.env.NEXT_PUBLIC_IMAGE_URL}/${item.detailColor.products.color_main_image}`}
+                        alt={item.detailColor.products.name}
+                        className={styles.productImage}
+                      />
+                    </Link>
                     {/* 상품 정보 */}
                     <div className={styles.productInfo}>
                       {/* 상품명 */}
-                      <h3 className={styles.productName}>
-                        {item.detailColor.products.name}
-                      </h3>
+                      <Link
+                        href={`/product/${item.detailColor.products.id}`}
+                        style={{
+                          color: "inherit",
+                          textDecoration: "none",
+                        }}
+                      >
+                        <h3 className={styles.productName}>
+                          {item.detailColor.products.name}
+                        </h3>
+                      </Link>
 
                       {/* 원래 상품 가격 */}
                       <p className={styles.originalPrice}>
