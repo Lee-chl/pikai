@@ -17,7 +17,7 @@ export default function ProductList({ products }: ProductListProps) {
       style={{
         display: "grid",
         gridTemplateColumns: "repeat(5, 1fr)",
-        gap: "20px",
+        gap: "30px",
       }}
     >
       {products.map((product) => {
@@ -52,6 +52,7 @@ export default function ProductList({ products }: ProductListProps) {
                   display: "flex",
                   flexDirection: "column",
                   alignItems: "center",
+                  marginTop: "20px",
                 }}
               >
                 {product.name}

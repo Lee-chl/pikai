@@ -158,3 +158,6 @@ AzuriteConfig*
 **/__azurite_db_blob_extent__.json
 azurite/
 *.db
+
+**/__azurite_db_queue_extent__.json
+**/__azurite_db_queue__.json
