@@ -5,13 +5,10 @@ import {
 } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { RecommendationRequestDto } from './dto/recommendation-request.dto';
-
-//import { AzureOpenAI } from 'openai';
 import OpenAI from 'openai';
 
 @Injectable()
 export class RecommendationsService {
-  AzureAiProvider: any;
   constructor(private readonly prisma: PrismaService) {}
 
   async recommendColor(dto: RecommendationRequestDto, userId: number) {
@@ -271,9 +268,6 @@ export class RecommendationsService {
     // endpoint 마지막의 /를 제거한 뒤 v1 경로 추가
     const baseURL = `${endpoint.replace(/\/$/, '')}/openai/v1/`;
 
-    console.log('Azure Base URL:', baseURL);
-    console.log('Azure Deployment:', deploymentId);
-
     const client = new OpenAI({
       apiKey: azureApiKey,
       baseURL,
@@ -301,8 +295,6 @@ export class RecommendationsService {
 
       const content = result.choices[0]?.message?.content?.trim();
 
-      console.log('content =', content);
-
       if (!content) {
         throw new NotFoundException('Azure OpenAI 응답이 비어 있습니다.');
       }
@@ -315,8 +307,6 @@ export class RecommendationsService {
       // const answer가 아니라, 위에서 선언한 answer에 값 저장
       answer = content;
 
-      console.log('Azure OpenAI 응답:', content);
-
       // 여기 아래에는 기존 return 코드가 있으면 그대로 두세요.
     } catch (error: any) {
       console.error('========== Azure OpenAI 오류 ==========');
@@ -327,8 +317,6 @@ export class RecommendationsService {
 
       throw error;
     }
-
-    //========================================
 
     return {
       // 테스트할 때 AI에 어떤 정보가 전달됐는지 확인하기 위한 값
@@ -362,7 +350,7 @@ export class RecommendationsService {
         price: detailColor.products.price,
       },
 
-      // MockAiProvider에서 반환한 결과 사용
+      // Azure OpenAI가 반환한 추천 점수를 사용합니다.
       answer,
     };
   }
