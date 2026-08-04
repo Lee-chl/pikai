@@ -13,6 +13,7 @@
   "dependencies": {
     "@repo/common": "workspace:*",
     "@repo/ui": "workspace:*",
+    "@tosspayments/payment-widget-sdk": "^0.12.2",
     "js-cookie": "^3.0.8",
     "jwt-decode": "^4.0.0",
     "lucide-react": "^1.25.0",
