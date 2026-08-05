@@ -49,10 +49,13 @@ jobs:
           cp -R apps/api/dist/. deploy-out/dist/
           cp -R apps/api/src/. deploy-out/src/
           cp apps/api/package.json deploy-out/package.json
+
           # 3. Prisma 스키마 복사 (존재할 경우)
           if [ -d apps/api/prisma ]; then
             cp -r apps/api/prisma deploy-out/prisma
           fi
+
+          sed -i '/"@repo\/common"/d' deploy-out/package.json
 
           # 4. deploy-out 내부에서 pnpm으로 독립 node_modules 설치
           cd deploy-out
