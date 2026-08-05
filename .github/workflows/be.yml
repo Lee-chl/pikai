@@ -57,6 +57,8 @@ jobs:
 
           sed -i '/"@repo\/common"/d' deploy-out/package.json
 
+          node dist/src/main.js
+
           # 4. deploy-out 내부에서 pnpm으로 독립 node_modules 설치
           cd deploy-out
           npm install --omit=dev --legacy-peer-deps
