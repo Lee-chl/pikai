@@ -4,6 +4,7 @@ import { CreatePayDto } from './dto/create-pay.dto';
 import { ApiBearerAuth, ApiOperation } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth/jwt-auth.guard';
 import { CurrentUser } from 'src/common/current-user.decorator';
+import { CompletePayDto } from './dto/complete-pay.dto';
 
 @Controller('pay')
 @UseGuards(JwtAuthGuard)
@@ -20,25 +21,8 @@ export class PayController {
     return this.payService.create(userId, createPayDto);
   }
 
-  @Post('page')
-  @ApiOperation({ summary: '결제 페이지 조회' })
-  findOne(
-    @Body()
-    body: {
-      isCartOrder: boolean;
-      selectedOnly?: boolean;
-      buyItems?: {
-        detailColorId: number;
-        quantity: number;
-      }[];
-    },
-    @CurrentUser('id') userId: number,
-  ) {
-    return this.payService.findOne(
-      userId,
-      body.isCartOrder,
-      body.selectedOnly,
-      body.buyItems,
-    );
+  @Post('complete')
+  async completePay(@Body() dto: CompletePayDto) {
+    return await this.payService.completePay(dto);
   }
 }

@@ -57,17 +57,11 @@ jobs:
 
           # 4. deploy-out 내부에서 pnpm으로 독립 node_modules 설치
           cd deploy-out
-          echo "shamefully-hoist=true" > .npmrc
-          echo "node-linker=hoisted" >> .npmrc
-          echo "public-hoist-pattern[]=@nestjs*" >> .npmrc
-          echo "public-hoist-pattern[]=@prisma*" >> .npmrc
-          echo "public-hoist-pattern[]=*express*" >> .npmrc
-
-          # npm 대신 pnpm을 사용하여 동결을 해제하고 프로덕션 전용 패키지 설치
-          pnpm install --prod --no-frozen-lockfile
-
-          # 5. 임시 설정 파일 정리
-          rm -f .npmrc
+          npm install --omit=dev --legacy-peer-deps
+          echo "=== Checking @nestjs/core installation ==="
+          ls -la node_modules/@nestjs/core || echo "❌ @nestjs/core NOT FOUND!"
+          echo "=== Checking dist folder structure ==="
+          ls -R dist
 
       - name: Zip artifact for deployment
         run: cd deploy-out && zip -qr "$GITHUB_WORKSPACE/release.zip" .
