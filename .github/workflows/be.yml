@@ -33,8 +33,10 @@ jobs:
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
 
-      - name: Build API
-        run: pnpm run build:api
+      - name: Build Packages and API
+        run: |
+          pnpm --filter @repo/common build || pnpm run build
+          pnpm run build:api
 
       # 워크스페이스와 분리해 독립 설치. hoisted 라야 심볼릭 링크 없이 담긴다.
       - name: Create deployment folder
@@ -60,14 +62,9 @@ jobs:
           npm install --omit=dev --legacy-peer-deps
 
           mkdir -p node_modules/@repo
-          if [ -d "../packages/common/dist" ]; then
-            cp -R ../packages/common node_modules/@repo/common
-          else
-            cp -R ../packages/common node_modules/@repo/common
-          fi
+          cp -R ../packages/common node_modules/@repo/common
 
-          # 6. [검증 로그]
-          echo "=== Checking @repo/common in node_modules ==="
+          echo "=== Checking @repo/common inside deploy-out ==="
           ls -la node_modules/@repo/common
 
       - name: Zip artifact for deployment
