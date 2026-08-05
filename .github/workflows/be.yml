@@ -27,10 +27,6 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Generate Prisma Client
-        # run: pnpm --filter api prisma generate
-        run: pnpm prisma:generate
-
       - name: Build
         run: pnpm turbo run build --filter=api
 
@@ -40,8 +36,13 @@ jobs:
           mkdir -p deploy-out
           cp -r apps/api/dist deploy-out/dist
           cp apps/api/package.json deploy-out/package.json
+          # 2. Prisma schema 복사 (프로덕션 pnpm install 시 필요)
+          if [ -d "apps/api/prisma" ]; separator cp -r apps/api/prisma deploy-out/prisma; fi
+
           cd deploy-out
           pnpm install --prod --ignore-workspace --node-linker=hoisted --no-frozen-lockfile
+
+          npx prisma generate
 
       - name: Zip artifact for deployment
         run: cd deploy-out && zip -qr "$GITHUB_WORKSPACE/release.zip" .
