@@ -49,7 +49,9 @@ jobs:
 
            pnpm --filter api deploy --prod deploy-out
 
-           cp -r apps/api/dist deploy-out/dist
+          mkdir -p deploy-out/dist
+
+          cp -r apps/api/dist/* deploy-out/dist/
 
            if [ -d apps/api/prisma ]; then
              cp -r apps/api/prisma deploy-out/prisma
