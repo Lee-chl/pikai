@@ -42,14 +42,6 @@ jobs:
       - name: Build
         run: pnpm turbo run build --filter=api
 
-      - name: Check build output
-        run: |
-          echo "===== api dist ====="
-          ls -al apps/api/dist || true
-
-          echo "===== dist files ====="
-          find apps/api/dist -maxdepth 2 -type f || true
-
       # 워크스페이스와 분리해 독립 설치. hoisted 라야 심볼릭 링크 없이 담긴다.
       - name: Create deployment folder
         run: |
@@ -59,11 +51,16 @@ jobs:
 
           mkdir -p deploy-out/dist
 
-          cp -r apps/api/dist/* deploy-out/dist/
+          cp -R apps/api/dist/. deploy-out/dist/
 
            if [ -d apps/api/prisma ]; then
              cp -r apps/api/prisma deploy-out/prisma
            fi
+          # 불필요한 개발 파일 제거
+          rm -rf deploy-out/src
+          rm -f deploy-out/tsconfig.json
+          rm -f deploy-out/nest-cli.json
+          rm -f deploy-out/eslint.config.mjs
 
       - name: Zip deployment package
         run: |
@@ -75,14 +72,6 @@ jobs:
         with:
           name: api-app
           path: release.zip
-
-      - name: Check deploy output
-        run: |
-          echo "===== deploy dist ====="
-          ls -al deploy-out/dist || true
-
-          echo "===== deploy files ====="
-          find deploy-out -maxdepth 3 -type f | head -100
 
   deploy:
     runs-on: ubuntu-latest
