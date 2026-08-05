@@ -45,7 +45,6 @@ jobs:
           cp -r apps/api/dist deploy-out/dist
           cp -r apps/api/prisma deploy-out/prisma
           cp apps/api/prisma.config.ts deploy-out/prisma.config.ts
-          cp apps/api/package.deploy.json deploy-out/package.json
           cp apps/api/start.sh deploy-out/start.sh
           chmod +x deploy-out/start.sh
 
