@@ -6,8 +6,11 @@ on:
       - main
     paths:
       - "apps/api/**"
+      - "packages/**"
       - "pnpm-lock.yaml"
+      - "turbo.json"
       - ".github/workflows/be.yml"
+
   workflow_dispatch:
 
 jobs:
@@ -15,21 +18,28 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout
+        uses: actions/checkout@v4
 
-      - uses: pnpm/action-setup@v4
-
-      - uses: actions/setup-node@v4
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
         with:
-          node-version: "24.x"
-          cache: "pnpm"
+          version: 9
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
+
       - name: Generate Prisma Client for Build
+        working-directory: apps/api
         env:
           DATABASE_URL: "postgresql://dummy:dummy@localhost:5432/dummy"
-        run: pnpm --filter api exec prisma generate
+        run: npx prisma generate
 
       - name: Build
         run: pnpm turbo run build --filter=api
@@ -37,21 +47,22 @@ jobs:
       # 워크스페이스와 분리해 독립 설치. hoisted 라야 심볼릭 링크 없이 담긴다.
       - name: Create deployment folder
         run: |
+          rm -rf deploy-out
 
-          # 1. pnpm deploy로 api 앱 및 연결된 내부 패키지(@repo/common 등)만 경량화 추출
-          pnpm --filter=api deploy --prod deploy-out
+           pnpm --filter api deploy --prod deploy-out
 
-          # 2. 빌드된 dist 폴더를 deploy-out 안으로 복사
-          cp -r apps/api/dist deploy-out/dist
+           cp -r apps/api/dist deploy-out/dist
 
-          # 3. deploy-out 안에서 Prisma Client 재생성 (Linux 실행 환경 맞춤)
+           if [ -d apps/api/prisma ]; then
+             cp -r apps/api/prisma deploy-out/prisma
+           fi
+
+      - name: Zip deployment package
+        run: |
           cd deploy-out
-          DATABASE_URL="postgresql://dummy:dummy@localhost:5432/dummy" npx prisma generate
+          zip -r ../release.zip .
 
-      - name: Zip artifact for deployment
-        run: cd deploy-out && zip -qr "$GITHUB_WORKSPACE/release.zip" .
-
-      - name: Upload artifact for deployment job
+      - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
           name: api-app
@@ -67,7 +78,7 @@ jobs:
         with:
           name: api-app
 
-      - name: "Deploy to Azure Web App"
+      - name: Deploy to Azure Web App
         uses: azure/webapps-deploy@v3
         with:
           app-name: "pikai-api"
