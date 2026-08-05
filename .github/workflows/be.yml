@@ -59,6 +59,9 @@ jobs:
           cd deploy-out
           echo "shamefully-hoist=true" > .npmrc
           echo "node-linker=hoisted" >> .npmrc
+          echo "public-hoist-pattern[]=@nestjs*" >> .npmrc
+          echo "public-hoist-pattern[]=@prisma*" >> .npmrc
+          echo "public-hoist-pattern[]=*express*" >> .npmrc
 
           # npm 대신 pnpm을 사용하여 동결을 해제하고 프로덕션 전용 패키지 설치
           pnpm install --prod --no-frozen-lockfile
