@@ -37,21 +37,17 @@ jobs:
       # 워크스페이스와 분리해 독립 설치. hoisted 라야 심볼릭 링크 없이 담긴다.
       - name: Create deployment folder
         run: |
-          mkdir -p deploy-out
 
+        # 1. pnpm deploy로 api 앱 및 연결된 내부 패키지(@repo/common 등)만 경량화 추출
+          pnpm --filter=api deploy --prod deploy-out
+
+          # 2. 빌드된 dist 폴더를 deploy-out 안으로 복사
           cp -r apps/api/dist deploy-out/dist
-          cp apps/api/package.json deploy-out/package.json
 
-          # 2. Prisma schema 복사 (프로덕션 pnpm install 시 필요)
-          if [ -d "apps/api/prisma" ]; then
-            cp -r apps/api/prisma deploy-out/prisma
-          fi
-
+          # 3. deploy-out 안에서 Prisma Client 재생성 (Linux 실행 환경 맞춤)
           cd deploy-out
-          pnpm install --prod --ignore-workspace --node-linker=hoisted --no-frozen-lockfile
-
-          # 배포 환경용 generate 실행 시에도 더미 ENV 전달
           DATABASE_URL="postgresql://dummy:dummy@localhost:5432/dummy" npx prisma generate
+          mkdir -p deploy-out
 
       - name: Zip artifact for deployment
         run: cd deploy-out && zip -qr "$GITHUB_WORKSPACE/release.zip" .
