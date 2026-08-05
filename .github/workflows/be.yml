@@ -47,8 +47,8 @@ jobs:
           echo "===== api dist ====="
           ls -al apps/api/dist || true
 
-    echo "===== dist files ====="
-    find apps/api/dist -maxdepth 2 -type f || true
+          echo "===== dist files ====="
+          find apps/api/dist -maxdepth 2 -type f || true
 
       # 워크스페이스와 분리해 독립 설치. hoisted 라야 심볼릭 링크 없이 담긴다.
       - name: Create deployment folder
@@ -77,12 +77,12 @@ jobs:
           path: release.zip
 
           - name: Check deploy output
-            run: |
-              echo "===== deploy dist ====="
-              ls -al deploy-out/dist || true
+          run: |
+            echo "===== deploy dist ====="
+            ls -al deploy-out/dist || true
 
-              echo "===== deploy files ====="
-              find deploy-out -maxdepth 3 -type f | head -100
+            echo "===== deploy files ====="
+            find deploy-out -maxdepth 3 -type f | head -100
   
 
   deploy:
