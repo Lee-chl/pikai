@@ -38,7 +38,7 @@ jobs:
       - name: Create deployment folder
         run: |
 
-        # 1. pnpm deploy로 api 앱 및 연결된 내부 패키지(@repo/common 등)만 경량화 추출
+          # 1. pnpm deploy로 api 앱 및 연결된 내부 패키지(@repo/common 등)만 경량화 추출
           pnpm --filter=api deploy --prod deploy-out
 
           # 2. 빌드된 dist 폴더를 deploy-out 안으로 복사
@@ -47,7 +47,6 @@ jobs:
           # 3. deploy-out 안에서 Prisma Client 재생성 (Linux 실행 환경 맞춤)
           cd deploy-out
           DATABASE_URL="postgresql://dummy:dummy@localhost:5432/dummy" npx prisma generate
-          mkdir -p deploy-out
 
       - name: Zip artifact for deployment
         run: cd deploy-out && zip -qr "$GITHUB_WORKSPACE/release.zip" .
