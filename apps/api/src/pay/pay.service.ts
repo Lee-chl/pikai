@@ -3,6 +3,7 @@ import { CreatePayDto } from './dto/create-pay.dto';
 import { NotFoundException } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { BuyItem, PayItemType } from './pay.type';
+import { CompletePayDto } from './dto/complete-pay.dto';
 
 @Injectable()
 export class PayService {
@@ -95,6 +96,7 @@ export class PayService {
           phone_number: createPayDto.phone_number,
           recipient: createPayDto.recipient,
           user_id: userId,
+          order_status: 'PAYCOMPLETED',
         },
       });
 
@@ -180,121 +182,38 @@ export class PayService {
     });
   }
 
-  async findOne(
-    userId: number,
-    isCartOrder: boolean,
-    selectedOnly?: boolean,
-    buyItems?: BuyItem[],
-  ) {
-    const user = await this.prisma.user.findUnique({
-      where: {
-        id: userId,
+  async completePay(dto: CompletePayDto) {
+    const { paymentKey, orderId, amount } = dto;
+    const secretKey = `${process.env.TOSS_SECRET_KEY}`;
+
+    const basicAuth = Buffer.from(`${secretKey}:`).toString('base64');
+
+    const tossRes = await fetch(
+      'https://api.tosspayments.com/v1/payments/confirm',
+      {
+        method: 'POST',
+        headers: {
+          Authorization: `Basic ${basicAuth}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ paymentKey, orderId, amount }),
       },
-      select: {
-        name: true,
-        phone: true,
-        postal_code: true,
-        address: true,
-        is_active: true,
+    );
+
+    const paymentData = await tossRes.json();
+
+    if (!tossRes.ok) {
+      throw new BadRequestException(
+        paymentData.message || '결제 승인에 실패했습니다.',
+      );
+    }
+
+    return await this.prisma.order.update({
+      where: { id: orderId },
+      data: {
+        payment: paymentData.method || 'CARD',
+        order_status: 'PAYCOMPLETED',
       },
     });
-
-    if (!user) {
-      throw new NotFoundException('회원을 찾을 수 없습니다.');
-    }
-
-    if (!user.is_active) {
-      throw new BadRequestException('탈퇴한 회원입니다.');
-    }
-
-    let items: PayItemType[] = [];
-
-    if (isCartOrder) {
-      const cart = await this.prisma.cart.findUnique({
-        where: {
-          userId,
-        },
-        include: {
-          cartItems: {
-            where: selectedOnly
-              ? {
-                  is_selected: true,
-                }
-              : undefined,
-            include: {
-              detailColor: {
-                include: {
-                  products: true,
-                },
-              },
-            },
-          },
-        },
-      });
-
-      if (!cart) {
-        throw new NotFoundException('장바구니를 찾을 수 없습니다.');
-      }
-
-      if (cart.cartItems.length === 0) {
-        throw new BadRequestException('장바구니가 비어 있습니다.');
-      }
-
-      items = cart.cartItems.map((item) => ({
-        detail_color_id: item.detailColor.id,
-        name: item.detailColor.products.name,
-        colorName: item.detailColor.color_name,
-        image: item.detailColor.products.color_main_image,
-        quantity: item.quantity,
-        price: item.detailColor.products.price,
-        sale_price: this.getSalePrice(item.detailColor.products.price),
-      }));
-    } else {
-      if (!buyItems || buyItems.length === 0) {
-        throw new BadRequestException('상품 정보가 올바르지 않습니다.');
-      }
-
-      const products = await this.prisma.detailProduct.findMany({
-        where: {
-          id: {
-            in: buyItems.map((item) => item.detailColorId),
-          },
-        },
-        include: {
-          products: true,
-        },
-      });
-
-      if (products.length === 0) {
-        throw new NotFoundException('상품을 찾을 수 없습니다.');
-      }
-
-      items = buyItems.map((buyItem) => {
-        const product = products.find((p) => p.id === buyItem.detailColorId);
-
-        if (!product) {
-          throw new NotFoundException('상품을 찾을 수 없습니다.');
-        }
-
-        return {
-          detail_color_id: product.id,
-          name: product.products.name,
-          colorName: product.color_name,
-          image: product.products.color_main_image,
-          quantity: buyItem.quantity,
-          price: product.products.price,
-          sale_price: this.getSalePrice(product.products.price),
-        };
-      });
-    }
-
-    return {
-      recipient: user.name,
-      phone_number: user.phone,
-      postal_code: user.postal_code,
-      delivery_info: user.address,
-      isCartOrder,
-      items,
-    };
   }
 }
