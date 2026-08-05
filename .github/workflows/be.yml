@@ -6,7 +6,7 @@ on:
       - main
     paths:
       - "apps/api/**"
-      - "packages/**"
+      - "packages/common/**"
       - "pnpm-lock.yaml"
       - "turbo.json"
       - ".github/workflows/be.yml"
@@ -33,6 +33,7 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
+<<<<<<< HEAD
       - name: Generate Prisma Client for Build
         working-directory: apps/api
         env:
@@ -41,11 +42,23 @@ jobs:
 
       - name: Build
         run: pnpm turbo run build --filter=api
+=======
+      - name: Generate Prisma Client
+        run: pnpm run prisma:generate
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+
+      - name: Build API
+        run: pnpm run build:api
+>>>>>>> e9479190b9a943120c3a5c433ed92b685f4ff677
 
       # 워크스페이스와 분리해 독립 설치. hoisted 라야 심볼릭 링크 없이 담긴다.
       - name: Create deployment folder
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
         run: |
           rm -rf deploy-out
+<<<<<<< HEAD
 
            pnpm --filter api deploy --prod deploy-out
 
@@ -68,6 +81,38 @@ jobs:
           zip -r ../release.zip .
 
       - name: Upload artifact
+=======
+          mkdir -p deploy-out
+          mkdir -p deploy-out/dist
+          mkdir -p deploy-out/src
+          # 2. 빌드 결과물, 소스, package.json 및 lockfile 복사
+          cp -R apps/api/dist/. deploy-out/dist/
+          cp -R apps/api/src/. deploy-out/src/
+          cp apps/api/package.json deploy-out/package.json
+
+          # 3. Prisma 스키마 복사 (존재할 경우)
+          if [ -d apps/api/prisma ]; then
+            cp -r apps/api/prisma deploy-out/prisma
+          fi
+
+          sed -i '/"@repo\/common"/d' deploy-out/package.json
+
+          # 4. deploy-out 내부에서 pnpm으로 독립 node_modules 설치
+          cd deploy-out
+          echo "shamefully-hoist=true" > .npmrc
+          echo "node-linker=hoisted" >> .npmrc
+
+          # npm 대신 pnpm을 사용하여 동결을 해제하고 프로덕션 전용 패키지 설치
+          pnpm install --prod --no-frozen-lockfile
+
+          # 5. 임시 설정 파일 정리
+          rm -f .npmrc
+
+      - name: Zip artifact for deployment
+        run: cd deploy-out && zip -qr "$GITHUB_WORKSPACE/release.zip" .
+
+      - name: Upload artifact for deployment job
+>>>>>>> e9479190b9a943120c3a5c433ed92b685f4ff677
         uses: actions/upload-artifact@v4
         with:
           name: api-app
