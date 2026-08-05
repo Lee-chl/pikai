@@ -8,9 +8,7 @@ on:
       - "apps/api/**"
       - "packages/common/**"
       - "pnpm-lock.yaml"
-      - "turbo.json"
       - ".github/workflows/be.yml"
-
   workflow_dispatch:
 
 jobs:
@@ -18,31 +16,18 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v4
+      - uses: pnpm/action-setup@v4
 
-      - name: Setup Node
-        uses: actions/setup-node@v4
+      - uses: actions/setup-node@v4
         with:
-          node-version: 20
-          cache: pnpm
+          node-version: "24.x"
+          cache: "pnpm"
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-<<<<<<< HEAD
-      - name: Generate Prisma Client for Build
-        working-directory: apps/api
-        env:
-          DATABASE_URL: "postgresql://dummy:dummy@localhost:5432/dummy"
-        run: npx prisma generate
-
-      - name: Build
-        run: pnpm turbo run build --filter=api
-=======
       - name: Generate Prisma Client
         run: pnpm run prisma:generate
         env:
@@ -50,7 +35,6 @@ jobs:
 
       - name: Build API
         run: pnpm run build:api
->>>>>>> e9479190b9a943120c3a5c433ed92b685f4ff677
 
       # 워크스페이스와 분리해 독립 설치. hoisted 라야 심볼릭 링크 없이 담긴다.
       - name: Create deployment folder
@@ -58,30 +42,6 @@ jobs:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
         run: |
           rm -rf deploy-out
-<<<<<<< HEAD
-
-           pnpm --filter api deploy --prod deploy-out
-
-          mkdir -p deploy-out/dist
-
-          cp -R apps/api/dist/. deploy-out/dist/
-
-           if [ -d apps/api/prisma ]; then
-             cp -r apps/api/prisma deploy-out/prisma
-           fi
-          # 불필요한 개발 파일 제거
-          rm -rf deploy-out/src
-          rm -f deploy-out/tsconfig.json
-          rm -f deploy-out/nest-cli.json
-          rm -f deploy-out/eslint.config.mjs
-
-      - name: Zip deployment package
-        run: |
-          cd deploy-out
-          zip -r ../release.zip .
-
-      - name: Upload artifact
-=======
           mkdir -p deploy-out
           mkdir -p deploy-out/dist
           mkdir -p deploy-out/src
@@ -112,7 +72,6 @@ jobs:
         run: cd deploy-out && zip -qr "$GITHUB_WORKSPACE/release.zip" .
 
       - name: Upload artifact for deployment job
->>>>>>> e9479190b9a943120c3a5c433ed92b685f4ff677
         uses: actions/upload-artifact@v4
         with:
           name: api-app
@@ -128,11 +87,10 @@ jobs:
         with:
           name: api-app
 
-      - name: Deploy to Azure Web App
+      - name: "Deploy to Azure Web App"
         uses: azure/webapps-deploy@v3
         with:
           app-name: "pikai-api"
           slot-name: "staging"
           package: release.zip
-          type: zip
           publish-profile: ${{ secrets.BE_PUBLISH_PROFILE }}
