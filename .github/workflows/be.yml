@@ -76,14 +76,13 @@ jobs:
           name: api-app
           path: release.zip
 
-          - name: Check deploy output
-          run: |
-            echo "===== deploy dist ====="
-            ls -al deploy-out/dist || true
+      - name: Check deploy output
+        run: |
+          echo "===== deploy dist ====="
+          ls -al deploy-out/dist || true
 
-            echo "===== deploy files ====="
-            find deploy-out -maxdepth 3 -type f | head -100
-  
+          echo "===== deploy files ====="
+          find deploy-out -maxdepth 3 -type f | head -100
 
   deploy:
     runs-on: ubuntu-latest
