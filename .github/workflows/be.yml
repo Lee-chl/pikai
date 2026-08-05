@@ -64,14 +64,17 @@ jobs:
           mkdir -p node_modules/@repo/common
           cp -R ../packages/common/. node_modules/@repo/common/
 
-          # ★ 핵심: TypeScript로 되어있는 @repo/common을 배포 환경용 자바스크립트(.js)로 즉시 빌드!
+          node -e '
+            const fs = require("fs");
+            const pkgPath = "node_modules/@repo/common/package.json";
+            if (fs.existsSync(pkgPath)) {
+              const pkg = JSON.parse(fs.readFileSync(pkgPath, "utf8"));
+              pkg.main = "./dist/index.js";
+              pkg.types = "./dist/index.d.ts";
+              fs.writeFileSync(pkgPath, JSON.stringify(pkg, null, 2));
+            }
+          '
           npx tsc node_modules/@repo/common/src/index.ts --outDir node_modules/@repo/common/dist --module commonjs --target es2021 || true
-
-          # package.json이 빌드된 dist/index.js를 가리키도록 설정
-          npx npm-pkg-set --path node_modules/@repo/common/package.json main="dist/index.js"
-
-          echo "=== Checking @repo/common inside deploy-out ==="
-          ls -la node_modules/@repo/common
 
       - name: Zip artifact for deployment
         run: cd deploy-out && zip -qr "$GITHUB_WORKSPACE/release.zip" .
