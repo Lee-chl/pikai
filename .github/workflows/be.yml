@@ -29,12 +29,12 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: Generate Prisma Client
-        run: pnpm prisma:generate
+        run: pnpm run prisma:generate
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
 
       - name: Build API
-        run: pnpm build:api
+        run: pnpm run build:api
 
       # 워크스페이스와 분리해 독립 설치. hoisted 라야 심볼릭 링크 없이 담긴다.
       - name: Create deployment folder
