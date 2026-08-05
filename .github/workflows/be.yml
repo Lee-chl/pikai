@@ -42,10 +42,8 @@ jobs:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
         run: |
           rm -rf deploy-out
-          mkdir -p deploy-out
-          mkdir -p deploy-out/dist
-          mkdir -p deploy-out/src
-          # 2. 빌드 결과물, 소스, package.json 및 lockfile 복사
+          mkdir -p deploy-out/dist deploy-out/src
+
           cp -R apps/api/dist/. deploy-out/dist/
           cp -R apps/api/src/. deploy-out/src/
           cp apps/api/package.json deploy-out/package.json
