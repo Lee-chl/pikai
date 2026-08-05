@@ -38,10 +38,14 @@ jobs:
       - name: Create deployment folder
         run: |
           mkdir -p deploy-out
+
           cp -r apps/api/dist deploy-out/dist
           cp apps/api/package.json deploy-out/package.json
+
           # 2. Prisma schema 복사 (프로덕션 pnpm install 시 필요)
-          if [ -d "apps/api/prisma" ]; separator cp -r apps/api/prisma deploy-out/prisma; fi
+          if [ -d "apps/api/prisma" ]; then
+            cp -r apps/api/prisma deploy-out/prisma
+          fi
 
           cd deploy-out
           pnpm install --prod --ignore-workspace --node-linker=hoisted --no-frozen-lockfile
