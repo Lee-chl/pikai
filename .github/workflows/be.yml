@@ -58,10 +58,17 @@ jobs:
           # 4. deploy-out 내부에서 pnpm으로 독립 node_modules 설치
           cd deploy-out
           npm install --omit=dev --legacy-peer-deps
-          echo "=== Checking @nestjs/core installation ==="
-          ls -la node_modules/@nestjs/core || echo "❌ @nestjs/core NOT FOUND!"
-          echo "=== Checking dist folder structure ==="
-          ls -R dist
+
+          mkdir -p node_modules/@repo
+          if [ -d "../packages/common/dist" ]; then
+            cp -R ../packages/common node_modules/@repo/common
+          else
+            cp -R ../packages/common node_modules/@repo/common
+          fi
+
+          # 6. [검증 로그]
+          echo "=== Checking @repo/common in node_modules ==="
+          ls -la node_modules/@repo/common
 
       - name: Zip artifact for deployment
         run: cd deploy-out && zip -qr "$GITHUB_WORKSPACE/release.zip" .
