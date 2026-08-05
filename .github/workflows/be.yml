@@ -6,11 +6,9 @@ on:
       - main
     paths:
       - "apps/api/**"
-      - "packages/**"
+      - "packages/common/**"
       - "pnpm-lock.yaml"
-      - "turbo.json"
       - ".github/workflows/be.yml"
-
   workflow_dispatch:
 
 jobs:
@@ -18,56 +16,62 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v4
+      - uses: pnpm/action-setup@v4
 
-      - name: Setup Node
-        uses: actions/setup-node@v4
+      - uses: actions/setup-node@v4
         with:
-          node-version: 20
-          cache: pnpm
+          node-version: "24.x"
+          cache: "pnpm"
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Generate Prisma Client for Build
-        working-directory: apps/api
+      - name: Generate Prisma Client
+        run: pnpm run prisma:generate
         env:
-          DATABASE_URL: "postgresql://dummy:dummy@localhost:5432/dummy"
-        run: npx prisma generate
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
 
-      - name: Build
-        run: pnpm turbo run build --filter=api
+      - name: Build API
+        run: pnpm run build:api
 
       # 워크스페이스와 분리해 독립 설치. hoisted 라야 심볼릭 링크 없이 담긴다.
       - name: Create deployment folder
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
         run: |
           rm -rf deploy-out
-
-           pnpm --filter api deploy --prod deploy-out
-
+          mkdir -p deploy-out
           mkdir -p deploy-out/dist
-
+          mkdir -p deploy-out/src
+          # 2. 빌드 결과물, 소스, package.json 및 lockfile 복사
           cp -R apps/api/dist/. deploy-out/dist/
+          cp -R apps/api/src/. deploy-out/src/
+          cp apps/api/package.json deploy-out/package.json
 
-           if [ -d apps/api/prisma ]; then
-             cp -r apps/api/prisma deploy-out/prisma
-           fi
-          # 불필요한 개발 파일 제거
-          rm -rf deploy-out/src
-          rm -f deploy-out/tsconfig.json
-          rm -f deploy-out/nest-cli.json
-          rm -f deploy-out/eslint.config.mjs
+          # 3. Prisma 스키마 복사 (존재할 경우)
+          if [ -d apps/api/prisma ]; then
+            cp -r apps/api/prisma deploy-out/prisma
+          fi
 
-      - name: Zip deployment package
-        run: |
+          sed -i '/"@repo\/common"/d' deploy-out/package.json
+
+          # 4. deploy-out 내부에서 pnpm으로 독립 node_modules 설치
           cd deploy-out
-          zip -r ../release.zip .
+          echo "shamefully-hoist=true" > .npmrc
+          echo "node-linker=hoisted" >> .npmrc
 
-      - name: Upload artifact
+          # npm 대신 pnpm을 사용하여 동결을 해제하고 프로덕션 전용 패키지 설치
+          pnpm install --prod --no-frozen-lockfile
+
+          # 5. 임시 설정 파일 정리
+          rm -f .npmrc
+
+      - name: Zip artifact for deployment
+        run: cd deploy-out && zip -qr "$GITHUB_WORKSPACE/release.zip" .
+
+      - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v4
         with:
           name: api-app
@@ -83,11 +87,10 @@ jobs:
         with:
           name: api-app
 
-      - name: Deploy to Azure Web App
+      - name: "Deploy to Azure Web App"
         uses: azure/webapps-deploy@v3
         with:
           app-name: "pikai-api"
           slot-name: "staging"
           package: release.zip
-          type: zip
           publish-profile: ${{ secrets.BE_PUBLISH_PROFILE }}
