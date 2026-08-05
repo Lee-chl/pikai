@@ -42,10 +42,8 @@ jobs:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
         run: |
           rm -rf deploy-out
-          mkdir -p deploy-out
-          mkdir -p deploy-out/dist
-          mkdir -p deploy-out/src
-          # 2. 빌드 결과물, 소스, package.json 및 lockfile 복사
+          mkdir -p deploy-out/dist deploy-out/src
+
           cp -R apps/api/dist/. deploy-out/dist/
           cp -R apps/api/src/. deploy-out/src/
           cp apps/api/package.json deploy-out/package.json
@@ -61,6 +59,9 @@ jobs:
           cd deploy-out
           echo "shamefully-hoist=true" > .npmrc
           echo "node-linker=hoisted" >> .npmrc
+          echo "public-hoist-pattern[]=@nestjs*" >> .npmrc
+          echo "public-hoist-pattern[]=@prisma*" >> .npmrc
+          echo "public-hoist-pattern[]=*express*" >> .npmrc
 
           # npm 대신 pnpm을 사용하여 동결을 해제하고 프로덕션 전용 패키지 설치
           pnpm install --prod --no-frozen-lockfile
