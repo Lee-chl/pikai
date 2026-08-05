@@ -84,4 +84,5 @@ jobs:
           app-name: "pikai-api"
           slot-name: "staging"
           package: release.zip
+          type: zip
           publish-profile: ${{ secrets.BE_PUBLISH_PROFILE }}
