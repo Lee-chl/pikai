@@ -33,48 +33,46 @@ jobs:
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
 
-      - name: Build Packages and API
-        run: |
-          pnpm --filter @repo/common build || pnpm run build
-          pnpm run build:api
+       - name: Build API
+        run: pnpm build:api
 
-      # 워크스페이스와 분리해 독립 설치. hoisted 라야 심볼릭 링크 없이 담긴다.
       - name: Create deployment folder
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
         run: |
-          rm -rf deploy-out
-          mkdir -p deploy-out/dist deploy-out/src
+          mkdir -p deploy-out
+          cp -r apps/api/dist deploy-out/dist
+          cp -r apps/api/prisma deploy-out/prisma
+          cp apps/api/prisma.config.ts deploy-out/prisma.config.ts
+          cp apps/api/package.deploy.json deploy-out/package.json
+          cp apps/api/start.sh deploy-out/start.sh
+          chmod +x deploy-out/start.sh
 
-          cp -R apps/api/dist/. deploy-out/dist/
-          cp -R apps/api/src/. deploy-out/src/
-          cp apps/api/package.json deploy-out/package.json
-
-          # 3. Prisma 스키마 복사 (존재할 경우)
-          if [ -d apps/api/prisma ]; then
-            cp -r apps/api/prisma deploy-out/prisma
-          fi
-
-          sed -i '/"@repo\/common"/d' deploy-out/package.json
-
-          # 4. deploy-out 내부에서 pnpm으로 독립 node_modules 설치
           cd deploy-out
-          npm install --omit=dev --legacy-peer-deps
+          npm install --omit=dev
+          npx prisma generate
 
-          mkdir -p node_modules/@repo/common
-          cp -R ../packages/common/. node_modules/@repo/common/
+          # 의존성 검증
+          test -f node_modules/@nestjs/core/package.json
+          test -f node_modules/@nestjs/common/package.json
+          test -f node_modules/@nestjs/platform-express/package.json
+          test -f node_modules/prisma/package.json
+          test -f node_modules/prisma/build/index.js
+          test -f node_modules/tslib/package.json
 
-          node -e '
-            const fs = require("fs");
-            const pkgPath = "node_modules/@repo/common/package.json";
-            if (fs.existsSync(pkgPath)) {
-              const pkg = JSON.parse(fs.readFileSync(pkgPath, "utf8"));
-              pkg.main = "./dist/index.js";
-              pkg.types = "./dist/index.d.ts";
-              fs.writeFileSync(pkgPath, JSON.stringify(pkg, null, 2));
-            }
-          '
-          npx tsc node_modules/@repo/common/src/index.ts --outDir node_modules/@repo/common/dist --module commonjs --target es2021 || true
+          # .bin/prisma 가 wasm 을 .bin/ 에서 찾음 → 미리 복사
+          cp -f node_modules/prisma/build/*.wasm node_modules/.bin/
+
+          # Azure OneDeploy NodeProjectOptimizer 가 "node_modules" 폴더를 보면
+          # tar로 압축하다 rsync 실패함 → 이름을 바꿔서 우회
+          mv node_modules node_modules_app
+
+          printf '%s\n' '[config]' 'SCM_DO_BUILD_DURING_DEPLOYMENT = false' > .deployment
+          rm -f pnpm-lock.yaml node_modules.tar.gz app-node_modules.tar.gz
+
+          echo "Artifact contents:"
+          ls -la
+          ls node_modules_app/@nestjs
 
       - name: Zip artifact for deployment
         run: cd deploy-out && zip -qr "$GITHUB_WORKSPACE/release.zip" .
