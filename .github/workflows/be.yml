@@ -26,8 +26,9 @@ jobs:
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
-
       - name: Generate Prisma Client for Build
+        env:
+          DATABASE_URL: "postgresql://dummy:dummy@localhost:5432/dummy"
         run: pnpm --filter api exec prisma generate
 
       - name: Build
@@ -45,7 +46,8 @@ jobs:
           cd deploy-out
           pnpm install --prod --ignore-workspace --node-linker=hoisted --no-frozen-lockfile
 
-          npx prisma generate
+          # 배포 환경용 generate 실행 시에도 더미 ENV 전달
+          DATABASE_URL="postgresql://dummy:dummy@localhost:5432/dummy" npx prisma generate
 
       - name: Zip artifact for deployment
         run: cd deploy-out && zip -qr "$GITHUB_WORKSPACE/release.zip" .
