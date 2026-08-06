@@ -1,0 +1,74 @@
+name: Build and deploy web (Next.js) to Azure Web App - fe-next
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "apps/web/**"
+      - "packages/**"
+      - "pnpm-lock.yaml"
+      - ".github/workflows/fe.yml"
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "24.x"
+          cache: "pnpm"
+
+      # hoisted 링커: 심볼릭 링크 없이 실제 파일로 깔아야 Next 파일 추적과
+      # zip 배포가 모두 정상 동작한다.
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile --config.node-linker=hoisted
+
+      - name: Build (standalone)
+        run: pnpm turbo run build --filter=web
+        env:
+          NEXT_PUBLIC_API_URL: ${{ secrets.API_URL }}
+          NEXT_PUBLIC_IMAGE_URL: ${{ secrets.IMAGE_URL }}
+
+      # standalone 은 저장소 구조를 유지하므로 server.js 가 apps/web/ 아래에 있다.
+      # static / public 은 추적 대상이 아니라 직접 복사한다.
+      # cp -rL 은 남은 심볼릭 링크를 실체로 풀어준다.
+      - name: Assemble deployment package
+        run: |
+          cd apps/web
+          cp -r .next/static .next/standalone/apps/web/.next/static
+          if [ -d public ]; then cp -r public .next/standalone/apps/web/public; fi
+          cd "$GITHUB_WORKSPACE"
+          cp -rL apps/web/.next/standalone deploy-out
+
+      - name: Zip artifact for deployment
+        run: cd deploy-out && zip -qr "$GITHUB_WORKSPACE/release.zip" .
+
+      - name: Upload artifact for deployment job
+        uses: actions/upload-artifact@v4
+        with:
+          name: web-app
+          path: release.zip
+
+  deploy:
+    runs-on: ubuntu-latest
+    needs: build
+
+    steps:
+      - name: Download artifact from build job
+        uses: actions/download-artifact@v4
+        with:
+          name: web-app
+
+      - name: "Deploy to Azure Web App"
+        uses: azure/webapps-deploy@v3
+        with:
+          app-name: "pikai-app"
+          package: release.zip
+          publish-profile: ${{ secrets.FE_PUBLISH_PROFILE }}
