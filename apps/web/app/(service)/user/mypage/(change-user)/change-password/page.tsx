@@ -42,7 +42,7 @@ export default async function Page() {
         현재 비밀번호를 입력한 후 새 비밀번호로 변경해주세요.
       </p>
 
-      <PasswordForm id={user.id} />
+      <PasswordForm />
     </div>
   );
 }
