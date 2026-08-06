@@ -46,10 +46,13 @@ export default function Page() {
       try {
         setLoading(true);
         setError("");
-        let url = `${process.env.NEXT_PUBLIC_BACK_URL}/products?page=${currentPage}&limit=${limit}&sort=${selectedSort}`;
+        let url = `${process.env.NEXT_PUBLIC_BACK_URL}/products?limit=${limit}&sort=${selectedSort}`;
         if (q) {
+          setCurrentPage(1);
           url += `&productName=${encodeURIComponent(q)}`;
         }
+
+        url += `&page=${currentPage}`;
 
         const response = await fetch(url);
 
