@@ -1,4 +1,4 @@
-name: Build and deploy web (Next.js) to Azure Web App - fe-next
+name: Build and deploy web (Next.js) to Azure Web App - pikai-app
 
 on:
   push:
@@ -6,7 +6,7 @@ on:
       - main
     paths:
       - "apps/web/**"
-      - "packages/**"
+      - "packages/common/**"
       - "pnpm-lock.yaml"
       - ".github/workflows/fe.yml"
   workflow_dispatch:
@@ -25,36 +25,36 @@ jobs:
           node-version: "24.x"
           cache: "pnpm"
 
-      # hoisted 링커: 심볼릭 링크 없이 실제 파일로 깔아야 Next 파일 추적과
-      # zip 배포가 모두 정상 동작한다.
       - name: Install dependencies
-        run: pnpm install --frozen-lockfile --config.node-linker=hoisted
+        run: pnpm install --frozen-lockfile
 
-      - name: Build (standalone)
-        run: pnpm turbo run build --filter=web
+      - name: Build
+        run: pnpm build:web
         env:
           NEXT_PUBLIC_API_URL: ${{ secrets.API_URL }}
           NEXT_PUBLIC_IMAGE_URL: ${{ secrets.IMAGE_URL }}
 
-      # standalone 은 저장소 구조를 유지하므로 server.js 가 apps/web/ 아래에 있다.
-      # static / public 은 추적 대상이 아니라 직접 복사한다.
-      # cp -rL 은 남은 심볼릭 링크를 실체로 풀어준다.
-      - name: Assemble deployment package
+      - name: Pack standalone
         run: |
-          cd apps/web
-          cp -r .next/static .next/standalone/apps/web/.next/static
-          if [ -d public ]; then cp -r public .next/standalone/apps/web/public; fi
-          cd "$GITHUB_WORKSPACE"
-          cp -rL apps/web/.next/standalone deploy-out
+          mkdir -p deploy-out
+          cp -r apps/web/.next/standalone/. deploy-out/
+          mkdir -p deploy-out/apps/web/.next
+          cp -r apps/web/.next/static deploy-out/apps/web/.next/static
+          cp -r apps/web/public deploy-out/apps/web/public
+          cp apps/web/start.sh deploy-out/start.sh
+          chmod +x deploy-out/start.sh
+          printf '%s\n' '[config]' 'SCM_DO_BUILD_DURING_DEPLOYMENT = false' > deploy-out/.deployment
+          test -f deploy-out/apps/web/server.js
+          ls -la deploy-out/apps/web
 
-      - name: Zip artifact for deployment
-        run: cd deploy-out && zip -qr "$GITHUB_WORKSPACE/release.zip" .
+      - name: Zip
+        run: cd deploy-out && zip -qr "$GITHUB_WORKSPACE/release-web.zip" .
 
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v4
         with:
           name: web-app
-          path: release.zip
+          path: release-web.zip
 
   deploy:
     runs-on: ubuntu-latest
@@ -70,5 +70,5 @@ jobs:
         uses: azure/webapps-deploy@v3
         with:
           app-name: "pikai-app"
-          package: release.zip
+          package: release-web.zip
           publish-profile: ${{ secrets.FE_PUBLISH_PROFILE }}
