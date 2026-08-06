@@ -8,7 +8,7 @@ const Tone: Record<string, string> = {
   SPRINGWARM: '봄 웜',
   SUMMERCOOL: '여름 쿨',
   SUMMERMUTE: '여름 뮤트',
-  FALLWARM: '가을 웜톤',
+  FALLWARM: '가을 웜',
   FALLMUTE: '가을 뮤트',
   FALLDEEP: '가을 딥',
   WINTERCOOL: '겨울 쿨',

@@ -13,6 +13,7 @@ if (fullUrl && fullUrl !== "undefined" && fullUrl.startsWith("http")) {
 
 const nextConfig = {
   basePath: "/pikai",
+  output: "standalone",
   transpilePackages: ["@repo/common"],
   devIndicators: false,
   images: {
