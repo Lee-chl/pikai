@@ -1,3 +1,4 @@
+export const dynamic = "force-dynamic";
 import LoginForm from "@/components/login/Loginform";
 import type { Metadata } from "next";
 
