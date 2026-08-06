@@ -15,6 +15,8 @@ const nextConfig = {
   basePath: "/pikai",
   output: "standalone",
   transpilePackages: ["@repo/common"],
+  // 모노레포에서 @repo/common 등이 standalone에 포함되도록 루트 지정
+  outputFileTracingRoot: path.join(__dirname, "../.."),
   devIndicators: false,
   images: {
     remotePatterns: [
