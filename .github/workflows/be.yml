@@ -43,6 +43,7 @@ jobs:
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
         run: |
+          rm -rf deploy-out
           mkdir -p deploy-out
           cp -r apps/api/dist deploy-out/dist
           cp -r apps/api/prisma deploy-out/prisma
