@@ -43,7 +43,12 @@ export class RatingService {
       throw new NotFoundException(`${userId}는 존재하지 않는 유저입니다.`);
     }
     if (createRatingDto.is_comp) {
-      await this.getCompRatingCount(userId);
+      const { ratingCount } = await this.getCompRatingCount(userId);
+      if (ratingCount >= 10) {
+        throw new BadRequestException(
+          `비교 상품 등록 최대 갯수(10개)를 초과했습니다.`,
+        );
+      }
     }
 
     return this.prisma.rating.create({
@@ -217,12 +222,6 @@ export class RatingService {
     const ratingCount = await this.prisma.rating.count({
       where: { is_comp: true, user_id: userId },
     });
-
-    if (ratingCount >= 10) {
-      throw new BadRequestException(
-        `비교 상품 등록 최대 갯수(10개)를 초과했습니다.`,
-      );
-    }
     return { ratingCount };
   }
 
