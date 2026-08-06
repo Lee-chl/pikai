@@ -1,4 +1,5 @@
 "use client";
+export const dynamic = "force-dynamic";
 import { Search } from "lucide-react";
 import styles from "./SearchBar.module.css";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";

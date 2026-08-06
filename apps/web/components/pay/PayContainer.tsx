@@ -1,5 +1,5 @@
 "use client";
-
+export const dynamic = "force-dynamic";
 import { useEffect, useRef, useState } from "react";
 import DeliveryInfo from "@/components/pay/DeliveryInfo";
 import PayItem from "@/components/pay/PayItem";

@@ -1,5 +1,5 @@
 "use client";
-
+export const dynamic = "force-dynamic";
 import { use, useEffect, useState } from "react";
 
 import ProductList from "../../../../../components/products/ProductList";
