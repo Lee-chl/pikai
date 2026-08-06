@@ -73,6 +73,7 @@ jobs:
           echo "Artifact contents:"
           ls -la
           ls node_modules_app/@nestjs
+          ls -la
 
       - name: Zip artifact for deployment
         run: cd deploy-out && zip -qr "$GITHUB_WORKSPACE/release.zip" .
