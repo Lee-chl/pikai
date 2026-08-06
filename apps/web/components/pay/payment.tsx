@@ -68,9 +68,7 @@ export default function Payment({ userId, price, onWidgetLoad }: PaymentProps) {
 
   return (
     <div style={{ width: "100%" }}>
-      {/* 토스 결제수단 선택 영역 */}
       <div id="payment-widget" style={{ width: "100%", minHeight: "400px" }} />
-      {/* 이용약관 영역 */}
       <div id="agreement" style={{ width: "100%" }} />
     </div>
   );
