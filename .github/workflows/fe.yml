@@ -1,4 +1,7 @@
-name: Build and deploy web (Next.js) to Azure Web App - pikai-app
+# web(Next.js) → Azure App Service
+# Next standalone 이라 be.yml 보다 단순합니다.
+
+name: Deploy Web to Azure
 
 on:
   push:
@@ -7,7 +10,7 @@ on:
     paths:
       - "apps/web/**"
       - "packages/common/**"
-      - "pnpm-lock.yaml"
+      # - "pnpm-lock.yaml"
       - ".github/workflows/fe.yml"
   workflow_dispatch:
 
@@ -25,14 +28,16 @@ jobs:
           node-version: "24.x"
           cache: "pnpm"
 
-      - name: Install dependencies
+      - name: Install
         run: pnpm install --frozen-lockfile
 
+      # NEXT_PUBLIC_* 는 빌드 시 번들에 들어감
       - name: Build
         run: pnpm build:web
         env:
-          NEXT_PUBLIC_BACK_URL: ${{ secrets.API_URL }}
-          NEXT_PUBLIC_IMAGE_URL: ${{ secrets.IMAGE_URL }}
+          NEXT_PUBLIC_BACK_URL: ${{ secrets.NEXT_PUBLIC_BACK_URL }}
+          NEXT_PUBLIC_IMAGE_URL: ${{ secrets.NEXT_PUBLIC_IMAGE_URL }}
+          NEXT_PUBLIC_FRONT_URL: ${{ secrets.NEXT_PUBLIC_FRONT_URL }}
 
       - name: Pack standalone
         run: |
@@ -43,15 +48,24 @@ jobs:
           cp -r apps/web/public deploy-out/apps/web/public
           cp apps/web/start.sh deploy-out/start.sh
           chmod +x deploy-out/start.sh
-          printf '%s\n' '[config]' 'SCM_DO_BUILD_DURING_DEPLOYMENT = false' > deploy-out/.deployment
-          test -f deploy-out/apps/web/server.js
-          ls -la deploy-out/apps/web
+
+          # Azure OneDeploy가 node_modules 를 tar로 망가뜨리지 않게 이름 변경 (be.yml 과 동일)
+          mv deploy-out/node_modules deploy-out/node_modules_app
+
+          cd deploy-out
+          printf '%s\n' '[config]' 'SCM_DO_BUILD_DURING_DEPLOYMENT = false' > .deployment
+          rm -f node_modules.tar.gz app-node_modules.tar.gz pnpm-lock.yaml
+
+          test -f apps/web/server.js
+          test -d node_modules_app/.pnpm/node_modules/@swc/helpers
+          echo "Artifact contents:"
+          ls -la
+          ls node_modules_app/.pnpm/node_modules/@swc/helpers
 
       - name: Zip
         run: cd deploy-out && zip -qr "$GITHUB_WORKSPACE/release-web.zip" .
 
-      - name: Upload artifact for deployment job
-        uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v4
         with:
           name: web-app
           path: release-web.zip
@@ -59,16 +73,14 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     needs: build
-
     steps:
-      - name: Download artifact from build job
-        uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v4
         with:
           name: web-app
 
-      - name: "Deploy to Azure Web App"
-        uses: azure/webapps-deploy@v3
+      - uses: azure/webapps-deploy@v3
         with:
+          # 본인 App Service 이름으로 바꾸세요
           app-name: "pikai-app"
           package: release-web.zip
           publish-profile: ${{ secrets.FE_PUBLISH_PROFILE }}
