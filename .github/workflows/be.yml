@@ -111,6 +111,5 @@ jobs:
         uses: azure/webapps-deploy@v3
         with:
           app-name: "pikai-api"
-          slot-name: "staging"
           package: release.zip
           publish-profile: ${{ secrets.BE_PUBLISH_PROFILE }}
