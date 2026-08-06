@@ -7,6 +7,7 @@ import SearchBar from "./SearchBar";
 import logo from "../../../public/pikai_logo.png";
 import { CategoryType } from "@/types/productDetailType";
 import { Constants } from "@/common/constants";
+import { Suspense } from "react";
 
 export default async function Header() {
   let categories: CategoryType[] = [];
@@ -40,10 +41,14 @@ export default async function Header() {
             loading="eager"
           />
         </a>
-        <SearchBar />
+        <Suspense fallback={<div>Loading...</div>}>
+          <SearchBar />
+        </Suspense>
       </div>
       <div className={styles.category}>
-        <CategoryNav categories={categories} />
+        <Suspense fallback={<div>Loading...</div>}>
+          <CategoryNav categories={categories} />
+        </Suspense>
       </div>
     </div>
   );
