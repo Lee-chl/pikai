@@ -22,7 +22,6 @@ export default async function Page({ searchParams }: CompletePageProps) {
   const cookieStore = await cookies();
   const token = cookieStore.get("accessToken")?.value;
 
-  // 백엔드로 승인 및 DB 업데이트 요청
   const res = await fetch(`${Constants.back_url}/pay/complete`, {
     method: "POST",
     headers: {
@@ -61,7 +60,6 @@ export default async function Page({ searchParams }: CompletePageProps) {
         <div className={styles.check}>✓</div>
 
         <h1 className={styles.title}>주문이 완료되었습니다.</h1>
-
         <p className={styles.description}>주문해주셔서 감사합니다.</p>
 
         <div className={styles.orderBox}>
