@@ -1,5 +1,4 @@
 "use client";
-export const dynamic = "force-dynamic";
 import { RatingItemType } from "@/types/ratingType";
 import { useState } from "react";
 import RatingItem from "./Rating-item";

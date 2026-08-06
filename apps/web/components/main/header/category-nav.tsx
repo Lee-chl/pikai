@@ -1,5 +1,4 @@
 "use client";
-export const dynamic = "force-dynamic";
 import Link from "next/link";
 import styles from "./category-nav.module.css";
 import { CategoryType } from "@/types/productDetailType";

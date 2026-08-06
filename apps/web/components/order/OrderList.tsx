@@ -1,5 +1,4 @@
 "use client";
-export const dynamic = "force-dynamic";
 import { OrderListType } from "@/types/OrderType";
 import { useRouter, useSearchParams } from "next/navigation";
 import Image from "next/image";

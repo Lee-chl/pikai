@@ -1,5 +1,4 @@
 "use client";
-export const dynamic = "force-dynamic";
 import { useRef, useState, useEffect } from "react";
 import styles from "./SearchBar_Rating.module.css";
 import { Search } from "lucide-react";
