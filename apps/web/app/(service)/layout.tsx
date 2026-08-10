@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 import Header from "../../components/main/header/Header";
 import Footer from "../../components/main/Footer";
+import { Toaster } from "sonner";
 
 export const metadata: Metadata = {
   title: {
@@ -21,6 +22,7 @@ export default function RootLayout({
       <body>
         <Header />
         <main>{children}</main>
+        <Toaster position="top-center" />
         <Footer />
       </body>
     </html>
