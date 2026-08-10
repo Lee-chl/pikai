@@ -42,7 +42,7 @@ export default async function UserMenu() {
   if (user.is_admin) {
     return (
       <div className={styles.container}>
-        <Link href={`/admin`}>관리자 페이지</Link>
+        <Link href={`/admin/add-product`}>관리자 페이지</Link>
         <LogoutButton />
       </div>
     );
