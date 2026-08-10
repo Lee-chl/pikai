@@ -1,11 +1,16 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateAdminDto } from './dto/create-admin.dto';
-import { UpdateAdminDto } from './dto/update-admin.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
+import { CreateDetailProductDto } from './dto/create-detailproduct.dto';
+import { UpdateDetailProductDto } from './dto/update-detailproduct.dto';
+import { UpdateAdminDto } from './dto/update-admin.dto';
 
 @Injectable()
 export class AdminService {
   constructor(private readonly prisma: PrismaService) {}
+
+  // 상품 관련
+  // Product
 
   async create(createAdminDto: CreateAdminDto) {
     const brand = await this.prisma.brand.findFirst({
@@ -62,19 +67,190 @@ export class AdminService {
     });
   }
 
+  async update(id: number, updateAdminDto: UpdateAdminDto) {
+    const product = await this.prisma.product.findUnique({
+      where: {
+        id,
+      },
+    });
+
+    if (!product) {
+      throw new NotFoundException('상품을 찾을 수 없습니다.');
+    }
+
+    // 브랜드
+    let brandId = product.brand_id;
+
+    if (updateAdminDto.brand_name) {
+      const brand = await this.prisma.brand.findFirst({
+        where: {
+          name: updateAdminDto.brand_name,
+        },
+      });
+
+      if (brand) {
+        brandId = brand.id;
+      } else {
+        const newBrand = await this.prisma.brand.create({
+          data: {
+            name: updateAdminDto.brand_name,
+          },
+        });
+
+        brandId = newBrand.id;
+      }
+    }
+
+    return this.prisma.product.update({
+      where: {
+        id,
+      },
+      data: {
+        color_main_image: updateAdminDto.color_main_image,
+        color_detail_image: updateAdminDto.color_detail_image,
+        name: updateAdminDto.name,
+        price: updateAdminDto.price,
+        hash_tag: updateAdminDto.hash_tag,
+        brand_id: brandId,
+      },
+    });
+  }
+
   findAll() {
-    return `This action returns all admin`;
+    return this.prisma.product.findMany({
+      include: {
+        brand: true,
+        category: true,
+      },
+      orderBy: {
+        id: 'desc',
+      },
+    });
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} admin`;
+  async findOne(id: number) {
+    const product = await this.prisma.product.findUnique({
+      where: {
+        id,
+      },
+      include: {
+        brand: true,
+        category: true,
+        detail_color: true,
+      },
+    });
+
+    if (!product) {
+      throw new NotFoundException('상품을 찾을 수 없습니다.');
+    }
+
+    return product;
   }
 
-  update(id: number, updateAdminDto: UpdateAdminDto) {
-    return `This action updates a #${id} admin`;
+  async remove(id: number) {
+    const product = await this.prisma.product.findUnique({
+      where: {
+        id,
+      },
+    });
+    if (!product) {
+      throw new NotFoundException('상품을 찾을 수 없습니다.');
+    }
+
+    return this.prisma.product.delete({
+      where: {
+        id,
+      },
+    });
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} admin`;
+  // 상품 옵션 관련
+  // DetailProduct
+
+  async createDetailProduct(
+    productId: number,
+    createDetailProductDto: CreateDetailProductDto,
+  ) {
+    const product = await this.prisma.product.findUnique({
+      where: {
+        id: productId,
+      },
+    });
+
+    if (!product) {
+      throw new NotFoundException('상품을 찾을 수 없습니다.');
+    }
+    return this.prisma.detailProduct.create({
+      data: {
+        product_id: productId,
+        color_name: createDetailProductDto.color_name,
+        color_image: createDetailProductDto.color_image,
+        stock: createDetailProductDto.stock,
+        h: createDetailProductDto.h,
+        s: createDetailProductDto.s,
+        l: createDetailProductDto.l,
+      },
+    });
+  }
+
+  async updateDetailProduct(
+    id: number,
+    updateDetailProductDto: UpdateDetailProductDto,
+  ) {
+    const detailProduct = await this.prisma.detailProduct.findUnique({
+      where: {
+        id,
+      },
+    });
+
+    if (!detailProduct) {
+      throw new NotFoundException('상품 옵션을 찾을 수 없습니다.');
+    }
+
+    return this.prisma.detailProduct.update({
+      where: {
+        id,
+      },
+      data: updateDetailProductDto,
+    });
+  }
+
+  async findDetailProducts(productId: number) {
+    const product = await this.prisma.detailProduct.findUnique({
+      where: {
+        id: productId,
+      },
+    });
+
+    if (!product) {
+      throw new NotFoundException('상품을 찾을 수 없습니다.');
+    }
+
+    return this.prisma.detailProduct.findMany({
+      where: {
+        product_id: productId,
+      },
+      orderBy: {
+        id: 'desc',
+      },
+    });
+  }
+
+  async removeDetailProduct(id: number) {
+    const detailProduct = await this.prisma.detailProduct.findUnique({
+      where: {
+        id,
+      },
+    });
+
+    if (!detailProduct) {
+      throw new NotFoundException('상품 옵션을 찾을 수 없습니다.');
+    }
+
+    return this.prisma.detailProduct.delete({
+      where: {
+        id,
+      },
+    });
   }
 }
