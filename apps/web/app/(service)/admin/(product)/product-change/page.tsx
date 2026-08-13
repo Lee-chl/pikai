@@ -65,14 +65,14 @@ export default async function Page() {
 
             <div className={styles.actions}>
               <Link
-                href={`/admin/change-product/${product.id}/option`}
+                href={`/admin/product-change/${product.id}/option`}
                 className={styles.optionButton}
               >
                 상품 옵션 관리
               </Link>
 
               <Link
-                href={`/admin/change-product/${product.id}`}
+                href={`/admin/product-change/${product.id}`}
                 className={styles.editButton}
               >
                 상품 수정

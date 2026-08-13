@@ -1,8 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import styles from "./add-product.module.css";
+import styles from "./product-add.module.css";
 import Image from "next/image";
+import { Constants } from "@/common/constants";
 
 export default function AddProduct() {
   const [brandName, setBrandName] = useState("");
@@ -12,6 +13,8 @@ export default function AddProduct() {
   const [productName, setProductName] = useState("");
   const [price, setPrice] = useState("");
   const [hashTag, setHashTag] = useState("");
+
+  const imageUrl = `${Constants.image_url}/`;
 
   return (
     <div className={styles.container}>
@@ -58,7 +61,7 @@ export default function AddProduct() {
             <div className={styles.preview}>
               {mainImage ? (
                 <Image
-                  src={mainImage}
+                  src={`${imageUrl}${mainImage}`}
                   alt="상품 대표 이미지 미리보기"
                   width={150}
                   height={150}
@@ -86,7 +89,7 @@ export default function AddProduct() {
             <div className={styles.preview}>
               {detailImage ? (
                 <Image
-                  src={detailImage}
+                  src={`${imageUrl}${detailImage}`}
                   alt="상품 상세 이미지 미리보기"
                   width={150}
                   height={150}

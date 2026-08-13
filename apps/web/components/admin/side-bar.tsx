@@ -17,11 +17,11 @@ export default function SideBar() {
 
       {open && (
         <div className={styles.menu}>
-          <Link href={`/admin/change-product`} className={styles.link}>
+          <Link href={`/admin/product-change`} className={styles.link}>
             상품 관리/수정
           </Link>
 
-          <Link href={`/admin/add-product`} className={styles.link}>
+          <Link href={`/admin/product-add`} className={styles.link}>
             상품 등록
           </Link>
         </div>

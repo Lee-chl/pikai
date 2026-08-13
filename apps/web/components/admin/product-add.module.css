@@ -5,7 +5,6 @@
   padding: 40px 20px;
 }
 
-/* 상단 제목 */
 .header {
   margin-bottom: 30px;
 }
@@ -23,7 +22,6 @@
   color: #888;
 }
 
-/* 폼 */
 .form {
   display: flex;
   flex-direction: column;
@@ -36,7 +34,6 @@
   border-radius: 12px;
 }
 
-/* 일반 입력 영역 */
 .field {
   display: flex;
   flex-direction: column;
@@ -55,7 +52,6 @@
   margin-left: 2px;
 }
 
-/* input / select */
 .field input,
 .field select,
 .imageBox input {
@@ -92,7 +88,6 @@
   box-shadow: 0 0 0 3px rgba(255, 199, 194, 0.15);
 }
 
-/* select */
 .field select {
   appearance: none;
   cursor: pointer;
@@ -112,7 +107,6 @@
   background-repeat: no-repeat;
 }
 
-/* 이미지 영역 */
 .imageField {
   display: flex;
   flex-direction: column;
@@ -132,7 +126,6 @@
   background: #fafafa;
 }
 
-/* 이미지 미리보기 */
 .preview {
   flex-shrink: 0;
 
@@ -163,12 +156,10 @@
   text-align: center;
 }
 
-/* 이미지 URL 입력 */
 .imageBox input {
   flex: 1;
 }
 
-/* 등록 버튼 */
 .button {
   width: 100%;
   height: 46px;
@@ -191,4 +182,101 @@
 
 .button:hover {
   background: #f3aaa4;
+}
+
+/* ========================================
+   반응형
+======================================== */
+
+@media (max-width: 768px) {
+  .container {
+    padding: 30px 20px;
+  }
+
+  .header {
+    margin-bottom: 25px;
+  }
+
+  .header h1 {
+    font-size: 25px;
+  }
+
+  .header p {
+    font-size: 13px;
+  }
+
+  .form {
+    gap: 18px;
+    padding: 25px 20px;
+  }
+
+  .imageBox {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 15px;
+  }
+
+  .preview {
+    align-self: center;
+  }
+
+  .imageBox input {
+    width: 100%;
+  }
+}
+
+/* 작은 모바일 */
+@media (max-width: 480px) {
+  .container {
+    padding: 25px 15px;
+  }
+
+  .header {
+    margin-bottom: 20px;
+  }
+
+  .header h1 {
+    font-size: 23px;
+  }
+
+  .header p {
+    font-size: 12px;
+  }
+
+  .form {
+    gap: 17px;
+    padding: 20px 15px;
+    border-radius: 10px;
+  }
+
+  .field label,
+  .imageField > label {
+    font-size: 13px;
+  }
+
+  .field input,
+  .field select,
+  .imageBox input {
+    height: 42px;
+    font-size: 12px;
+  }
+
+  .imageBox {
+    padding: 12px;
+  }
+
+  .preview {
+    width: 130px;
+    height: 130px;
+  }
+
+  .preview img {
+    width: 130px;
+    height: 130px;
+  }
+
+  .button {
+    height: 44px;
+    font-size: 13px;
+  }
 }
