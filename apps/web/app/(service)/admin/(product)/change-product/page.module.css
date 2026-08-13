@@ -1,0 +1,324 @@
+.container {
+  width: 100%;
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 40px 20px;
+}
+
+/* 상단 */
+.header {
+  margin-bottom: 30px;
+}
+
+.header h1 {
+  margin: 0 0 8px;
+  font-size: 28px;
+  font-weight: 700;
+  color: #333;
+}
+
+.header p {
+  margin: 0;
+  font-size: 14px;
+  color: #888;
+}
+
+/* 상품 목록 */
+.productList {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+/* 상품 카드 */
+.productCard {
+  display: flex;
+  align-items: center;
+  min-height: 150px;
+  padding: 18px 22px;
+
+  background: #fff;
+  border: 1px solid #eee;
+  border-radius: 12px;
+
+  transition:
+    box-shadow 0.2s ease,
+    border-color 0.2s ease;
+}
+
+.productCard:hover {
+  border-color: #ffc7c2;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.06);
+}
+
+/* 상품 이미지 */
+.productImage {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 120px;
+  height: 120px;
+  margin-right: 24px;
+
+  background: #fafafa;
+  border-radius: 8px;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.productImage img {
+  object-fit: contain;
+}
+
+/* 상품 정보 */
+.productInfo {
+  flex: 1;
+  min-width: 0;
+}
+
+.productInfo h2 {
+  margin: 0 0 12px;
+
+  font-size: 17px;
+  font-weight: 600;
+  color: #333;
+
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.detail {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.detail span {
+  padding: 5px 9px;
+
+  font-size: 12px;
+  color: #777;
+
+  background: #f7f7f7;
+  border-radius: 5px;
+}
+
+.price {
+  margin: 0;
+
+  font-size: 16px;
+  font-weight: 700;
+  color: #333;
+}
+
+/* 버튼 영역 */
+.actions {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+
+  width: 130px;
+  margin-left: 25px;
+
+  flex-shrink: 0;
+}
+
+.actions button,
+.actions a {
+  width: 100%;
+  height: 34px;
+
+  border-radius: 6px;
+  font-size: 12px;
+  cursor: pointer;
+
+  transition: 0.2s;
+  text-decoration: none;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+}
+
+/* 옵션 관리 */
+.optionButton {
+  border: 1px solid #ffc7c2;
+  background: #fff;
+  color: #e98f87;
+}
+
+.optionButton:hover {
+  background: #fff4f2;
+}
+
+/* 수정 */
+.editButton {
+  border: 1px solid #ddd;
+  background: #fff;
+  color: #555;
+}
+
+.editButton:hover {
+  background: #f7f7f7;
+}
+
+/* 삭제 */
+.deleteButton {
+  border: 1px solid #eee;
+  background: #fff;
+  color: #999;
+}
+
+.deleteButton:hover {
+  border-color: #f1aaaa;
+  color: #e06f6f;
+  background: #fff8f8;
+}
+
+/* ========================================
+   반응형
+======================================== */
+
+/* 태블릿 */
+@media (max-width: 768px) {
+  .container {
+    padding: 30px 16px;
+  }
+
+  .productCard {
+    padding: 16px;
+  }
+
+  .productImage {
+    width: 100px;
+    height: 100px;
+    margin-right: 18px;
+  }
+
+  .actions {
+    width: 115px;
+    margin-left: 18px;
+  }
+
+  .productInfo h2 {
+    font-size: 16px;
+  }
+
+  .price {
+    font-size: 15px;
+  }
+}
+
+/* 모바일 */
+@media (max-width: 600px) {
+  .container {
+    padding: 25px 14px;
+  }
+
+  .header {
+    margin-bottom: 20px;
+  }
+
+  .header h1 {
+    font-size: 24px;
+  }
+
+  .header p {
+    font-size: 13px;
+  }
+
+  .productCard {
+    flex-wrap: wrap;
+    padding: 16px;
+  }
+
+  .productImage {
+    width: 90px;
+    height: 90px;
+    margin-right: 16px;
+  }
+
+  .productInfo {
+    flex: 1;
+  }
+
+  .productInfo h2 {
+    font-size: 15px;
+    margin-bottom: 9px;
+  }
+
+  .detail {
+    margin-bottom: 9px;
+  }
+
+  .detail span {
+    padding: 4px 7px;
+    font-size: 11px;
+  }
+
+  .price {
+    font-size: 14px;
+  }
+
+  .actions {
+    width: 100%;
+    margin-left: 0;
+    margin-top: 15px;
+
+    flex-direction: row;
+  }
+
+  .actions button,
+  .actions a {
+    flex: 1;
+    height: 36px;
+  }
+}
+
+/* 작은 모바일 */
+@media (max-width: 400px) {
+  .container {
+    padding: 20px 10px;
+  }
+
+  .productCard {
+    padding: 13px;
+  }
+
+  .productImage {
+    width: 75px;
+    height: 75px;
+    margin-right: 12px;
+  }
+
+  .productInfo h2 {
+    font-size: 14px;
+  }
+
+  .detail {
+    gap: 5px;
+  }
+
+  .detail span {
+    padding: 3px 6px;
+    font-size: 10px;
+  }
+
+  .price {
+    font-size: 13px;
+  }
+
+  .actions {
+    gap: 5px;
+    margin-top: 12px;
+  }
+
+  .actions button,
+  .actions a {
+    height: 34px;
+    font-size: 11px;
+  }
+}

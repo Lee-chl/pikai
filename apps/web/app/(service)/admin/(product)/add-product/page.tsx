@@ -1,7 +1,9 @@
+import AddProduct from "@/components/admin/add-product";
+
 export default function Page() {
   return (
     <div>
-      <p>상품 등록 페이지</p>
+      <AddProduct />
     </div>
   );
 }
