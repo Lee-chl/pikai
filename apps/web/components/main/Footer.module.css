@@ -68,3 +68,100 @@
   color: #999;
   text-align: center;
 }
+
+/* ========================================
+   반응형
+======================================== */
+
+@media (max-width: 768px) {
+  .footer {
+    margin-top: 60px;
+  }
+
+  .inner {
+    width: calc(100% - 40px);
+    padding: 30px 0 20px;
+  }
+
+  .top {
+    gap: 30px;
+    padding-bottom: 20px;
+  }
+
+  .top a {
+    font-size: 13px;
+  }
+
+  .logoInfo {
+    flex-direction: column;
+    gap: 15px;
+
+    padding: 25px 0;
+  }
+
+  .logoInfo img {
+    width: 180px;
+    height: auto;
+  }
+
+  .info {
+    width: 100%;
+    align-items: center;
+    text-align: center;
+    gap: 6px;
+  }
+
+  .info p {
+    font-size: 12px;
+  }
+
+  .info .company {
+    font-size: 14px;
+  }
+
+  .copy {
+    padding-top: 15px;
+    font-size: 11px;
+  }
+}
+
+/* 작은 모바일 */
+@media (max-width: 480px) {
+  .footer {
+    margin-top: 50px;
+  }
+
+  .inner {
+    width: calc(100% - 30px);
+    padding-top: 25px;
+  }
+
+  .top {
+    gap: 20px;
+  }
+
+  .top a {
+    font-size: 12px;
+  }
+
+  .logoInfo {
+    padding: 20px 0;
+  }
+
+  .logoInfo img {
+    width: 150px;
+  }
+
+  .info p {
+    font-size: 11px;
+    word-break: keep-all;
+  }
+
+  .info .company {
+    font-size: 13px;
+  }
+
+  .copy {
+    font-size: 10px;
+  }
+}

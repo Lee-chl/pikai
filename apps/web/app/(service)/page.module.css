@@ -66,3 +66,55 @@
 .button:hover svg {
   transform: translateX(4px);
 }
+
+/* ========================================
+   반응형
+======================================== */
+
+@media (max-width: 768px) {
+  .main {
+    padding: 25px 0 30px;
+  }
+
+  .image {
+    width: calc(100% - 40px);
+    max-width: none;
+    height: auto;
+
+    margin-bottom: 35px;
+  }
+
+  .button {
+    margin-top: 20px;
+    padding: 12px 26px;
+
+    font-size: 14px;
+  }
+}
+
+/* 작은 모바일 */
+@media (max-width: 480px) {
+  .main {
+    padding: 20px 0 25px;
+  }
+
+  .image {
+    width: calc(100% - 30px);
+
+    margin-bottom: 25px;
+
+    border-radius: 8px;
+  }
+
+  .button {
+    margin-top: 15px;
+    padding: 11px 22px;
+
+    font-size: 13px;
+  }
+
+  .button svg {
+    width: 17px;
+    height: 17px;
+  }
+}

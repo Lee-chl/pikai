@@ -81,3 +81,82 @@
 .category a::after {
   bottom: -10px;
 }
+
+/* ========================================
+   반응형
+======================================== */
+
+@media (max-width: 768px) {
+  .userMenu {
+    height: auto;
+    min-height: 48px;
+    padding: 8px 20px;
+
+    gap: 12px;
+  }
+
+  .logo {
+    width: calc(100% - 40px);
+    height: auto;
+
+    margin-bottom: 20px;
+
+    flex-direction: column;
+
+    padding: 20px 0 10px;
+    gap: 15px;
+  }
+
+  .logo img {
+    width: 200px;
+    height: auto;
+  }
+
+  .logo :global(.container) {
+    position: relative;
+    right: auto;
+  }
+
+  .category {
+    overflow-x: auto;
+    justify-content: center;
+
+    padding: 0 20px 13px;
+
+    white-space: nowrap;
+  }
+
+  .category a {
+    flex-shrink: 0;
+    padding: 0 18px;
+    font-size: 14px;
+  }
+}
+
+/* 작은 모바일 */
+@media (max-width: 480px) {
+  .userMenu {
+    padding: 8px 15px;
+  }
+
+  .logo {
+    width: calc(100% - 30px);
+
+    padding-top: 15px;
+    gap: 12px;
+  }
+
+  .logo img {
+    width: 170px;
+  }
+
+  .category {
+    padding-left: 10px;
+    padding-right: 10px;
+  }
+
+  .category a {
+    padding: 0 14px;
+    font-size: 13px;
+  }
+}

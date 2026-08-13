@@ -63,3 +63,68 @@
 
   color: #777;
 }
+
+/* ========================================
+   반응형
+======================================== */
+
+@media (max-width: 768px) {
+  .card {
+    gap: 14px;
+    padding: 15px;
+  }
+
+  .rank {
+    width: 35px;
+    font-size: 18px;
+  }
+
+  .image {
+    width: 60px;
+    height: 60px;
+  }
+
+  .productName {
+    font-size: 14px;
+  }
+
+  .colorName {
+    font-size: 13px;
+  }
+}
+
+/* 작은 모바일 */
+@media (max-width: 480px) {
+  .card {
+    gap: 10px;
+    padding: 12px;
+  }
+
+  .rank {
+    width: 30px;
+    font-size: 16px;
+  }
+
+  .image {
+    width: 52px;
+    height: 52px;
+    border-radius: 8px;
+  }
+
+  .info {
+    gap: 4px;
+    min-width: 0;
+  }
+
+  .productName {
+    font-size: 13px;
+
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .colorName {
+    font-size: 12px;
+  }
+}

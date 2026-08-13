@@ -46,3 +46,37 @@
 .link:hover::after {
   width: 100%;
 }
+
+/* ========================================
+   반응형
+======================================== */
+
+@media (max-width: 768px) {
+  .nav {
+    justify-content: center;
+    gap: 30px;
+
+    height: 55px;
+
+    padding: 0 15px;
+
+    box-sizing: border-box;
+  }
+
+  .link {
+    font-size: 14px;
+    flex-shrink: 0;
+  }
+}
+
+/* 작은 모바일 */
+@media (max-width: 480px) {
+  .nav {
+    gap: 18px;
+    padding: 0 10px;
+  }
+
+  .link {
+    font-size: 13px;
+  }
+}

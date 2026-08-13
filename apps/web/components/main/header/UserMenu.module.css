@@ -32,13 +32,36 @@
   background-color: hsl(5, 100%, 82%);
 }
 
+/* 반응형 */
 @media (max-width: 768px) {
   .container {
     gap: 12px;
+    flex-wrap: wrap;
   }
 
   .container a,
   .container button {
     font-size: 13px;
+  }
+}
+
+/* 작은 모바일 */
+@media (max-width: 480px) {
+  .container {
+    gap: 8px;
+    justify-content: flex-end;
+  }
+
+  .container a,
+  .container button {
+    font-size: 12px;
+  }
+
+  .container button {
+    padding: 7px 13px;
+  }
+
+  .container p {
+    font-size: 12px !important;
   }
 }

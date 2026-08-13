@@ -19,6 +19,8 @@
 .input {
   flex: 1;
 
+  min-width: 0;
+
   border: none;
   outline: none;
 
@@ -34,6 +36,8 @@
 .button {
   width: 60px;
   height: 100%;
+
+  flex-shrink: 0;
 
   border: none;
 
@@ -52,4 +56,49 @@
 
 .button:hover {
   background: hsl(5, 100%, 88%);
+}
+
+/* ========================================
+   반응형
+======================================== */
+
+@media (max-width: 768px) {
+  .container {
+    position: relative;
+    right: auto;
+
+    width: calc(100vw - 40px);
+    max-width: 350px;
+
+    margin: 0 auto;
+  }
+
+  .input {
+    font-size: 14px;
+    padding: 0 16px;
+  }
+
+  .button {
+    width: 52px;
+  }
+}
+
+/* 작은 모바일 */
+@media (max-width: 480px) {
+  .container {
+    width: calc(100vw - 30px);
+
+    height: 44px;
+
+    margin: 0 auto;
+  }
+
+  .input {
+    padding: 0 14px;
+    font-size: 13px;
+  }
+
+  .button {
+    width: 48px;
+  }
 }

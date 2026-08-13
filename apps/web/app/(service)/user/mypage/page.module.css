@@ -1,99 +1,138 @@
 .container {
-  max-width: 900px;
-  margin: 60px auto 80px;
-}
-
-.title {
-  text-align: center;
-  font-size: 35px;
-  font-weight: 700;
-  margin-bottom: 40px;
-}
-
-.myPageBox {
-  width: 800px;
+  width: 100%;
+  max-width: 1000px;
   margin: 0 auto;
-
-  background: #f6f6f6;
-  border-radius: 22px;
-  border: 1px solid #ececec;
-  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.05);
+  padding: 50px 20px;
 }
 
-.profile {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+.container > h2 {
+  text-align: center;
+  margin: 0 0 30px;
 
-  padding: 30px 60px;
-  margin-top: 10px;
-}
-
-.userName {
-  margin: 0;
-  font-size: 25px;
+  font-size: 28px;
   font-weight: 700;
   color: #333;
 }
 
-.cancel {
-  font-size: 14px;
+.myPageBox {
+  padding: 30px;
+
+  background: #fff;
+  border: 1px solid #eee;
+  border-radius: 12px;
+}
+
+.profile {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.userName {
+  margin: 0;
+
+  font-size: 20px;
+  color: #333;
+}
+
+.userName strong {
+  font-weight: 700;
+  color: #333;
+}
+
+.profile button {
+  padding: 7px 12px;
+
+  border: 1px solid #ddd;
+  border-radius: 6px;
+
+  background: #fff;
   color: #999;
-  text-decoration: none;
+
+  font-size: 12px;
+  cursor: pointer;
+
   transition: 0.2s;
 }
 
-.cancel:hover {
-  color: #ff6b6b;
-  text-decoration: underline;
+.profile button:hover {
+  border-color: #f1aaaa;
+  color: #e06f6f;
+  background: #fff8f8;
 }
 
 .divider {
-  width: calc(100% - 60px);
+  width: 100%;
   height: 1px;
-  margin: 0 auto;
-  background: #dddddd;
+  margin: 28px 0;
+
+  background: #eee;
 }
 
 .menuBox {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 70px;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
 
-  padding: 60px 40px;
+  gap: 15px;
 }
 
 .menu {
-  width: 180px;
-
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
 
-  text-decoration: none;
-  color: #333;
+  min-height: 180px;
 
-  transition: transform 0.2s;
+  border: 1px solid #eee;
+  border-radius: 10px;
+
+  background: #fff;
+
+  color: #444;
+  text-decoration: none;
+
+  transition:
+    border-color 0.2s ease,
+    background 0.2s ease,
+    box-shadow 0.2s ease,
+    transform 0.2s ease;
 }
 
 .menu:hover {
-  transform: translateY(-4px);
+  border-color: #ffc7c2;
+  background: #fffaf9;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.05);
+
+  transform: translateY(-2px);
 }
 
 .menu svg {
-  color: #ffc7c2;
   margin-bottom: 18px;
-}
 
-.menu:hover svg {
-  color: #ffaea8;
+  color: #e99b94;
 }
 
 .menu span {
-  font-size: 18px;
+  font-size: 14px;
   font-weight: 600;
-  text-align: center;
-  line-height: 1.5;
+  color: #444;
+}
+
+@media (max-width: 700px) {
+  .container {
+    padding: 30px 15px;
+  }
+
+  .myPageBox {
+    padding: 20px;
+  }
+
+  .menuBox {
+    grid-template-columns: 1fr;
+  }
+
+  .menu {
+    min-height: 130px;
+  }
 }

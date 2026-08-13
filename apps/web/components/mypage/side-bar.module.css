@@ -33,3 +33,25 @@
 .link:hover {
   color: #ff9a92;
 }
+
+/* 반응형 */
+@media (max-width: 768px) {
+  .sidebar {
+    position: static;
+
+    width: auto;
+    padding: 10px 20px;
+
+    background: #fff;
+    border-bottom: 1px solid #eee;
+  }
+
+  .menu {
+    flex-direction: row;
+
+    margin-top: 10px;
+    margin-left: 0;
+
+    gap: 20px;
+  }
+}
