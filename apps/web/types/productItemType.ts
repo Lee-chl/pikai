@@ -19,4 +19,5 @@ export interface ProductAdminType {
     id: number;
     name: string;
   };
+  hash_tag: string[];
 }

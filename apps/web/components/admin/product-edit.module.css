@@ -1,0 +1,268 @@
+.container {
+  width: 100%;
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 40px 20px;
+}
+
+/* 상단 제목 */
+.header {
+  margin-bottom: 30px;
+}
+
+.header h1 {
+  margin: 0 0 8px;
+  font-size: 28px;
+  font-weight: 700;
+  color: #333;
+}
+
+.header p {
+  margin: 0;
+  font-size: 14px;
+  color: #888;
+}
+
+/* 폼 */
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+
+  padding: 30px;
+
+  background: #fff;
+  border: 1px solid #eee;
+  border-radius: 12px;
+}
+
+/* 일반 입력 */
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+}
+
+.field label,
+.imageField > label {
+  font-size: 14px;
+  font-weight: 600;
+  color: #444;
+}
+
+.field input,
+.imageField input {
+  width: 100%;
+  height: 44px;
+  box-sizing: border-box;
+
+  padding: 0 14px;
+
+  border: 1px solid #ddd;
+  border-radius: 7px;
+
+  background: #fff;
+
+  font-size: 13px;
+  color: #333;
+
+  outline: none;
+
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.field input:focus,
+.imageField input:focus {
+  border-color: #ffc7c2;
+  box-shadow: 0 0 0 3px rgba(255, 199, 194, 0.15);
+}
+
+.field input::placeholder,
+.imageField input::placeholder {
+  color: #aaa;
+}
+
+/* 이미지 */
+.imageField {
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+}
+
+.imageBox {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+
+  padding: 15px;
+
+  border: 1px solid #eee;
+  border-radius: 8px;
+
+  background: #fafafa;
+}
+
+/* 이미지 미리보기 */
+.preview {
+  flex-shrink: 0;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 150px;
+  height: 150px;
+
+  border: 1px solid #eee;
+  border-radius: 8px;
+
+  background: #fff;
+
+  overflow: hidden;
+}
+
+.preview img {
+  width: 150px;
+  height: 150px;
+  object-fit: contain;
+}
+
+.preview span {
+  font-size: 12px;
+  color: #aaa;
+  text-align: center;
+}
+
+/* 이미지 입력 */
+.imageBox input {
+  flex: 1;
+  min-width: 0;
+}
+
+/* 해시태그 설명 */
+.field p {
+  margin: 0;
+
+  font-size: 12px;
+  color: #999;
+}
+
+/* 버튼 */
+.button {
+  width: 100%;
+  height: 46px;
+
+  margin-top: 8px;
+
+  border: none;
+  border-radius: 7px;
+
+  background: #ffc7c2;
+  color: #fff;
+
+  font-size: 14px;
+  font-weight: 600;
+
+  cursor: pointer;
+
+  transition: background 0.2s ease;
+}
+
+.button:hover {
+  background: #f3aaa4;
+}
+
+/* ========================================
+   반응형
+======================================== */
+
+@media (max-width: 768px) {
+  .container {
+    padding: 30px 15px;
+  }
+
+  .header h1 {
+    font-size: 24px;
+  }
+
+  .form {
+    padding: 22px 18px;
+    gap: 20px;
+  }
+
+  .imageBox {
+    gap: 15px;
+    padding: 12px;
+  }
+
+  .preview {
+    width: 120px;
+    height: 120px;
+  }
+
+  .preview img {
+    width: 120px;
+    height: 120px;
+  }
+}
+
+/* 작은 모바일 */
+@media (max-width: 480px) {
+  .container {
+    padding: 25px 12px;
+  }
+
+  .header {
+    margin-bottom: 20px;
+  }
+
+  .header h1 {
+    font-size: 22px;
+  }
+
+  .form {
+    padding: 18px 14px;
+    gap: 18px;
+  }
+
+  .field label,
+  .imageField > label {
+    font-size: 13px;
+  }
+
+  /* 이미지 + 입력을 세로로 */
+  .imageBox {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+
+    padding: 12px;
+  }
+
+  .preview {
+    width: 120px;
+    height: 120px;
+
+    margin: 0 auto;
+  }
+
+  .preview img {
+    width: 120px;
+    height: 120px;
+  }
+
+  .imageBox input {
+    width: 100%;
+  }
+
+  .field input,
+  .imageBox input {
+    height: 42px;
+  }
+
+  .button {
+    height: 44px;
+  }
+}
