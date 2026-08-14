@@ -10,7 +10,7 @@ export default function SideBar() {
   return (
     <div className={styles.sidebar}>
       <div className={styles.folder} onClick={() => setOpen(!open)}>
-        <span>상품 관리</span>
+        <span>상품</span>
 
         {open ? <ChevronDown size={18} /> : <ChevronRight size={18} />}
       </div>

@@ -40,6 +40,10 @@ export default async function AdminLayout({
     }
   }
 
+  if (!user) {
+    redirect("/user/login");
+  }
+
   if (!user.is_admin) {
     return <AdminToast />;
   }
