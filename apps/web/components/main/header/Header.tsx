@@ -8,6 +8,7 @@ import logo from "../../../public/pikai_logo.png";
 import { CategoryType } from "@/types/productDetailType";
 import { Constants } from "@/common/constants";
 import { Suspense } from "react";
+import { toast } from "sonner";
 
 export default async function Header() {
   let categories: CategoryType[] = [];
@@ -18,7 +19,7 @@ export default async function Header() {
 
     const categoryList: CategoryType[] = await res.json();
     if (!categoryList) {
-      alert("카테고리를 가져오는데 실패하였습니다. 다시 시도해주세요");
+      toast.error("카테고리를 가져오는데 실패하였습니다. 다시 시도해주세요");
       throw new Error("카테고리를 가져오는데 실패");
     }
     categories = categoryList;

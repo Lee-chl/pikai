@@ -4,6 +4,7 @@ import { Constants } from "@/common/constants";
 import { useState } from "react";
 import { Address, useKakaoPostcodePopup } from "react-daum-postcode";
 import styles from "./addressForm.module.css";
+import { toast } from "sonner";
 
 export default function AddressForm() {
   const scriptUrl =
@@ -30,17 +31,17 @@ export default function AddressForm() {
     const address = `${newAddress} ${detailAddress}`;
 
     if (!newPostalCode.trim()) {
-      alert("주소를 선택해주세요.");
+      toast.error("주소를 선택해주세요.");
       return;
     }
 
     if (!newAddress.trim()) {
-      alert("주소를 선택해주세요.");
+      toast.error("주소를 선택해주세요.");
       return;
     }
 
     if (!detailAddress.trim()) {
-      alert("상세주소를 입력해주세요.");
+      toast.error("상세주소를 입력해주세요.");
       return;
     }
 
@@ -50,7 +51,7 @@ export default function AddressForm() {
       ?.split("=")[1];
 
     if (!token) {
-      alert("로그인이 필요합니다.");
+      toast.error("로그인이 필요합니다.");
       return;
     }
 
@@ -69,10 +70,10 @@ export default function AddressForm() {
         });
 
         if (response.ok) {
-          alert("주소가 수정되었습니다.");
+          toast.success("주소가 수정되었습니다.");
           window.location.reload();
         } else {
-          alert("주소 수정에 실패했습니다.");
+          toast.error("주소 수정에 실패했습니다.");
         }
       } catch (err) {
         console.error(err);

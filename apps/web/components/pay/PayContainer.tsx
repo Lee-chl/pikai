@@ -9,6 +9,7 @@ import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { Cart } from "@/types/cartType";
 import { PaymentWidgetInstance } from "@tosspayments/payment-widget-sdk";
 import Payment from "./payment";
+import { toast } from "sonner";
 
 interface Props {
   data: Cart;
@@ -29,7 +30,7 @@ export default function PayContainer({ data }: Props) {
     const errorMessage = searchParams.get("message");
 
     if (errorCode) {
-      alert(`결제에 실패했습니다: ${errorMessage || "알 수 없는 오류"}`);
+      toast.error(`결제에 실패했습니다: ${errorMessage || "알 수 없는 오류"}`);
       router.replace(pathname);
     }
   }, [searchParams, router, pathname]);
@@ -52,27 +53,27 @@ export default function PayContainer({ data }: Props) {
 
   const handlePay = async () => {
     if (!delivery.recipient.trim()) {
-      alert("받는 분을 입력해주세요.");
+      toast.error("받는 분을 입력해주세요.");
       return;
     }
 
     if (!delivery.phone_number.trim()) {
-      alert("연락처를 입력해주세요.");
+      toast.error("연락처를 입력해주세요.");
       return;
     }
 
     if (delivery.phone_number.length !== 11) {
-      alert("전화번호 11자리를 정확히 입력해주세요.");
+      toast.error("전화번호 11자리를 정확히 입력해주세요.");
       return;
     }
 
     if (!delivery.postal_code.trim()) {
-      alert("주소를 선택해주세요.");
+      toast.error("주소를 선택해주세요.");
       return;
     }
 
     if (!delivery.delivery_info.trim()) {
-      alert("배송지를 입력해주세요.");
+      toast.error("배송지를 입력해주세요.");
       return;
     }
 
@@ -82,13 +83,13 @@ export default function PayContainer({ data }: Props) {
       ?.split("=")[1];
 
     if (!token) {
-      alert("로그인이 필요합니다.");
+      toast.error("로그인이 필요합니다.");
       return;
     }
 
     const paymentWidget = paymentWidgetRef.current;
     if (!paymentWidget) {
-      alert("결제 위젯 로딩 중입니다. 잠시만 기다려주세요.");
+      toast.error("결제 위젯 로딩 중입니다. 잠시만 기다려주세요.");
       return;
     }
 
@@ -115,7 +116,7 @@ export default function PayContainer({ data }: Props) {
         });
 
         if (!response.ok) {
-          alert("결제에 실패했습니다.");
+          toast.error("결제에 실패했습니다.");
           return;
         }
 
@@ -136,6 +137,7 @@ export default function PayContainer({ data }: Props) {
         });
       } catch (err) {
         console.error(err);
+        toast.error("결제 중 오류가 발생했습니다.");
       }
     }
   };

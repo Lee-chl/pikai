@@ -7,8 +7,7 @@
   font-weight: 600;
 
   cursor: pointer;
-
-  transition: all 0.2s ease;
+  transition: color 0.2s ease;
 }
 
 .deleteButton:hover {
@@ -18,4 +17,196 @@
 
 .deleteButton:active {
   transform: scale(0.97);
+}
+
+/* ========================================
+   회원 탈퇴 확인 팝업
+======================================== */
+
+.confirmOverlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 20px;
+  box-sizing: border-box;
+
+  background: rgba(0, 0, 0, 0.35);
+}
+
+.confirmToast {
+  width: 100%;
+  max-width: 420px;
+  padding: 30px;
+
+  box-sizing: border-box;
+
+  background: #fff;
+  border: 1px solid #ffd8d4;
+  border-radius: 14px;
+
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+
+  text-align: center;
+}
+
+/* 제목 */
+.confirmTitle {
+  margin: 0 0 12px;
+
+  font-size: 17px;
+  font-weight: 700;
+  line-height: 1.5;
+  color: #333;
+}
+
+/* 설명 */
+.confirmText {
+  margin: 0 0 24px;
+
+  font-size: 13px;
+  line-height: 1.7;
+  color: #888;
+}
+
+/* 버튼 영역 */
+.confirmButtons {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+}
+
+.confirmButtons button {
+  flex: 1;
+
+  height: 40px;
+  padding: 0 14px;
+
+  border-radius: 7px;
+
+  font-size: 13px;
+  font-weight: 600;
+
+  cursor: pointer;
+  transition:
+    background 0.2s ease,
+    border-color 0.2s ease;
+}
+
+/* 취소 */
+.cancelButton {
+  border: 1px solid #ddd;
+  background: #fff;
+  color: #555;
+}
+
+.cancelButton:hover {
+  background: #f7f7f7;
+}
+
+/* 탈퇴 */
+.confirmButton {
+  border: 1px solid #ffc7c2;
+  background: #ffc7c2;
+  color: #5a3a38;
+}
+
+.confirmButton:hover {
+  background: #ffb4ae;
+  border-color: #ffb4ae;
+}
+
+/* ========================================
+   태블릿
+======================================== */
+
+@media (max-width: 768px) {
+  .deleteButton {
+    font-size: 15px;
+  }
+
+  .confirmToast {
+    max-width: 380px;
+    padding: 26px;
+  }
+
+  .confirmTitle {
+    font-size: 16px;
+  }
+
+  .confirmText {
+    font-size: 13px;
+  }
+}
+
+/* ========================================
+   모바일
+======================================== */
+
+@media (max-width: 600px) {
+  .deleteButton {
+    font-size: 14px;
+  }
+
+  .confirmOverlay {
+    padding: 16px;
+  }
+
+  .confirmToast {
+    max-width: 100%;
+    padding: 24px 20px;
+
+    border-radius: 12px;
+  }
+
+  .confirmTitle {
+    margin-bottom: 10px;
+    font-size: 15px;
+  }
+
+  .confirmText {
+    margin-bottom: 20px;
+    font-size: 12px;
+  }
+
+  .confirmButtons {
+    gap: 7px;
+  }
+
+  .confirmButtons button {
+    height: 38px;
+    font-size: 12px;
+  }
+}
+
+/* ========================================
+   작은 모바일
+======================================== */
+
+@media (max-width: 400px) {
+  .confirmOverlay {
+    padding: 12px;
+  }
+
+  .confirmToast {
+    padding: 22px 16px;
+  }
+
+  .confirmTitle {
+    font-size: 14px;
+  }
+
+  .confirmText {
+    font-size: 11px;
+    line-height: 1.6;
+  }
+
+  .confirmButtons button {
+    height: 36px;
+    font-size: 11px;
+  }
 }
