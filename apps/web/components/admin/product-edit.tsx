@@ -6,6 +6,7 @@ import Image from "next/image";
 import { useState } from "react";
 import { toast } from "sonner";
 import styles from "./product-edit.module.css";
+import { useRouter } from "next/navigation";
 
 interface EditProductProps {
   product: ProductAdminType;
@@ -22,6 +23,8 @@ export default function ProductEdit({ product }: EditProductProps) {
 
   const imageUrl = `${Constants.image_url}/`;
 
+  const router = useRouter();
+
   const handleSubmit = async () => {
     const token = document.cookie
       .split("; ")
@@ -32,6 +35,7 @@ export default function ProductEdit({ product }: EditProductProps) {
       toast.error("로그인이 필요합니다.");
       return;
     }
+
     if (token) {
       try {
         try {
@@ -62,6 +66,7 @@ export default function ProductEdit({ product }: EditProductProps) {
           }
 
           toast.success("상품이 수정되었습니다.");
+          router.push("/admin/product-change");
         } catch (error) {
           toast.error("상품 수정 중 오류가 발생했습니다.");
         }

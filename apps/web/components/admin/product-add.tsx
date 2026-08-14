@@ -4,6 +4,8 @@ import { useState } from "react";
 import styles from "./product-add.module.css";
 import Image from "next/image";
 import { Constants } from "@/common/constants";
+import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 
 export default function AddProduct() {
   const [brandName, setBrandName] = useState("");
@@ -15,6 +17,65 @@ export default function AddProduct() {
   const [hashTag, setHashTag] = useState("");
 
   const imageUrl = `${Constants.image_url}/`;
+
+  const router = useRouter();
+
+  const handleAdd = async () => {
+    const token = document.cookie
+      .split("; ")
+      .find((row) => row.startsWith("accessToken="))
+      ?.split("=")[1];
+
+    if (!token) {
+      toast.error("로그인이 필요합니다.");
+      return;
+    }
+
+    if (
+      !brandName ||
+      !categoryName ||
+      !mainImage ||
+      !detailImage ||
+      !productName ||
+      !price
+    ) {
+      toast.error("모든 정보를 입력해주세요.");
+      return;
+    }
+
+    try {
+      const response = await fetch(`${Constants.back_url}/admin`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          brand_name: brandName,
+          category_name: categoryName,
+          color_main_image: mainImage,
+          color_detail_image: detailImage,
+          name: productName,
+          price: Number(price),
+          hash_tag: hashTag
+            .split(",")
+            .map((tag) => tag.trim())
+            .filter((tag) => tag !== ""),
+        }),
+      });
+
+      if (!response.ok) {
+        toast.error("상품 등록이 실패하였습니다.");
+        return;
+      }
+
+      toast.success("상품이 등록되었습니다.");
+      router.push("/admin/product-change");
+    } catch (error) {
+      console.log(error);
+      toast.error("상품 등록 중 오류가 발생했습니다.");
+    }
+  };
 
   return (
     <div className={styles.container}>
@@ -145,7 +206,7 @@ export default function AddProduct() {
           />
         </div>
 
-        <button type="button" className={styles.button}>
+        <button type="button" className={styles.button} onClick={handleAdd}>
           상품 등록
         </button>
       </div>
