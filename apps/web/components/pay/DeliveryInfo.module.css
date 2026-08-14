@@ -1,82 +1,249 @@
 .container {
   width: 100%;
   max-width: 900px;
-  margin: 60px auto 80px;
+  margin: 40px auto 70px;
   padding: 0 20px;
+  box-sizing: border-box;
 }
 
 .form {
   padding: 32px;
-  border-radius: 16px;
-  background: #fffdfd;
-  border: 1px solid #ffc7c2;
-  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.05);
+  border: 1px solid #eee;
+  border-radius: 12px;
+  background: #fff;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.04);
 }
 
+/* 제목 */
 .subTitle {
+  margin: 0 0 28px;
+
   font-size: 22px;
   font-weight: 700;
-  margin-bottom: 28px;
+  color: #333;
 }
 
+/* 입력 항목 */
 .form p {
-  margin-bottom: 20px;
+  margin: 0 0 20px;
 }
 
 .form label {
   display: block;
-  font-size: 16px;
+
+  margin-bottom: 9px;
+
+  font-size: 14px;
   font-weight: 600;
-  margin-bottom: 10px;
+  color: #444;
 }
 
-.postBox {
-  display: flex;
-  gap: 12px;
-  margin-bottom: 12px;
-}
-
+/* 입력창 */
 .postInput,
 .input {
   width: 100%;
   height: 48px;
-  padding: 0 16px;
-  font-size: 15px;
-  border: 1px solid #ddd;
-  border-radius: 10px;
-  outline: none;
+  padding: 0 15px;
+
   box-sizing: border-box;
-  background: white;
+
+  border: 1px solid #ddd;
+  border-radius: 8px;
+
+  outline: none;
+
+  background: #fff;
+  color: #333;
+
+  font-size: 14px;
+
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
 }
 
 .postInput:focus,
 .input:focus {
   border-color: #ffc7c2;
+  box-shadow: 0 0 0 2px rgba(255, 199, 194, 0.15);
 }
 
+.postInput::placeholder,
+.input::placeholder {
+  color: #aaa;
+}
+
+/* 읽기 전용 */
 .postInput[readonly],
 .input[readonly] {
-  background: #edecec;
-  color: #555;
+  background: #f7f7f7;
+  color: #666;
+}
+
+/* 우편번호 + 주소 찾기 */
+.postBox {
+  display: flex;
+  gap: 10px;
+
+  width: 100%;
+  margin-bottom: 12px;
+}
+
+.postBox .postInput {
+  flex: 1;
+  min-width: 0;
 }
 
 .searchButton {
   width: 120px;
   height: 48px;
-  border: none;
-  border-radius: 10px;
+
+  flex-shrink: 0;
+
+  border: 1px solid #ffc7c2;
+  border-radius: 8px;
+
   background: #ffc7c2;
   color: #5a3a38;
-  font-size: 15px;
+
+  font-size: 14px;
   font-weight: 600;
+
   cursor: pointer;
-  flex-shrink: 0;
+
+  transition:
+    background 0.2s ease,
+    border-color 0.2s ease;
 }
 
 .searchButton:hover {
   background: #ffb4ae;
+  border-color: #ffb4ae;
 }
 
+/* 일반 입력창 */
 .input {
   margin-bottom: 16px;
+}
+
+/* ========================================
+   태블릿
+======================================== */
+
+@media (max-width: 768px) {
+  .container {
+    margin: 30px auto 50px;
+    padding: 0 16px;
+  }
+
+  .form {
+    padding: 26px 22px;
+  }
+
+  .subTitle {
+    margin-bottom: 24px;
+    font-size: 20px;
+  }
+
+  .form label {
+    font-size: 14px;
+  }
+
+  .postInput,
+  .input,
+  .searchButton {
+    height: 46px;
+  }
+}
+
+/* ========================================
+   모바일
+======================================== */
+
+@media (max-width: 600px) {
+  .container {
+    margin: 25px auto 40px;
+    padding: 0 14px;
+  }
+
+  .form {
+    padding: 22px 16px;
+    border-radius: 10px;
+  }
+
+  .subTitle {
+    margin-bottom: 22px;
+    font-size: 19px;
+  }
+
+  .form p {
+    margin-bottom: 17px;
+  }
+
+  .form label {
+    margin-bottom: 8px;
+    font-size: 13px;
+  }
+
+  .postInput,
+  .input {
+    height: 44px;
+    padding: 0 13px;
+    border-radius: 7px;
+    font-size: 13px;
+  }
+
+  .postBox {
+    gap: 8px;
+    margin-bottom: 10px;
+  }
+
+  .searchButton {
+    width: 95px;
+    height: 44px;
+
+    border-radius: 7px;
+
+    font-size: 13px;
+  }
+
+  .input {
+    margin-bottom: 13px;
+  }
+}
+
+/* ========================================
+   작은 모바일
+======================================== */
+
+@media (max-width: 400px) {
+  .container {
+    padding: 0 10px;
+  }
+
+  .form {
+    padding: 20px 13px;
+  }
+
+  .subTitle {
+    font-size: 18px;
+  }
+
+  .postBox {
+    gap: 6px;
+  }
+
+  .postInput,
+  .input {
+    height: 42px;
+    padding: 0 11px;
+    font-size: 12px;
+  }
+
+  .searchButton {
+    width: 82px;
+    height: 42px;
+
+    font-size: 12px;
+  }
 }

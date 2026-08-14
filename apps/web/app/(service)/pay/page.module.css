@@ -1,13 +1,70 @@
 .container {
   max-width: 1100px;
+
   margin: 50px auto 80px;
   padding: 0 24px;
+
+  box-sizing: border-box;
 }
 
 .title {
+  margin-bottom: 40px;
+
   font-size: 34px;
   font-weight: 700;
+
   text-align: center;
-  margin-bottom: 40px;
+
   color: #333;
+}
+
+/* ========================================
+   태블릿
+======================================== */
+
+@media (max-width: 768px) {
+  .container {
+    margin: 40px auto 60px;
+    padding: 0 18px;
+  }
+
+  .title {
+    margin-bottom: 32px;
+
+    font-size: 30px;
+  }
+}
+
+/* ========================================
+   모바일
+======================================== */
+
+@media (max-width: 600px) {
+  .container {
+    margin: 30px auto 50px;
+    padding: 0 14px;
+  }
+
+  .title {
+    margin-bottom: 26px;
+
+    font-size: 26px;
+  }
+}
+
+/* ========================================
+   작은 모바일
+======================================== */
+
+@media (max-width: 400px) {
+  .container {
+    margin: 25px auto 40px;
+    padding: 0 12px;
+  }
+
+  .title {
+    margin-bottom: 22px;
+
+    font-size: 23px;
+  }
 }
