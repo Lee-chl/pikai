@@ -4,6 +4,7 @@ import { type ProductAdminType } from "@/types/productItemType";
 import Image from "next/image";
 import styles from "./page.module.css";
 import Link from "next/link";
+import ProductDelete from "@/components/admin/product-delete";
 
 export default async function Page() {
   const cookieStore = await cookies();
@@ -78,7 +79,7 @@ export default async function Page() {
                 상품 수정
               </Link>
 
-              <button className={styles.deleteButton}>상품 삭제</button>
+              <ProductDelete productId={product.id} />
             </div>
           </div>
         ))}

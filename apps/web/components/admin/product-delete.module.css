@@ -1,0 +1,69 @@
+.container {
+  width: 100%;
+  display: flex;
+  align-items: center;
+}
+
+/* 상품 삭제 버튼 */
+.deleteButton {
+  width: 100%;
+  height: 34px;
+
+  border: 1px solid #eee;
+  border-radius: 6px;
+
+  background: #fff;
+  color: #999;
+
+  font-size: 12px;
+  cursor: pointer;
+
+  box-sizing: border-box;
+
+  transition: 0.2s;
+}
+
+.deleteButton:hover {
+  border-color: #f1aaaa;
+  color: #e06f6f;
+  background: #fff8f8;
+}
+
+/* ========================================
+   태블릿
+======================================== */
+
+@media (max-width: 768px) {
+  .deleteButton {
+    width: 115px;
+    height: 34px;
+  }
+}
+
+/* ========================================
+   모바일
+======================================== */
+
+@media (max-width: 600px) {
+  .container {
+    width: 100%;
+  }
+
+  .deleteButton {
+    width: 100%;
+    height: 36px;
+  }
+}
+
+/* ========================================
+   작은 모바일
+======================================== */
+
+@media (max-width: 400px) {
+  .deleteButton {
+    width: 100%;
+    height: 34px;
+
+    font-size: 11px;
+  }
+}
