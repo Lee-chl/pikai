@@ -1,0 +1,651 @@
+.container {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  margin-bottom: 4px;
+}
+
+.header h2 {
+  margin: 0;
+
+  font-size: 20px;
+  font-weight: 600;
+  color: #333;
+}
+
+.addButton {
+  height: 36px;
+
+  padding: 0 16px;
+
+  border: 1px solid #ffc7c2;
+  border-radius: 6px;
+
+  background: #fff;
+  color: #e98f87;
+
+  font-size: 12px;
+  font-weight: 500;
+
+  cursor: pointer;
+
+  transition: 0.2s;
+}
+
+.addButton:hover {
+  background: #fff4f2;
+}
+
+.empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 100%;
+  min-height: 200px;
+
+  font-size: 14px;
+  color: #999;
+  text-align: center;
+}
+
+/* ========================================
+   상품 옵션 카드
+======================================== */
+
+.productCard {
+  display: flex;
+  align-items: center;
+
+  min-height: 150px;
+  padding: 18px 22px;
+
+  background: #fff;
+  border: 1px solid #eee;
+  border-radius: 12px;
+
+  transition:
+    box-shadow 0.2s ease,
+    border-color 0.2s ease;
+}
+
+.productCard:hover {
+  border-color: #ffc7c2;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.06);
+}
+
+/* ========================================
+   상품 이미지
+======================================== */
+
+.productImage {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 120px;
+  height: 120px;
+
+  margin-right: 24px;
+
+  background: #fafafa;
+  border-radius: 8px;
+
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.productImage img {
+  width: 100%;
+  height: 100%;
+
+  object-fit: contain;
+}
+
+/* ========================================
+   이미지 수정 영역
+======================================== */
+
+.imageEdit {
+  width: 100%;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  gap: 8px;
+
+  padding: 8px;
+  box-sizing: border-box;
+}
+
+.imagePreview {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 80px;
+  height: 80px;
+
+  background: #fff;
+  border: 1px solid #eee;
+  border-radius: 7px;
+
+  overflow: hidden;
+}
+
+.imagePreview img {
+  width: 100%;
+  height: 100%;
+
+  object-fit: contain;
+}
+
+.imagePreview span {
+  font-size: 10px;
+  color: #aaa;
+  text-align: center;
+}
+
+.imageEdit input {
+  width: 100%;
+  height: 28px;
+
+  padding: 0 7px;
+  box-sizing: border-box;
+
+  border: 1px solid #ddd;
+  border-radius: 5px;
+
+  background: #fff;
+
+  font-size: 10px;
+  color: #333;
+
+  outline: none;
+}
+
+.imageEdit input:focus {
+  border-color: #ffc7c2;
+  box-shadow: 0 0 0 2px rgba(255, 199, 194, 0.15);
+}
+
+/* ========================================
+   상품 정보
+======================================== */
+
+.productInfo {
+  flex: 1;
+  min-width: 0;
+}
+
+.productInfo h2 {
+  margin: 0 0 12px;
+
+  font-size: 17px;
+  font-weight: 600;
+
+  color: #333;
+
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* ========================================
+   H / S / L
+======================================== */
+
+.detail {
+  display: flex;
+  gap: 8px;
+
+  margin-bottom: 12px;
+}
+
+.detail span {
+  padding: 5px 9px;
+
+  font-size: 12px;
+  color: #777;
+
+  background: #f7f7f7;
+  border-radius: 5px;
+}
+
+/* ========================================
+   재고
+======================================== */
+
+.stock {
+  margin: 0;
+
+  font-size: 14px;
+  font-weight: 600;
+
+  color: #555;
+}
+
+/* ========================================
+   수정 입력 영역
+======================================== */
+
+.editInfo {
+  display: flex;
+  flex-direction: column;
+
+  gap: 10px;
+
+  width: 100%;
+}
+
+.editInfo > input {
+  width: 100%;
+  height: 36px;
+
+  padding: 0 10px;
+  box-sizing: border-box;
+
+  border: 1px solid #ddd;
+  border-radius: 6px;
+
+  background: #fff;
+
+  font-size: 13px;
+  color: #333;
+
+  outline: none;
+
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.editInfo > input:focus {
+  border-color: #ffc7c2;
+  box-shadow: 0 0 0 3px rgba(255, 199, 194, 0.15);
+}
+
+/* ========================================
+   H / S / L 수정 입력
+======================================== */
+
+.editInfo .detail {
+  display: flex;
+  align-items: center;
+
+  gap: 6px;
+
+  margin: 0;
+}
+
+.editInfo .detail label {
+  font-size: 11px;
+  font-weight: 600;
+
+  color: #777;
+}
+
+.editInfo .detail input {
+  width: 65px;
+  height: 34px;
+
+  padding: 0 7px;
+  box-sizing: border-box;
+
+  border: 1px solid #ddd;
+  border-radius: 6px;
+
+  background: #fff;
+
+  font-size: 12px;
+  color: #333;
+
+  outline: none;
+
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.editInfo .detail input:focus {
+  border-color: #ffc7c2;
+  box-shadow: 0 0 0 2px rgba(255, 199, 194, 0.15);
+}
+
+/* ========================================
+   버튼 영역
+======================================== */
+
+.actions {
+  display: flex;
+  flex-direction: column;
+
+  gap: 7px;
+
+  width: 110px;
+
+  margin-left: 25px;
+
+  flex-shrink: 0;
+}
+
+.actions button {
+  width: 100%;
+  height: 34px;
+
+  border-radius: 6px;
+
+  font-size: 12px;
+
+  cursor: pointer;
+
+  box-sizing: border-box;
+
+  transition: 0.2s;
+}
+
+/* 수정 / 저장 */
+
+.editButton {
+  border: 1px solid #ffc7c2;
+
+  background: #fff;
+
+  color: #e98f87;
+}
+
+.editButton:hover {
+  background: #fff4f2;
+}
+
+/* 삭제 */
+
+.deleteButton {
+  border: 1px solid #eee;
+
+  background: #fff;
+
+  color: #999;
+}
+
+.deleteButton:hover {
+  border-color: #f1aaaa;
+
+  color: #e06f6f;
+
+  background: #fff8f8;
+}
+
+/* ========================================
+   태블릿
+======================================== */
+
+@media (max-width: 768px) {
+  .header h2 {
+    font-size: 18px;
+  }
+
+  .addButton {
+    height: 34px;
+    padding: 0 13px;
+
+    font-size: 11px;
+  }
+
+  .productCard {
+    padding: 16px;
+  }
+
+  .productImage {
+    width: 100px;
+    height: 100px;
+
+    margin-right: 18px;
+  }
+
+  .imagePreview {
+    width: 65px;
+    height: 65px;
+  }
+
+  .imageEdit {
+    gap: 6px;
+    padding: 6px;
+  }
+
+  .imageEdit input {
+    height: 26px;
+
+    font-size: 9px;
+  }
+
+  .productInfo h2 {
+    font-size: 16px;
+  }
+
+  .detail {
+    gap: 6px;
+  }
+
+  .detail span {
+    padding: 4px 7px;
+
+    font-size: 11px;
+  }
+
+  .stock {
+    font-size: 13px;
+  }
+
+  .actions {
+    width: 100px;
+
+    margin-left: 18px;
+  }
+
+  .editInfo .detail input {
+    width: 55px;
+  }
+}
+
+/* ========================================
+   모바일
+======================================== */
+
+@media (max-width: 600px) {
+  .header h2 {
+    font-size: 17px;
+  }
+
+  .addButton {
+    height: 32px;
+    padding: 0 11px;
+
+    font-size: 10px;
+  }
+
+  .productCard {
+    flex-wrap: wrap;
+
+    padding: 16px;
+  }
+
+  .productImage {
+    width: 90px;
+    height: 90px;
+
+    margin-right: 16px;
+  }
+
+  .productInfo {
+    flex: 1;
+  }
+
+  .productInfo h2 {
+    font-size: 15px;
+
+    margin-bottom: 9px;
+  }
+
+  .detail {
+    gap: 5px;
+
+    margin-bottom: 9px;
+  }
+
+  .detail span {
+    padding: 4px 7px;
+
+    font-size: 11px;
+  }
+
+  .stock {
+    font-size: 13px;
+  }
+
+  /* 이미지 수정 */
+
+  .imageEdit {
+    gap: 5px;
+
+    padding: 5px;
+  }
+
+  .imagePreview {
+    width: 60px;
+    height: 60px;
+  }
+
+  .imageEdit input {
+    height: 24px;
+
+    padding: 0 5px;
+
+    font-size: 8px;
+  }
+
+  /* 수정 정보 */
+
+  .editInfo {
+    gap: 8px;
+  }
+
+  .editInfo > input {
+    height: 34px;
+
+    font-size: 12px;
+  }
+
+  .editInfo .detail {
+    gap: 4px;
+  }
+
+  .editInfo .detail label {
+    font-size: 10px;
+  }
+
+  .editInfo .detail input {
+    width: 45px;
+    height: 32px;
+
+    font-size: 11px;
+  }
+
+  /* 버튼 */
+
+  .actions {
+    width: 100%;
+
+    margin-left: 0;
+    margin-top: 15px;
+
+    flex-basis: 100%;
+
+    flex-direction: row;
+
+    gap: 8px;
+  }
+
+  .actions button {
+    flex: 1;
+
+    width: auto;
+    height: 36px;
+  }
+}
+
+/* ========================================
+   작은 모바일
+======================================== */
+
+@media (max-width: 400px) {
+  .productCard {
+    padding: 13px;
+  }
+
+  .productImage {
+    width: 75px;
+    height: 75px;
+
+    margin-right: 12px;
+  }
+
+  .productInfo h2 {
+    font-size: 14px;
+  }
+
+  .detail {
+    gap: 4px;
+  }
+
+  .detail span {
+    padding: 3px 6px;
+
+    font-size: 10px;
+  }
+
+  .stock {
+    font-size: 12px;
+  }
+
+  /* 이미지 */
+
+  .imagePreview {
+    width: 50px;
+    height: 50px;
+  }
+
+  .imageEdit input {
+    font-size: 7px;
+  }
+
+  /* 수정 입력 */
+
+  .editInfo .detail input {
+    width: 38px;
+    height: 30px;
+  }
+
+  /* 버튼 */
+
+  .actions {
+    margin-top: 12px;
+
+    gap: 6px;
+  }
+
+  .actions button {
+    height: 34px;
+
+    font-size: 11px;
+  }
+}
