@@ -2,49 +2,179 @@
   width: 100%;
   max-width: 900px;
   margin: 0 auto;
+  padding: 40px 20px 80px;
+  box-sizing: border-box;
 }
 
+/* 제목 */
 .title {
+  margin: 0 0 35px;
+
   text-align: center;
-  font-size: 30px;
+  font-size: 28px;
   font-weight: 700;
-  margin-bottom: 35px;
+  color: #333;
 }
 
+/* 현재 주소 */
 .currentBox {
-  background: #f6f6f6;
-  border: 1px solid #ececec;
-  border-radius: 10px;
   padding: 28px 30px;
   margin-bottom: 25px;
+
+  background: #fff;
+  border: 1px solid #eee;
+  border-radius: 12px;
+
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.currentBox:hover {
+  border-color: #ffc7c2;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.06);
 }
 
 .subTitle {
+  margin: 0 0 22px;
+
   font-size: 20px;
   font-weight: 700;
-  margin-bottom: 20px;
+  color: #333;
 }
 
+/* 주소 정보 */
 .info {
   display: flex;
   flex-direction: column;
-  gap: 18px;
+  gap: 16px;
 }
 
 .row {
   display: flex;
   align-items: flex-start;
+
+  min-height: 24px;
 }
 
 .label {
   width: 90px;
-  font-weight: 600;
-  color: #666;
   flex-shrink: 0;
+
+  font-size: 14px;
+  font-weight: 600;
+  color: #888;
 }
 
 .row span:last-child {
   flex: 1;
+
+  font-size: 15px;
   line-height: 1.6;
+  color: #333;
+
   word-break: break-all;
+}
+
+/* ========================================
+   반응형
+======================================== */
+
+/* 태블릿 */
+@media (max-width: 768px) {
+  .container {
+    padding: 30px 16px 60px;
+  }
+
+  .title {
+    margin-bottom: 28px;
+    font-size: 25px;
+  }
+
+  .currentBox {
+    padding: 24px;
+  }
+
+  .subTitle {
+    font-size: 19px;
+    margin-bottom: 20px;
+  }
+
+  .label {
+    width: 80px;
+  }
+
+  .row span:last-child {
+    font-size: 14px;
+  }
+}
+
+/* 모바일 */
+@media (max-width: 600px) {
+  .container {
+    padding: 25px 14px 50px;
+  }
+
+  .title {
+    margin-bottom: 22px;
+    font-size: 23px;
+  }
+
+  .currentBox {
+    padding: 20px 18px;
+    border-radius: 10px;
+  }
+
+  .subTitle {
+    margin-bottom: 18px;
+    font-size: 18px;
+  }
+
+  .info {
+    gap: 18px;
+  }
+
+  .row {
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .label {
+    width: auto;
+    font-size: 13px;
+    color: #888;
+  }
+
+  .row span:last-child {
+    width: 100%;
+    font-size: 14px;
+  }
+}
+
+/* 작은 모바일 */
+@media (max-width: 400px) {
+  .container {
+    padding: 20px 10px 40px;
+  }
+
+  .title {
+    margin-bottom: 20px;
+    font-size: 21px;
+  }
+
+  .currentBox {
+    padding: 18px 15px;
+  }
+
+  .subTitle {
+    font-size: 17px;
+  }
+
+  .label {
+    font-size: 12px;
+  }
+
+  .row span:last-child {
+    font-size: 13px;
+  }
 }
