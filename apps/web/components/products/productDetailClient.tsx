@@ -1,5 +1,6 @@
 "use client";
-import AIRecommendPopup from "./aiRecommendpopup";
+import AIRecommendation from "./AIRecommendation";
+
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import type {
@@ -7,7 +8,6 @@ import type {
   ProductDetailType,
 } from "@/types/productDetailType";
 import styles from "./product-detail.module.css";
-import { RecommendationResponseType } from "@/types/recommendationType";
 // 로그인할 때 저장된 JWT 토큰을 쿠키에서 읽기 위해 사용합니다.
 import Cookies from "js-cookie";
 
@@ -26,26 +26,6 @@ export default function ProductDetailClient({
   // 페이지 이동에 사용하는 Next.js 라우터
   const router = useRouter();
 
-  // 현재 로그인 기능이 꺼져 있으므로 임시 회원 ID 1을 사용합니다.
-  // 나중에 JWT 로그인을 연결하면 로그인한 사용자의 ID로 변경해야 합니다.
-  //  const userId = 1;
-
-  // AI 추천 결과 저장
-  const [recommendation, setRecommendation] =
-    useState<RecommendationResponseType | null>(null);
-
-  // AI 추천 팝업 열림 여부
-  const [isOpen, setIsOpen] = useState(false);
-  // AI 추천 팝업 확인 후 어디로 이동할지 구분합니다.
-  // cart: 장바구니 페이지로 이동
-  // buy: 결제 페이지로 이동
-  const [aiAction, setAiAction] = useState<"cart" | "buy" | null>(null);
-
-  //  false: AI 분석 중이 아님, true: AI 분석 중임
-  const [isAiLoading, setIsAiLoading] = useState(false);
-  //오류 메시지를 저장할 state를 추가
-  const [aiError, setAiError] = useState<string | null>(null);
-
   // 장바구니 API 요청 중인지 저장
   // true이면 장바구니 버튼을 잠시 비활성화합니다.
   const [isCartLoading, setIsCartLoading] = useState(false);
@@ -57,95 +37,6 @@ export default function ProductDetailClient({
   );
 
   const [mainImage, setMainImage] = useState(product.color_main_image);
-  // 로그인할 때 쿠키에 저장한 JWT 토큰을 가져옵니다.
-  const token = Cookies.get("accessToken");
-
-  // AI 추천 API 호출
-  const fetchRecommendation = async (
-    detailColorId: number,
-  ): Promise<RecommendationResponseType> => {
-    // 로그인할 때 쿠키에 저장한 JWT 토큰을 가져옵니다.
-    const token = Cookies.get("accessToken");
-
-    const response = await fetch(
-      `${process.env.NEXT_PUBLIC_BACK_URL}/recommendations/color`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-
-          // JWT 인증이 적용된 추천 API이므로
-          // 로그인 사용자의 토큰을 전송합니다.
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({
-          detailColorId,
-        }),
-      },
-    );
-
-    if (!response.ok) {
-      throw new Error("AI 추천 API 호출에 실패했습니다.");
-    }
-
-    const data = await response.json();
-
-    // 백엔드 응답 구조가 달라질 가능성을 고려하여
-    // 실제 추천 결과 데이터를 추출합니다.
-    const recommendationData =
-      data.aiResult ?? data.data ?? data.recommendation ?? data;
-
-    // 점수가 문자열이거나 다른 필드 이름으로 전달되는 경우도 처리합니다.
-    const score = Number(
-      recommendationData.answer ??
-        recommendationData.score ??
-        recommendationData.recommendationScore ??
-        recommendationData.recommendation_score ??
-        0,
-    );
-
-    // 추천 점수에 따라 팝업에 표시할 문구를 반환합니다.
-    const getScoreMessage = (scoreValue: number): string => {
-      switch (scoreValue) {
-        case 6:
-          return `이 제품은 고객님이 가지고 있는 색과 육안으로는 거의 구분하기 힘들 정도로 비슷한 제품으로 보입니다!
-
-기존템이 인생템이셨으면 찰떡이실 것 같습니다!
-
-만약 새로운 변화를 주시고 싶으시다면 다른 색을 추천드립니다 ☺️`;
-
-        case 5:
-          return `기존에 쓰시던 색과 매우 흡사해서 현재 사용하시는 컬러가 만족스러우셨다면 아주 실패 없는 선택이 될 거예요!`;
-
-        case 4:
-        case 3:
-          return `기존 컬러와 비슷한 무드이긴 하지만 미세한 차이가 있어서
-
-평소 즐겨 쓰시던 느낌에서 약간의 변화를 주고 싶으실 때 적합할 것 같아요.`;
-
-        case 2:
-        case 1:
-          return `고객님, 이 컬러는 기존 사용하시던 색상과 차이가 커서 완전히 새로운 분위기를 원하실 때 선택하시는 걸 추천드려요!`;
-
-        default:
-          return "추천 결과를 확인해 주세요.";
-      }
-    };
-
-    // 숫자로 변환할 수 없는 점수는 0으로 처리합니다.
-    const safeScore = Number.isNaN(score) ? 0 : score;
-
-    // 프론트 팝업에서 사용하는 형태로 결과를 정리합니다.
-    const result: RecommendationResponseType = {
-      score: safeScore,
-      messageType: recommendationData.messageType ?? "",
-      title: recommendationData.title ?? "추천 결과",
-      message: getScoreMessage(safeScore),
-      recommend: recommendationData.recommend ?? false,
-    };
-
-    return result;
-  };
 
   const getImageUrl = (image: string) => {
     if (image.startsWith("http://") || image.startsWith("https://")) {
@@ -240,13 +131,18 @@ export default function ProductDetailClient({
     (total, option) => total + salePrice * option.quantity,
     0,
   );
-
-  // 회원 ID를 이용해서 해당 회원의 장바구니 ID를 가져오는 함수
-  //const getCartId = async (userId: number): Promise<number> => {
+  // AI 색상 추천은 색상 옵션을 1개 선택했을 때만 사용할 수 있습니다.
+  // 선택한 옵션이 정확히 1개이면 해당 색상의 id를 AI 컴포넌트에 전달하고,
+  // 선택하지 않았거나 2개 이상 선택한 경우에는 null을 전달합니다.
+  const aiDetailColorId =
+    selectedOptions.length === 1
+      ? (selectedOptions[0]?.color.id ?? null)
+      : null;
+  // 로그인한 사용자의 장바구니 ID를 조회하는 함수
   const getCartId = async (): Promise<number> => {
     // 로그인할 때 쿠키에 저장한 JWT 토큰을 가져옵니다.
     const token = Cookies.get("accessToken");
-    // 회원 ID로 장바구니 조회 API를 호출합니다.
+
     // 로그인 회원의 장바구니를 조회합니다.
     // 장바구니가 없으면 백엔드에서 새로 생성한 뒤 반환합니다.
     const response = await fetch(
@@ -281,7 +177,7 @@ export default function ProductDetailClient({
     return cart.id;
   };
 
-  // 장바구니 버튼을 눌렀을 때 실행되는 함수
+  // 장바구니 버튼 클릭 시 실행
   const handleAddCart = async () => {
     // 로그인할 때 쿠키에 저장한 JWT 토큰을 가져옵니다.
     const token = Cookies.get("accessToken");
@@ -302,13 +198,6 @@ export default function ProductDetailClient({
       return;
     }
 
-    // 현재 AI 추천은 옵션 1개만 선택했을 때 실행합니다.
-    if (selectedOptions.length > 1) {
-      alert(
-        "1개의 상품을 담았을 때만 AI 색상 추천을 합니다. 선택한 상품들은 장바구니에 담습니다.",
-      );
-    }
-
     // 선택한 옵션 중 재고가 없거나
     // 선택 수량이 재고보다 많은 옵션이 있는지 확인합니다.
     const hasInvalidStock = selectedOptions.some(
@@ -321,41 +210,11 @@ export default function ProductDetailClient({
       return;
     }
 
-    // 선택한 옵션이 하나도 없으면 함수를 종료합니다.
-    if (selectedOptions.length === 0) {
-      alert("선택된 색상 옵션을 찾을 수 없습니다.");
-      return;
-    }
-    // 현재는 옵션을 1개만 선택할 수 있으므로
-    // selectedOptions 배열의 첫 번째 값을 가져옵니다.
-    const selectedOption = selectedOptions[0];
-
-    if (!selectedOption) {
-      alert("선택된 색상 옵션을 찾을 수 없습니다.");
-      return;
-    }
-
     try {
       // 로그인할 때 쿠키에 저장한 JWT 토큰을 가져옵니다.
       const token = Cookies.get("accessToken");
       // 장바구니 API 요청 시작
       setIsCartLoading(true);
-
-      // 옵션을 1개 선택한 경우에만
-      // AI 추천 팝업을 열고 추천 API를 실행합니다.
-      if (selectedOptions.length === 1) {
-        setAiAction("cart");
-        setIsAiLoading(true);
-        setAiError(null);
-        setIsOpen(true);
-
-        const recommendationResult = await fetchRecommendation(
-          selectedOption.color.id,
-        );
-
-        // AI 추천 결과를 팝업에 저장합니다.
-        setRecommendation(recommendationResult);
-      }
 
       // 회원의 장바구니를 조회하여 cart.id를 가져옵니다.
       const cartId = await getCartId();
@@ -393,16 +252,11 @@ export default function ProductDetailClient({
               `${option.color.color_name} 상품을 장바구니에 담지 못했습니다.`,
           );
         }
-
-        // 응답 본문은 한 번만 읽습니다.
-        const addedCartItem = await cartResponse.json();
       }
-
-      // 옵션이 여러 개라면 AI 팝업이 없으므로 바로 장바구니로 이동합니다.
-      if (selectedOptions.length > 1) {
-        alert("상품을 장바구니에 담았습니다.");
-        router.push("/cart");
-      }
+      // 선택한 상품을 모두 장바구니에 저장한 후
+      // 옵션 개수와 관계없이 장바구니 페이지로 이동합니다.
+      alert("상품을 장바구니에 담았습니다.");
+      router.push("/cart");
     } catch (error) {
       console.error("장바구니 추가 오류:", error);
 
@@ -412,17 +266,12 @@ export default function ProductDetailClient({
       } else {
         alert("장바구니 처리 중 오류가 발생했습니다.");
       }
-
-      setAiError("AI 추천 또는 장바구니 처리에 실패했습니다.");
     } finally {
-      // 성공하거나 실패해도 로딩 상태를 종료합니다.
-      setIsAiLoading(false);
       setIsCartLoading(false);
     }
   };
 
-  //바로구매 함수
-
+  // 바로구매 버튼 클릭 시 실행
   const handleBuyNow = async () => {
     // 로그인할 때 쿠키에 저장한 JWT 토큰을 가져옵니다.
     const token = Cookies.get("accessToken");
@@ -435,11 +284,6 @@ export default function ProductDetailClient({
     if (selectedOptions.length === 0) {
       alert("옵션을 하나 이상 선택해 주세요.");
       return;
-    }
-    if (selectedOptions.length > 1) {
-      alert(
-        "1개의 상품을 담았을 때만 AI 색상 추천을 합니다. 선택한 상품들을 바로 구매합니다.",
-      );
     }
 
     const hasInvalidStock = selectedOptions.some(
@@ -477,41 +321,6 @@ export default function ProductDetailClient({
         );
       }
 
-      const deleteResult = await deleteBuyNowResponse.json();
-
-      // 첫 번째로 선택한 색상으로 AI 추천 결과를 요청
-      const selectedColor = selectedOptions[0];
-
-      if (!selectedColor) {
-        alert("선택된 색상 옵션을 찾을 수 없습니다.");
-        return;
-      }
-      // 옵션을 1개 선택한 경우에만
-      // AI 추천 팝업을 열고 추천 API를 실행합니다.
-      if (selectedOptions.length === 1) {
-        setAiAction("buy");
-        setIsAiLoading(true);
-        setAiError(null);
-        setIsOpen(true);
-
-        try {
-          const result = await fetchRecommendation(selectedColor.color.id);
-
-          // AI 추천 성공 결과를 팝업에 저장합니다.
-          setRecommendation(result);
-        } catch (error) {
-          // AI 추천이 실패해도 바로구매 상품 저장은 계속 진행합니다.
-          console.error("AI 추천 오류:", error);
-
-          setAiError(
-            "AI 추천 결과를 불러오지 못했습니다. 상품 구매는 계속 진행할 수 있습니다.",
-          );
-        } finally {
-          // AI 추천 요청 종료
-          setIsAiLoading(false);
-        }
-      }
-
       // 선택한 모든 옵션을 바로구매용 CartItem으로 저장합니다.
       for (const option of selectedOptions) {
         const buyNowCartItemData = {
@@ -542,22 +351,11 @@ export default function ProductDetailClient({
             errorData?.message ?? "바로구매 상품을 저장하지 못했습니다.",
           );
         }
-
-        const savedCartItem = await cartResponse.json();
       }
 
-      // 바로 구매 데이터
-      const orderData = selectedOptions.map((option) => ({
-        productId: product.id,
-        detailColorId: option.color.id,
-        quantity: option.quantity,
-      }));
-
-      // 옵션이 여러 개이면 AI 추천 팝업이 없으므로
-      // 상품 저장이 끝난 뒤 결제 페이지로 바로 이동합니다.
-      if (selectedOptions.length > 1) {
-        router.push(`/pay?isCartOrder=false&selectedOnly=true`);
-      }
+      // 선택한 상품을 바로구매용으로 저장한 후
+      // 옵션 개수와 관계없이 결제 페이지로 이동합니다.
+      router.push("/pay?isCartOrder=false&selectedOnly=true");
     } catch (error) {
       console.error("바로구매 처리 오류:", error);
 
@@ -571,37 +369,6 @@ export default function ProductDetailClient({
 
   return (
     <>
-      <AIRecommendPopup
-        open={isOpen}
-        title={recommendation?.title ?? "추천 결과"}
-        message={recommendation?.message ?? ""}
-        score={recommendation?.score ?? 0}
-        isAiLoading={isAiLoading}
-        aiError={aiError}
-        onClose={() => {
-          // AI 추천 팝업을 닫습니다.
-          setIsOpen(false);
-          setAiError(null);
-
-          // 장바구니 버튼으로 연 팝업이면 장바구니로 이동합니다.
-          if (aiAction === "cart") {
-            // AI 추천 결과 확인 후 장바구니 저장 완료 알림을 보여줍니다.
-            alert("상품을 장바구니에 담았습니다.");
-
-            // 알림 확인 후 장바구니 페이지로 이동합니다.
-            router.push("/cart");
-          }
-
-          // 바로구매 버튼으로 연 팝업이면 결제 페이지로 이동합니다.
-          if (aiAction === "buy") {
-            router.push("/pay?isCartOrder=false&selectedOnly=true");
-          }
-
-          // 다음 실행을 위해 상태를 초기화합니다.
-          setAiAction(null);
-        }}
-      />
-
       <main className={styles.page}>
         {/* 현재 상품 위치 */}
         <nav aria-label="상품 경로" className={styles.breadcrumb}>
@@ -884,11 +651,15 @@ export default function ProductDetailClient({
               </div>
             )}
 
-            {/* 장바구니 및 구매 버튼 */}
-
+            {/* AI 색상 추천 안내 */}
             <p className={styles.aiNotice}>
-              ※ 1개의 상품을 담았을 때만 AI 색상 추천을 합니다.
+              ※ 색상 옵션을 1개 선택하면 AI 색상 추천 분석을 이용할 수 있습니다.
             </p>
+
+            {/* AI 색상 추천 분석 */}
+            <AIRecommendation detailColorId={aiDetailColorId} />
+
+            {/* 장바구니 및 구매 버튼 */}
             <div className={styles.purchaseButtonArea}>
               <button
                 type="button"
