@@ -1,0 +1,121 @@
+/* 전체 컨테이너 */
+.container {
+  width: 100%;
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 40px 20px;
+}
+
+/* 페이지네이션 */
+.pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 6px;
+
+  margin-top: 30px;
+  padding-bottom: 20px;
+}
+
+.pageButton,
+.activePage {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 36px;
+  height: 36px;
+
+  border-radius: 8px;
+  font-size: 14px;
+  text-decoration: none;
+
+  box-sizing: border-box;
+
+  transition:
+    background-color 0.2s ease,
+    border-color 0.2s ease,
+    color 0.2s ease;
+}
+
+.pageButton {
+  border: 1px solid #eee;
+  background: #fff;
+  color: #777;
+}
+
+.pageButton:hover {
+  border-color: #ffc7c2;
+  color: #e98f87;
+  background: #fffafa;
+}
+
+.activePage {
+  border: 1px solid #ffc7c2;
+  background: #ffc7c2;
+  color: #5a3a38;
+  font-weight: 700;
+}
+
+/* ========================================
+   반응형
+======================================== */
+
+/* 태블릿 */
+@media (max-width: 768px) {
+  .container {
+    padding: 30px 16px;
+  }
+
+  .pagination {
+    gap: 5px;
+    margin-top: 25px;
+  }
+
+  .pageButton,
+  .activePage {
+    width: 34px;
+    height: 34px;
+    font-size: 13px;
+  }
+}
+
+/* 모바일 */
+@media (max-width: 600px) {
+  .container {
+    padding: 25px 14px;
+  }
+
+  .pagination {
+    gap: 5px;
+    margin-top: 22px;
+  }
+
+  .pageButton,
+  .activePage {
+    width: 32px;
+    height: 32px;
+    border-radius: 7px;
+    font-size: 12px;
+  }
+}
+
+/* 작은 모바일 */
+@media (max-width: 400px) {
+  .container {
+    padding: 20px 10px;
+  }
+
+  .pagination {
+    gap: 4px;
+    margin-top: 20px;
+  }
+
+  .pageButton,
+  .activePage {
+    width: 30px;
+    height: 30px;
+    border-radius: 6px;
+    font-size: 11px;
+  }
+}

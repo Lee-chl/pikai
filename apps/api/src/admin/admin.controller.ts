@@ -8,6 +8,7 @@ import {
   Delete,
   UseGuards,
   ParseIntPipe,
+  Query,
 } from '@nestjs/common';
 import { AdminService } from './admin.service';
 import { CreateAdminDto } from './dto/create-admin.dto';
@@ -44,8 +45,8 @@ export class AdminController {
 
   @Get()
   @ApiOperation({ summary: '등록된 상품 목록' })
-  findAll() {
-    return this.adminService.findAll();
+  findAll(@Query('page') page = '1', @Query('limit') limit = '10') {
+    return this.adminService.findAll(Number(page), Number(limit));
   }
 
   @Get(':id')
@@ -86,8 +87,16 @@ export class AdminController {
 
   @Get(':productId/detail')
   @ApiOperation({ summary: '상품 옵션 목록' })
-  findDetailProducts(@Param('productId', ParseIntPipe) productId: number) {
-    return this.adminService.findDetailProducts(productId);
+  findDetailProducts(
+    @Param('productId', ParseIntPipe) productId: number,
+    @Query('page') page = '1',
+    @Query('limit') limit = '5',
+  ) {
+    return this.adminService.findDetailProducts(
+      productId,
+      Number(page),
+      Number(limit),
+    );
   }
 
   @Delete('detail/:id')

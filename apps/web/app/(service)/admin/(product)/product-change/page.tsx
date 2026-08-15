@@ -6,26 +6,41 @@ import styles from "./page.module.css";
 import Link from "next/link";
 import ProductDelete from "@/components/admin/product-delete";
 
-export default async function Page() {
+export default async function Page({
+  searchParams,
+}: {
+  searchParams: Promise<{ page?: string }>;
+}) {
+  const params = await searchParams;
+  const page = Number(params.page ?? "1");
+  const limit = 5;
+
   const cookieStore = await cookies();
   const token = cookieStore.get("accessToken")?.value;
 
   let products: ProductAdminType[] = [];
+  let totalPage;
 
   if (token) {
     try {
-      const response = await fetch(`${Constants.back_url}/admin`, {
-        method: "GET",
-        headers: {
-          Authorization: `Bearer ${token}`,
+      const response = await fetch(
+        `${Constants.back_url}/admin?page=${page}&limit=${limit}`,
+        {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+          cache: "no-store",
         },
-        cache: "no-store",
-      });
+      );
 
       if (!response.ok) {
         throw new Error(response.statusText);
       }
-      products = await response.json();
+
+      const data = await response.json();
+      products = data.products;
+      totalPage = data.totalPage;
     } catch (err) {
       console.error(err);
     }
@@ -83,6 +98,22 @@ export default async function Page() {
             </div>
           </div>
         ))}
+      </div>
+
+      <div className={styles.pagination}>
+        {Array.from({ length: totalPage }, (_, i) => i + 1).map(
+          (pageNumber) => (
+            <Link
+              key={pageNumber}
+              href={`/admin/product-change?page=${pageNumber}`}
+              className={
+                pageNumber === page ? styles.activePage : styles.pageButton
+              }
+            >
+              {pageNumber}
+            </Link>
+          ),
+        )}
       </div>
     </div>
   );

@@ -10,8 +10,14 @@ import OptionAdd from "./option-add";
 import { useRouter } from "next/navigation";
 
 interface ProductOptionProps {
+  details: {
+    options: DetailProductType[];
+    total: number;
+    page: number;
+    limit: number;
+    totalPage: number;
+  };
   productId: number;
-  details: DetailProductType[];
 }
 
 export default function ProductOption({
@@ -132,10 +138,10 @@ export default function ProductOption({
         <OptionAdd productId={productId} isAdd={isAdd} setIsAdd={setIsAdd} />
       )}
 
-      {!details || details.length === 0 ? (
+      {!details || details.options.length === 0 ? (
         <p className={styles.empty}>등록된 옵션이 없습니다.</p>
       ) : (
-        details.map((item) => {
+        details.options.map((item) => {
           const isEdit = editId === item.id;
 
           return (

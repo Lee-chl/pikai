@@ -116,16 +116,30 @@ export class AdminService {
     });
   }
 
-  findAll() {
-    return this.prisma.product.findMany({
-      include: {
-        brand: true,
-        category: true,
-      },
-      orderBy: {
-        id: 'desc',
-      },
-    });
+  async findAll(page = 1, limit = 10) {
+    const skip = (page - 1) * limit;
+
+    const [products, total] = await Promise.all([
+      this.prisma.product.findMany({
+        skip,
+        take: limit,
+        include: {
+          brand: true,
+          category: true,
+        },
+        orderBy: {
+          id: 'desc',
+        },
+      }),
+      this.prisma.product.count(),
+    ]);
+    return {
+      products,
+      total,
+      page,
+      limit,
+      totalPage: Math.ceil(total / limit),
+    };
   }
 
   async findOne(id: number) {
@@ -215,7 +229,9 @@ export class AdminService {
     });
   }
 
-  async findDetailProducts(productId: number) {
+  async findDetailProducts(productId: number, page = 1, limit = 5) {
+    const skip = (page - 1) * limit;
+
     const product = await this.prisma.detailProduct.findUnique({
       where: {
         id: productId,
@@ -226,14 +242,32 @@ export class AdminService {
       throw new NotFoundException('상품을 찾을 수 없습니다.');
     }
 
-    return this.prisma.detailProduct.findMany({
-      where: {
-        product_id: productId,
-      },
-      orderBy: {
-        id: 'desc',
-      },
-    });
+    const [options, total] = await Promise.all([
+      this.prisma.detailProduct.findMany({
+        where: {
+          product_id: productId,
+        },
+        skip,
+        take: limit,
+        orderBy: {
+          id: 'desc',
+        },
+      }),
+
+      this.prisma.detailProduct.count({
+        where: {
+          product_id: productId,
+        },
+      }),
+    ]);
+
+    return {
+      options,
+      total,
+      page,
+      limit,
+      totalPage: Math.ceil(total / limit),
+    };
   }
 
   async removeDetailProduct(id: number) {

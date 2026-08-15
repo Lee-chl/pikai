@@ -165,6 +165,49 @@
   background: #f7f7f7;
 }
 
+.pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 6px;
+
+  margin-top: 30px;
+}
+
+.pageButton,
+.activePage {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 36px;
+  height: 36px;
+
+  border-radius: 8px;
+  font-size: 14px;
+  text-decoration: none;
+
+  box-sizing: border-box;
+}
+
+.pageButton {
+  border: 1px solid #eee;
+  background: #fff;
+  color: #777;
+}
+
+.pageButton:hover {
+  border-color: #ffc7c2;
+  color: #e98f87;
+}
+
+.activePage {
+  border: 1px solid #ffc7c2;
+  background: #ffc7c2;
+  color: #5a3a38;
+  font-weight: 700;
+}
+
 /* ========================================
    반응형
 ======================================== */
@@ -218,27 +261,32 @@
   }
 
   .productCard {
-    flex-wrap: wrap;
+    display: grid;
+    grid-template-columns: 80px 1fr;
+    column-gap: 16px;
+    row-gap: 15px;
+
     padding: 16px;
   }
 
   .productImage {
-    width: 90px;
-    height: 90px;
-    margin-right: 16px;
+    width: 80px;
+    height: 80px;
+    margin-right: 0;
   }
 
   .productInfo {
-    flex: 1;
+    min-width: 0;
   }
 
   .productInfo h2 {
+    margin-bottom: 8px;
     font-size: 15px;
-    margin-bottom: 9px;
   }
 
   .detail {
-    margin-bottom: 9px;
+    gap: 5px;
+    margin-bottom: 8px;
   }
 
   .detail span {
@@ -250,12 +298,28 @@
     font-size: 14px;
   }
 
+  /* 버튼은 한 줄로 억지로 넣지 않고 아래에서 가로 배치 */
   .actions {
-    width: 100%;
-    margin-left: 0;
-    margin-top: 15px;
+    grid-column: 1 / -1;
 
-    flex-direction: row;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 6px;
+
+    width: 100%;
+    margin: 0;
+  }
+
+  .actions button,
+  .actions a {
+    width: 100%;
+    min-width: 0;
+    height: 36px;
+
+    padding: 0 4px;
+
+    font-size: 11px;
+    white-space: nowrap;
   }
 }
 
@@ -266,13 +330,14 @@
   }
 
   .productCard {
+    grid-template-columns: 70px 1fr;
+    column-gap: 12px;
     padding: 13px;
   }
 
   .productImage {
-    width: 75px;
-    height: 75px;
-    margin-right: 12px;
+    width: 70px;
+    height: 70px;
   }
 
   .productInfo h2 {
@@ -280,7 +345,8 @@
   }
 
   .detail {
-    gap: 5px;
+    gap: 4px;
+    margin-bottom: 7px;
   }
 
   .detail span {
@@ -294,6 +360,12 @@
 
   .actions {
     gap: 5px;
-    margin-top: 12px;
+  }
+
+  .actions button,
+  .actions a {
+    height: 34px;
+    padding: 0 2px;
+    font-size: 10px;
   }
 }
