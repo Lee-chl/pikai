@@ -6,7 +6,7 @@ import {
 import { UpdateOrderDto } from './dto/update-order.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { QueryDto } from 'src/common/query.dto';
-import { PersonalColor } from '@prisma/client';
+import { OrderStatus, PersonalColor } from '@prisma/client';
 
 @Injectable()
 export class OrderService {
@@ -17,7 +17,12 @@ export class OrderService {
       this.prisma.order.findMany({
         skip: (page - 1) * limit,
         take: limit,
-        where: { user_id: userId },
+        where: {
+          user_id: userId,
+          order_status: {
+            not: OrderStatus.AWAITING,
+          },
+        },
         orderBy: { order_date: 'desc' },
         include: {
           orderItem: {
@@ -42,7 +47,14 @@ export class OrderService {
           },
         },
       }),
-      this.prisma.order.count({ where: { user_id: userId } }),
+      this.prisma.order.count({
+        where: {
+          user_id: userId,
+          order_status: {
+            not: OrderStatus.AWAITING,
+          },
+        },
+      }),
     ]);
     return { orders, total, page, limit, totalPage: Math.ceil(total / limit) };
   }

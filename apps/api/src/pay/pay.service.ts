@@ -96,7 +96,7 @@ export class PayService {
           phone_number: createPayDto.phone_number,
           recipient: createPayDto.recipient,
           user_id: userId,
-          order_status: 'PAYCOMPLETED',
+          order_status: 'AWAITING',
         },
       });
 
