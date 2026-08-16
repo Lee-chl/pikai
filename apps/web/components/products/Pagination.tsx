@@ -1,5 +1,5 @@
 "use client";
-
+import styles from "./Pagination.module.css";
 interface PaginationProps {
   currentPage: number;
   totalPage: number;
@@ -11,119 +11,73 @@ export default function Pagination({
   totalPage,
   onPageChange,
 }: PaginationProps) {
-  const isFirstPage = currentPage <= 1;
-  const isLastPage = currentPage >= totalPage;
+  const range: (number | string)[] = [];
 
-  const handlePreviousPage = () => {
-    if (isFirstPage) return;
+  // 전체 페이지가 5개 이하이면 모든 페이지 번호를 보여줍니다.
+  if (totalPage <= 5) {
+    for (let i = 1; i <= totalPage; i++) {
+      range.push(i);
+    }
+  } else {
+    // 첫 페이지는 항상 보여줍니다.
+    range.push(1);
 
-    onPageChange(currentPage - 1);
-  };
+    let start = currentPage - 1;
+    let end = currentPage + 1;
 
-  const handleNextPage = () => {
-    if (isLastPage) return;
+    // 현재 페이지가 앞쪽에 있을 경우
+    if (start <= 2) {
+      start = 2;
+      end = 4;
+    }
 
-    onPageChange(currentPage + 1);
-  };
+    // 현재 페이지가 뒤쪽에 있을 경우
+    if (end >= totalPage - 1) {
+      start = totalPage - 3;
+      end = totalPage - 1;
+    }
+
+    // 중간 페이지가 생략되는 경우 ...
+    if (start > 2) {
+      range.push("...");
+    }
+
+    for (let i = start; i <= end; i++) {
+      range.push(i);
+    }
+
+    if (end < totalPage - 1) {
+      range.push("...");
+    }
+
+    // 마지막 페이지는 항상 보여줍니다.
+    range.push(totalPage);
+  }
 
   return (
-    <div
-      style={{
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
-        width: "100%",
-        gap: "40px",
-        marginTop: "40px",
-        marginBottom: "40px",
-      }}
-    >
-      {/* 이전 버튼 */}
-      <button
-        type="button"
-        onClick={handlePreviousPage}
-        disabled={isFirstPage}
-        aria-label="이전 페이지"
-        style={{
-          width: "60px",
-          height: "38px",
-          minWidth: 0,
-          minHeight: 0,
-          padding: 0,
-          border: "1px solid #d7dee5",
-          borderRadius: "10px",
-          backgroundColor: "#fff",
-          fontSize: "20px",
-          lineHeight: 1,
-          cursor: isFirstPage ? "default" : "pointer",
-          opacity: isFirstPage ? 0.35 : 1,
-        }}
-      >
-        ‹
-      </button>
+    <div className={styles.pagination}>
+      {range.map((page, index) => {
+        // ... 은 버튼이 아니라 글자로 표시합니다.
+        if (page === "...") {
+          return (
+            <span key={`ellipsis-${index}`} className={styles.ellipsis}>
+              ...
+            </span>
+          );
+        }
+        const isActive = currentPage === page;
 
-      {/* 현재 페이지 / 전체 페이지 */}
-      <div
-        style={{
-          display: "flex",
-          alignItems: "center",
-          gap: "6px",
-          minWidth: "65px",
-          justifyContent: "center",
-          fontSize: "20px",
-        }}
-      >
-        <span
-          style={{
-            color: "#111",
-            fontWeight: 700,
-          }}
-        >
-          {currentPage}
-        </span>
-
-        <span
-          style={{
-            color: "#999",
-            fontWeight: 400,
-          }}
-        >
-          /
-        </span>
-
-        <span
-          style={{
-            color: "#888",
-            fontWeight: 600,
-          }}
-        >
-          {totalPage}
-        </span>
-      </div>
-
-      {/* 다음 버튼 */}
-      <button
-        type="button"
-        onClick={handleNextPage}
-        disabled={isLastPage}
-        aria-label="다음 페이지"
-        style={{
-          width: "60px",
-          height: "36px",
-          minWidth: 0,
-          minHeight: 0,
-          padding: 0,
-          border: "1px solid #d7dee5",
-          borderRadius: "8px",
-          backgroundColor: "#fff",
-          fontSize: "22px",
-          lineHeight: 1,
-          cursor: isLastPage ? "default" : "pointer",
-          opacity: isLastPage ? 0.35 : 1,
-        }}
-      >
-        ›
-      </button>
+        return (
+          <button
+            key={`page-${page}`}
+            type="button"
+            onClick={() => onPageChange(Number(page))}
+            className={`${styles.pageButton} ${isActive ? styles.active : ""}`}
+          >
+            {page}
+          </button>
+        );
+      })}
     </div>
   );
 }
