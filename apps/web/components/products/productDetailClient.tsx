@@ -1,6 +1,6 @@
 "use client";
 import AIRecommendation from "./AIRecommendation";
-
+import { toast } from "sonner";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import type {
@@ -48,7 +48,7 @@ export default function ProductDetailClient({
 
   const handleSelectOption = (color: DetailColorType) => {
     if (color.stock === 0) {
-      alert("품절된 옵션입니다.");
+      toast.warning("품절된 옵션입니다.");
       return;
     }
 
@@ -194,7 +194,7 @@ export default function ProductDetailClient({
 
     // 옵션을 선택하지 않은 경우
     if (selectedOptions.length === 0) {
-      alert("옵션을 하나 이상 선택해 주세요.");
+      toast.warning("옵션을 하나 이상 선택해 주세요.");
       return;
     }
 
@@ -206,7 +206,7 @@ export default function ProductDetailClient({
     );
 
     if (hasInvalidStock) {
-      alert("선택한 옵션의 재고를 다시 확인해 주세요.");
+      toast.warning("선택한 옵션의 재고를 다시 확인해 주세요.");
       return;
     }
 
@@ -255,16 +255,16 @@ export default function ProductDetailClient({
       }
       // 선택한 상품을 모두 장바구니에 저장한 후
       // 옵션 개수와 관계없이 장바구니 페이지로 이동합니다.
-      alert("상품을 장바구니에 담았습니다.");
+      toast.success("상품을 장바구니에 담았습니다.");
       router.push("/cart");
     } catch (error) {
       console.error("장바구니 추가 오류:", error);
 
       // error가 Error 객체인지 확인한 뒤 메시지를 보여줍니다.
       if (error instanceof Error) {
-        alert(error.message);
+        toast.error(error.message);
       } else {
-        alert("장바구니 처리 중 오류가 발생했습니다.");
+        toast.error("장바구니 처리 중 오류가 발생했습니다.");
       }
     } finally {
       setIsCartLoading(false);
@@ -282,7 +282,7 @@ export default function ProductDetailClient({
       return;
     }
     if (selectedOptions.length === 0) {
-      alert("옵션을 하나 이상 선택해 주세요.");
+      toast.warning("옵션을 하나 이상 선택해 주세요.");
       return;
     }
 
@@ -292,7 +292,7 @@ export default function ProductDetailClient({
     );
 
     if (hasInvalidStock) {
-      alert("선택한 옵션의 재고를 다시 확인해 주세요.");
+      toast.warning("선택한 옵션의 재고를 다시 확인해 주세요.");
       return;
     }
 
@@ -360,9 +360,9 @@ export default function ProductDetailClient({
       console.error("바로구매 처리 오류:", error);
 
       if (error instanceof Error) {
-        alert(error.message);
+        toast.error(error.message);
       } else {
-        alert("바로구매 처리 중 오류가 발생했습니다.");
+        toast.error("바로구매 처리 중 오류가 발생했습니다.");
       }
     }
   };
@@ -739,7 +739,7 @@ export default function ProductDetailClient({
                 <button
                   type="button"
                   onClick={() => {
-                    alert("상품 문의 기능은 추후 연결할 예정입니다.");
+                    toast("상품 문의 기능은 추후 연결할 예정입니다.");
                   }}
                   className={styles.inquiryButton}
                 >
@@ -749,7 +749,7 @@ export default function ProductDetailClient({
                 <button
                   type="button"
                   onClick={() => {
-                    alert("배송·반품·교환 문의 기능은 추후 연결할 예정입니다.");
+                    toast("배송·반품·교환 문의 기능은 추후 연결할 예정입니다.");
                   }}
                   className={styles.inquiryButton}
                 >
