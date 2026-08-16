@@ -5,6 +5,7 @@ import styles from "./page.module.css";
 import { Cart } from "@/types/cartType";
 import Cookies from "js-cookie";
 import Link from "next/link";
+import { toast } from "sonner";
 // 장바구니 페이지
 export default function CartPage() {
   const router = useRouter();
@@ -77,6 +78,7 @@ export default function CartPage() {
       setCart(cartData);
     } catch (error) {
       console.error(error);
+      toast.error("수량 변경 중 오류가 발생했습니다.");
     }
   };
 
@@ -124,21 +126,33 @@ export default function CartPage() {
       setSelectedItems((prev) => prev.filter((id) => id !== cartItemId));
     } catch (error) {
       console.error(error);
+      toast.error("상품 삭제 중 오류가 발생했습니다.");
+      throw error;
     }
   };
 
   // 선택한 장바구니 상품 삭제
   const deleteSelectedItems = async () => {
+    // 선택된 상품이 없으면 삭제하지 않습니다.
     if (selectedItems.length === 0) {
-      alert("삭제할 상품을 선택해 주세요.");
+      toast.warning("삭제할 상품을 선택해 주세요.");
       return;
     }
 
-    for (const cartItemId of selectedItems) {
-      await deleteCartItem(cartItemId);
+    try {
+      // 선택한 상품을 하나씩 삭제합니다.
+      for (const cartItemId of selectedItems) {
+        await deleteCartItem(cartItemId);
+      }
+
+      // 모든 상품이 정상적으로 삭제된 경우에만 성공 메시지를 보여줍니다.
+      toast.success("선택한 상품이 삭제되었습니다.");
+    } catch {
+      // deleteCartItem에서 이미 오류 Toast를 보여주므로
+      // 여기서는 추가 메시지를 띄우지 않습니다.
+      return;
     }
   };
-
   const updateSelectedItems = async () => {
     try {
       // 로그인할 때 쿠키에 저장한 JWT 토큰을 가져옵니다.
@@ -194,7 +208,7 @@ export default function CartPage() {
   const handleSelectedOrder = async () => {
     // 체크된 상품이 하나도 없으면 결제를 진행하지 않습니다.
     if (selectedItems.length === 0) {
-      alert("주문할 상품을 선택해 주세요.");
+      toast.warning("주문할 상품을 선택해 주세요.");
       return;
     }
 
@@ -212,7 +226,7 @@ export default function CartPage() {
       router.push(`/pay?${params.toString()}`);
     } catch (error) {
       console.error(error);
-      alert("선택 상품 주문 중 오류가 발생했습니다.");
+      toast.error("선택 상품 주문 중 오류가 발생했습니다.");
     }
   };
 
@@ -249,7 +263,7 @@ export default function CartPage() {
       router.push(`/pay?${params.toString()}`);
     } catch (error) {
       console.error(error);
-      alert("전체 상품 주문 중 오류가 발생했습니다.");
+      toast.error("전체 상품 주문 중 오류가 발생했습니다.");
     }
   };
   // 에러 메시지
