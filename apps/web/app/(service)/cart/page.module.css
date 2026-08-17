@@ -389,3 +389,32 @@
 .orderButton:hover {
   background-color: #ffb0aa;
 }
+
+/* 태블릿 */
+@media (max-width: 900px) {
+  .cartContent {
+    flex-direction: column;
+  }
+
+  .orderSummary {
+    width: 100%;
+    position: static;
+    box-sizing: border-box;
+  }
+}
+
+/* 모바일 */
+@media (max-width: 600px) {
+  .container {
+    padding: 16px;
+  }
+  .productBottom {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+  .productImage {
+    width: 80px;
+    height: 80px;
+  }
+}
