@@ -590,6 +590,13 @@
   line-height: 1.6;
 }
 
+.aiNotice {
+  margin: 20px 0 12px;
+  font-size: 12px;
+  color: #f59d96;
+  padding-left: 4px;
+  margin-right: 1.3rem;
+}
 /* 태블릿 */
 @media (max-width: 900px) {
   .productSection {
@@ -629,6 +636,8 @@
 
   .productName {
     font-size: 25px;
+    white-space: normal;
+    word-break: keep-all;
   }
 
   .productPrice {
@@ -655,12 +664,36 @@
   .inquiryButtonArea {
     grid-template-columns: 1fr;
   }
-}
-
-.aiNotice {
-  margin: 20px 0 12px;
-  font-size: 12px;
-  color: #f59d96;
-  padding-left: 4px;
-  margin-right: 1.3rem;
+  .aiNotice {
+    margin-right: 0;
+    padding-left: 0;
+    line-height: 1.5;
+    word-break: keep-all;
+    white-space: normal;
+  }
+  .inquiryDescription {
+    white-space: normal;
+    word-break: keep-all;
+    line-height: 1.5;
+    padding: 0 12px;
+  }
+  .qnaQuestion {
+    white-space: normal;
+    word-break: normal;
+    overflow-wrap: anywhere;
+    padding-right: 12px;
+  }
+  .bottomSection,
+  .bottomLeftArea,
+  .contentSection,
+  .qnaList,
+  .qnaItem {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
+  }
+  .qnaItem {
+    padding: 22px 12px;
+  }
 }
