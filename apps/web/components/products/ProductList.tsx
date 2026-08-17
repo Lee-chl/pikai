@@ -2,6 +2,7 @@ import Link from "next/link";
 import { ProductItemType } from "@/types/productItemType";
 import Image from "next/image";
 import { Constants } from "@/common/constants";
+import styles from "./ProductList.module.css";
 
 interface ProductListProps {
   products: ProductItemType[];
@@ -13,13 +14,7 @@ export default function ProductList({ products }: ProductListProps) {
   }
 
   return (
-    <div
-      style={{
-        display: "grid",
-        gridTemplateColumns: "repeat(5, 1fr)",
-        gap: "30px",
-      }}
-    >
+    <div className={styles.productGrid}>
       {products.map((product) => {
         const originalPrice = product.price;
         const salePrice = Math.floor(originalPrice * 0.9);
