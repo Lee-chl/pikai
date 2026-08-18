@@ -71,6 +71,25 @@ export default function AIRecommendPopup({
     );
   }
 
+  const getStars = (score: number) => {
+    switch (score) {
+      case 1:
+        return "★☆☆☆☆☆";
+      case 2:
+        return "★★☆☆☆☆";
+      case 3:
+        return "★★★☆☆☆";
+      case 4:
+        return "★★★★☆☆";
+      case 5:
+        return "★★★★★☆";
+      case 6:
+        return "★★★★★★";
+      default:
+        return "☆☆☆☆☆☆";
+    }
+  };
+
   // 기존 추천 AI 결과 JSX
   return (
     <div className={styles.overlay}>
@@ -79,7 +98,11 @@ export default function AIRecommendPopup({
         <h2>{title}</h2>
 
         {/* 점수 */}
-        <p className={styles.score}>추천 점수 : {score}점</p>
+        <p className={styles.star}>{getStars(score)}</p>
+        <p className={styles.score}>
+          <br />
+          추천 점수 : {score}점
+        </p>
 
         {/* 추천 내용 */}
         <p className={styles.message}>{message}</p>

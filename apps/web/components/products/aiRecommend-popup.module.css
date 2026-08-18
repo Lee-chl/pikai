@@ -37,10 +37,18 @@
    추천 점수
  */
 
-.score {
+.star {
   margin-top: 20px;
 
-  font-size: 22px;
+  font-size: 35px;
+
+  font-weight: bold;
+
+  color: #ffc7c2;
+}
+
+.score {
+  font-size: 17px;
 
   font-weight: bold;
 
