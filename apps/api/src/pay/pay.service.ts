@@ -2,7 +2,6 @@ import { BadRequestException, Injectable } from '@nestjs/common';
 import { CreatePayDto } from './dto/create-pay.dto';
 import { NotFoundException } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { BuyItem, PayItemType } from './pay.type';
 import { CompletePayDto } from './dto/complete-pay.dto';
 
 @Injectable()
@@ -58,13 +57,13 @@ export class PayService {
       throw new BadRequestException('탈퇴한 회원입니다.');
     }
 
+    if (createPayDto.items.length === 0) {
+      throw new BadRequestException('주문 상품이 없습니다.');
+    }
+
     const orderId = await this.generateOrderId();
 
     return await this.prisma.$transaction(async (tx) => {
-      if (createPayDto.items.length === 0) {
-        throw new BadRequestException('주문 상품이 없습니다.');
-      }
-
       //상품 확인
       for (const item of createPayDto.items) {
         const product = await tx.detailProduct.findUnique({
@@ -122,60 +121,6 @@ export class PayService {
             price: this.getSalePrice(product.products.price),
           },
         });
-
-        //재고 감소
-        await tx.detailProduct.update({
-          where: {
-            id: item.detail_color_id,
-          },
-          data: {
-            stock: {
-              decrement: item.quantity,
-            },
-          },
-        });
-      }
-
-      const cart = await tx.cart.findUnique({
-        where: {
-          userId,
-        },
-      });
-
-      if (!cart) {
-        throw new NotFoundException('장바구니를 찾을 수 없습니다.');
-      }
-
-      //장바구니, 바로구매에 맞게 결제 후 제품 삭제
-      if (!createPayDto.isCartOrder) {
-        await tx.cartItem.deleteMany({
-          where: {
-            cart_id: cart.id,
-            is_now: true,
-            detail_color_id: {
-              in: createPayDto.items.map((item) => item.detail_color_id),
-            },
-          },
-        });
-      } else if (createPayDto.selectedOnly) {
-        await tx.cartItem.deleteMany({
-          where: {
-            cart_id: cart.id,
-            detail_color_id: {
-              in: createPayDto.items.map((item) => item.detail_color_id),
-            },
-          },
-        });
-      } else {
-        await tx.cartItem.deleteMany({
-          where: {
-            cart_id: cart.id,
-            is_now: false,
-            detail_color_id: {
-              in: createPayDto.items.map((item) => item.detail_color_id),
-            },
-          },
-        });
       }
 
       return order;
@@ -183,7 +128,7 @@ export class PayService {
   }
 
   async completePay(dto: CompletePayDto) {
-    const { paymentKey, orderId, amount } = dto;
+    const { paymentKey, orderId, amount, isCartOrder, selectedOnly } = dto;
     const secretKey = `${process.env.TOSS_SECRET_KEY}`;
 
     const basicAuth = Buffer.from(`${secretKey}:`).toString('base64');
@@ -208,12 +153,111 @@ export class PayService {
       );
     }
 
-    return await this.prisma.order.update({
-      where: { id: orderId },
-      data: {
-        payment: paymentData.method || 'CARD',
-        order_status: 'PAYCOMPLETED',
-      },
+    return await this.prisma.$transaction(async (tx) => {
+      const order = await tx.order.findUnique({
+        where: {
+          id: orderId,
+        },
+        include: {
+          orderItem: true,
+        },
+      });
+
+      if (!order) {
+        throw new NotFoundException('주문을 찾을 수 없습니다.');
+      }
+
+      if (order.order_status === 'PAYCOMPLETED') {
+        return order;
+      }
+
+      for (const item of order.orderItem) {
+        const product = await tx.detailProduct.findUnique({
+          where: {
+            id: item.detail_color_id,
+          },
+        });
+
+        if (!product) {
+          throw new NotFoundException('상품을 찾을 수 없습니다.');
+        }
+
+        if (product.stock < item.quantity) {
+          throw new BadRequestException(
+            `${product.color_name}의 재고가 부족합니다.`,
+          );
+        }
+      }
+
+      //재고 감소
+      for (const item of order.orderItem) {
+        await tx.detailProduct.update({
+          where: {
+            id: item.detail_color_id,
+          },
+          data: {
+            stock: {
+              decrement: item.quantity,
+            },
+          },
+        });
+      }
+
+      // 결제 완료 후 장바구니 상품 삭제
+      const cart = await tx.cart.findUnique({
+        where: {
+          userId: order.user_id,
+        },
+      });
+
+      if (cart) {
+        const detailColorIds = order.orderItem.map(
+          (item) => item.detail_color_id,
+        );
+
+        if (!isCartOrder) {
+          await tx.cartItem.deleteMany({
+            where: {
+              cart_id: cart.id,
+              is_now: true,
+              detail_color_id: {
+                in: detailColorIds,
+              },
+            },
+          });
+        } else {
+          if (selectedOnly) {
+            await tx.cartItem.deleteMany({
+              where: {
+                cart_id: cart.id,
+                is_now: false,
+                is_selected: true,
+                detail_color_id: {
+                  in: detailColorIds,
+                },
+              },
+            });
+          } else {
+            await tx.cartItem.deleteMany({
+              where: {
+                cart_id: cart.id,
+                is_now: false,
+                detail_color_id: {
+                  in: detailColorIds,
+                },
+              },
+            });
+          }
+        }
+      }
+
+      return tx.order.update({
+        where: { id: orderId },
+        data: {
+          payment: paymentData.method || 'CARD',
+          order_status: 'PAYCOMPLETED',
+        },
+      });
     });
   }
 }

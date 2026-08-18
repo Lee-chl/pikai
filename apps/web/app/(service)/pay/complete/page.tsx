@@ -9,15 +9,21 @@ interface CompletePageProps {
     paymentKey?: string;
     orderId?: string;
     amount?: string;
+    isCartOrder?: string;
+    selectedOnly?: string;
   }>;
 }
 
 export default async function Page({ searchParams }: CompletePageProps) {
-  const { paymentKey, orderId, amount } = await searchParams;
+  const { paymentKey, orderId, amount, isCartOrder, selectedOnly } =
+    await searchParams;
 
   if (!orderId || !paymentKey || !amount) {
     redirect("/");
   }
+
+  const cartOrder = isCartOrder === "true";
+  const selectOnly = selectedOnly === "true";
 
   const cookieStore = await cookies();
   const token = cookieStore.get("accessToken")?.value;
@@ -32,6 +38,8 @@ export default async function Page({ searchParams }: CompletePageProps) {
       paymentKey,
       orderId,
       amount: Number(amount),
+      isCartOrder: cartOrder,
+      selectedOnly: selectOnly,
     }),
     cache: "no-store",
   });

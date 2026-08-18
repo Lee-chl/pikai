@@ -20,8 +20,8 @@ export default function PayContainer({ data }: Props) {
   const searchParams = useSearchParams();
   const pathname = usePathname();
 
-  const isCartOrder = searchParams.get("isCartOrder") ?? true;
-  const selectedOnly = searchParams.get("selectedOnly") ?? false;
+  const isCartOrder = searchParams.get("isCartOrder") === "true";
+  const selectedOnly = searchParams.get("selectedOnly") === "true";
 
   const paymentWidgetRef = useRef<PaymentWidgetInstance | null>(null);
 
@@ -109,8 +109,8 @@ export default function PayContainer({ data }: Props) {
           body: JSON.stringify({
             payment,
             ...delivery,
-            isCartOrder: isCartOrder === "true",
-            selectedOnly: selectedOnly === "true",
+            isCartOrder,
+            selectedOnly,
             items: cartItem,
           }),
         });
@@ -132,12 +132,14 @@ export default function PayContainer({ data }: Props) {
         await paymentWidget.requestPayment({
           orderId: `${order.id}`,
           orderName: orderName,
-          successUrl: `${window.location.origin}/pikai/pay/complete`,
+          successUrl:
+            `${window.location.origin}/pikai/pay/complete` +
+            `?isCartOrder=${isCartOrder}` +
+            `&selectedOnly=${selectedOnly}`,
           failUrl: `${window.location.origin}${pathname}`,
         });
       } catch (err) {
         console.error(err);
-        toast.error("결제 중 오류가 발생했습니다.");
       }
     }
   };

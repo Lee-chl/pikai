@@ -1,4 +1,4 @@
-import { IsInt, IsString } from 'class-validator';
+import { IsBoolean, IsInt, IsString } from 'class-validator';
 
 export class CompletePayDto {
   @IsString()
@@ -9,4 +9,10 @@ export class CompletePayDto {
 
   @IsInt()
   amount: number;
+
+  @IsBoolean()
+  isCartOrder: boolean;
+
+  @IsBoolean()
+  selectedOnly: boolean;
 }
